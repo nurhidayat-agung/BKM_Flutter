@@ -1,13 +1,9 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
-import 'package:flutter/scheduler.dart';
-import 'package:newbkmmobile/core/constants.dart';
 import 'package:newbkmmobile/core/drawer_item.dart';
 import 'package:newbkmmobile/core/r.dart';
-import 'package:newbkmmobile/core/storage_helper.dart';
-import 'package:newbkmmobile/models/user_detail_resp.dart';
+import 'package:newbkmmobile/repositories/user_detail_repository.dart';
 import 'package:newbkmmobile/ui/pages/change_password/change_password.dart';
+import 'package:newbkmmobile/ui/widgets/logout_dialog.dart';
 
 import 'home/home_page.dart';
 
@@ -20,9 +16,9 @@ class DrawerMenuPage extends StatefulWidget {
 
 class _DrawerMenuPageState extends State<DrawerMenuPage> {
   final listDrawer = [
-    DrawerItem("Menu Utama", Icons.home),
-    DrawerItem("Ganti Password", Icons.key),
-    DrawerItem("Keluar", Icons.logout),
+    DrawerItem(R.strings.mainMenu, Icons.home),
+    DrawerItem(R.strings.changePassword, Icons.key),
+    DrawerItem(R.strings.exit, Icons.logout),
   ];
 
   String urlPhoto = "";
@@ -34,24 +30,24 @@ class _DrawerMenuPageState extends State<DrawerMenuPage> {
   @override
   void initState() {
     super.initState();
-    _getDataLogin();
+    _getuserDetail();
   }
 
-  Future _getDataLogin() async {
+  Future _getuserDetail() async {
     try {
-      var userDetail = await StorageHelper().getString(Constants.userDetail);
-      Map<String, dynamic> map = await jsonDecode(userDetail!);
-      var result = UserDetailResp.fromJson(map);
-      setState(() {
-        fullName = result.fullName ?? "";
-        phone = result.mobileNumber ?? "";
-        dedication = result.dedication ?? "";
-        urlPhoto = result.profilImg ?? "";
-      });
+      var userDetail = await UserDetailRepository().getUserDetailLocal();
+      if (userDetail.isNotEmpty) {
+        setState(() {
+          fullName = userDetail[0].fullName;
+          phone = userDetail[0].mobileNumber;
+          dedication = userDetail[0].dedication;
+          urlPhoto = userDetail[0].profilImg;
+        });
+      }
     } catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text(e.toString())));
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text(e.toString())));
     }
   }
 
@@ -62,27 +58,20 @@ class _DrawerMenuPageState extends State<DrawerMenuPage> {
       case 1:
         return const ChangePasswordPage();
       case 2:
-        _logout();
-        return SchedulerBinding.instance.addPostFrameCallback((_) {
-          // Navigator.of(context).pushAndRemoveUntil(
-          //     MaterialPageRoute(builder: (context) =>
-          //         LoginPage()), (Route<dynamic> route) => false
-          // );
-        });
+      return const Center();
       default:
-        return Text("Error");
+        return const Center(child: Text("Error"));
     }
   }
 
   _onSelectItem(int index) {
-    setState(() => selectedDrawerIndex = index);
-    Navigator.of(context).pop();
-  }
-
-  Future _logout() async {
-    // final _sp = await SharedPreferences.getInstance();
-    // await _sp.clear();
-    // return true;
+    if (index == 2) {
+      Navigator.of(context).pop();
+      showDialog(context: context, builder: (BuildContext context) => const LogoutDialog());
+    } else {
+      setState(() => selectedDrawerIndex = index);
+      Navigator.of(context).pop();
+    }
   }
 
   @override
@@ -90,14 +79,23 @@ class _DrawerMenuPageState extends State<DrawerMenuPage> {
     List<Widget> listDrawerOptions = [];
     for (var i = 0; i < listDrawer.length; i++) {
       var d = listDrawer[i];
-      listDrawerOptions.add(
-          ListTile(
-            leading: Icon(d.icon),
-            title: Text(d.title),
-            selected: i == selectedDrawerIndex,
-            onTap: () => _onSelectItem(i),
-          )
-      );
+      listDrawerOptions.add(ListTile(
+        leading: Icon(
+          d.icon,
+          color:
+              i == selectedDrawerIndex ? R.colors.colorPrimary : R.colors.grey3,
+        ),
+        title: Text(
+          d.title,
+          style: TextStyle(
+            color: i == selectedDrawerIndex
+                ? R.colors.colorPrimary
+                : R.colors.grey3,
+          ),
+        ),
+        selected: i == selectedDrawerIndex,
+        onTap: () => _onSelectItem(i),
+      ));
     }
 
     return Scaffold(
@@ -134,7 +132,8 @@ class _DrawerMenuPageState extends State<DrawerMenuPage> {
                           child: Card(
                             color: Colors.white,
                             elevation: 0.0,
-                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(100.0)),
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(100.0)),
                             child: Container(
                               height: 70.0,
                               width: 70.0,
@@ -142,7 +141,8 @@ class _DrawerMenuPageState extends State<DrawerMenuPage> {
                                 borderRadius: BorderRadius.circular(100.0),
                                 image: DecorationImage(
                                   image: NetworkImage(urlPhoto),
-                                  onError: (error, stackTrace) => const Text(""),
+                                  onError: (error, stackTrace) =>
+                                      const Text(""),
                                   fit: BoxFit.cover,
                                 ),
                               ),
