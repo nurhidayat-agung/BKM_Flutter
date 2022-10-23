@@ -1,5 +1,8 @@
 class Constants {
   static String baseUrl           = "http://restapi.berkatkarimar.co.id/";
+  static String key               = "bkmmobilekey";
+  static String boxLogin          = "login";
+  static String boxUserDetail     = "user_detail";
 
   static String userId            = "user_id";
   static String token             = "token";

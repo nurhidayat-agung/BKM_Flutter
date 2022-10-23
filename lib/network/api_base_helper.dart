@@ -4,7 +4,8 @@ import 'package:dio/dio.dart';
 import 'package:newbkmmobile/core/constants.dart';
 import 'package:newbkmmobile/core/storage_helper.dart';
 import 'package:newbkmmobile/models/error_resp.dart';
-import 'api_exception.dart';
+import 'package:newbkmmobile/repositories/login_repository.dart';
+import '../core/failure.dart';
 
 class APIBaseHelper {
   final Dio _dio = Dio();
@@ -13,8 +14,13 @@ class APIBaseHelper {
 
   Future<Response> get(String url) async {
     var responseJson;
-    var token = await storageHelper.getString(Constants.token);
-    var userId = await storageHelper.getString(Constants.userId);
+    var token = "";
+    var userId = "";
+    final loginLocal = await LoginRepository().getLoginLocal();
+    if (loginLocal.isNotEmpty) {
+      token = loginLocal[0].token;
+      userId = loginLocal[0].userId;
+    }
     try {
       final response = await _dio.get(
         _baseUrl + url,
@@ -23,8 +29,6 @@ class APIBaseHelper {
             "Client-Service": "driver-client",
             "Auth-Key": "bkmrestapi",
             "Content-Type": "application/json",
-            // "responseType": ResponseType.plain,
-            // "Charset": "utf-8",
             "Authorization": token,
             "User-ID": userId,
           },
@@ -40,8 +44,13 @@ class APIBaseHelper {
 
   Future<Response> post(String url, {required FormData formData}) async {
     var responseJson;
-    var token = await storageHelper.getString(Constants.token);
-    var userId = await storageHelper.getString(Constants.userId);
+    var token = "";
+    var userId = "";
+    final loginLocal = await LoginRepository().getLoginLocal();
+    if (loginLocal.isNotEmpty) {
+      token = loginLocal[0].token;
+      userId = loginLocal[0].userId;
+    }
     try {
       final response = await _dio.post(
         _baseUrl + url,

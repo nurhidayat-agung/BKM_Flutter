@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:newbkmmobile/core/constants.dart';
 import 'package:newbkmmobile/core/r.dart';
 import 'package:newbkmmobile/core/storage_helper.dart';
+import 'package:newbkmmobile/repositories/login_repository.dart';
 import 'package:newbkmmobile/ui/pages/drawer_menu_page.dart';
 import 'package:newbkmmobile/ui/pages/login/login_page.dart';
 
@@ -25,16 +26,34 @@ class _SplashPageState extends State<SplashPage> {
   }
 
   Future _checkLogin() async {
-    final userId = await StorageHelper().getString(Constants.userId) ?? "";
-    if (userId.isNotEmpty) {
-      Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (_) => const DrawerMenuPage())
-      );
+    final loginLocal = await LoginRepository().getLoginLocal();
+    if (!mounted) return;
+    if (loginLocal.isNotEmpty) {
+      if (loginLocal[0].userId.isNotEmpty) {
+        Navigator.of(context).pushReplacement(
+            MaterialPageRoute(builder: (_) => const DrawerMenuPage())
+        );
+      } else {
+        Navigator.of(context).pushReplacement(
+            MaterialPageRoute(builder: (_) => const LoginPage())
+        );
+      }
     } else {
       Navigator.of(context).pushReplacement(
           MaterialPageRoute(builder: (_) => const LoginPage())
       );
     }
+    // final userId = loginLocal[0].userId;
+    // // final userId = await StorageHelper().getString(Constants.userId) ?? "";
+    // if (userId.isNotEmpty) {
+    //   Navigator.of(context).pushReplacement(
+    //       MaterialPageRoute(builder: (_) => const DrawerMenuPage())
+    //   );
+    // } else {
+    //   Navigator.of(context).pushReplacement(
+    //       MaterialPageRoute(builder: (_) => const LoginPage())
+    //   );
+    // }
   }
 
   @override

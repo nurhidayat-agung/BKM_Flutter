@@ -2,43 +2,40 @@ import 'package:flutter/material.dart';
 import 'package:newbkmmobile/core/r.dart';
 
 class CustomLoading extends StatelessWidget {
-  const CustomLoading();
+  const CustomLoading({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Dialog(
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(10),
+        borderRadius: BorderRadius.circular(0.0),
       ),
-      elevation: 0.0,
       backgroundColor: Colors.transparent,
+      elevation: 0.0,
       child: Stack(
         alignment: Alignment.center,
         children: [
           Container(
-            padding: const EdgeInsets.all(10),
+            padding: const EdgeInsets.all(10.0),
             decoration: BoxDecoration(
               shape: BoxShape.rectangle,
               color: R.colors.grey2,
-              borderRadius: BorderRadius.circular(10),
+              borderRadius: BorderRadius.circular(0.0),
             ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              mainAxisSize: MainAxisSize.min,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                const SizedBox(height: 20),
                 SizedBox(
-                  height: 30,
-                  width: 30,
+                  height: 30.0,
+                  width: 30.0,
                   child: CircularProgressIndicator(
                     valueColor: AlwaysStoppedAnimation<Color>(R.colors.colorPrimary),
                   ),
                 ),
-                const SizedBox(height: 20),
-                const Text(
-                  "Loading...",
-                  style: TextStyle(
-                    fontSize: 15,
+                Text(
+                  R.strings.loadingGetData,
+                  style: const TextStyle(
+                    fontSize: 15.0,
                   ),
                 ),
               ],

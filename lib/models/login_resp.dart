@@ -1,3 +1,5 @@
+import 'login_local.dart';
+
 class LoginResp {
   int? status;
   String? message;
@@ -24,5 +26,15 @@ class LoginResp {
     data['token'] = this.token;
     data['firebase_token'] = this.firebaseToken;
     return data;
+  }
+
+  LoginLocal toLocal() {
+    return LoginLocal(
+      status: status ?? 0,
+      message: message ?? "",
+      userId: userId ?? "",
+      token: token ?? "",
+      firebaseToken: firebaseToken ?? "",
+    );
   }
 }

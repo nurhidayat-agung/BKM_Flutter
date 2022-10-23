@@ -1,3 +1,7 @@
+import 'package:newbkmmobile/models/announcement_local.dart';
+import 'package:newbkmmobile/models/user_detail_local.dart';
+import 'package:newbkmmobile/models/vehicle_local.dart';
+
 class UserDetailResp {
   String? userId;
   String? driverId;
@@ -71,6 +75,26 @@ class UserDetailResp {
     }
     return data;
   }
+
+
+
+  UserDetailLocal toLocal() {
+    return UserDetailLocal(
+      userId: userId ?? "",
+      driverId: driverId ?? "",
+      fullName: fullName ?? "",
+      mobileNumber: mobileNumber ?? "",
+      dOB: dOB ?? "",
+      address: address ?? "",
+      bloodType: bloodType ?? "",
+      profilImg: profilImg ?? "",
+      activeWorkingDate: activeWorkingDate ?? "",
+      dedication: dedication ?? "",
+      numberOfTrip: numberOfTrip ?? "",
+      announcement: announcement!.map((data) => data.toLocal()).toList(),
+      vehicle: vehicle!.toLocal(),
+    );
+  }
 }
 
 class Announcement {
@@ -124,6 +148,21 @@ class Announcement {
     data['is_img'] = this.isImg;
     return data;
   }
+
+  AnnouncementLocal toLocal() {
+    return AnnouncementLocal(
+      id: id ?? "",
+      userId: userId ?? "",
+      startDate: startDate ?? "",
+      endDate: endDate ?? "",
+      announcement: announcement ?? "",
+      fontSize: fontSize ?? "",
+      fontColor: fontColor ?? "",
+      backgroundImg: backgroundImg ?? "",
+      backgroundColor: backgroundColor ?? "",
+      isImg: isImg ?? "",
+    );
+  }
 }
 
 class Vehicle {
@@ -156,5 +195,15 @@ class Vehicle {
     data['repair_status'] = this.repairStatus;
     data['capacity'] = this.capacity;
     return data;
+  }
+
+  VehicleLocal toLocal() {
+    return VehicleLocal(
+      id: id ?? "",
+      vehicleNumber: vehicleNumber ?? "",
+      isAvailable: isAvailable ?? "",
+      repairStatus: repairStatus ?? "",
+      capacity: capacity ?? "",
+    );
   }
 }
