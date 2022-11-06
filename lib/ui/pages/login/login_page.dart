@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:newbkmmobile/blocs/login_bloc.dart';
+import 'package:newbkmmobile/blocs/login/login_bloc.dart';
 import 'package:newbkmmobile/core/r.dart';
 import 'package:newbkmmobile/repositories/login_repository.dart';
 import 'package:newbkmmobile/repositories/user_detail_repository.dart';
@@ -46,10 +46,12 @@ class _LoginPageState extends State<LoginPage> {
               child: BlocListener<LoginBloc, LoginState>(
                 listener: (context, state) async {
                   if (state is LoginLoading) {
-                    showDialog(context: context,
-                        builder: (BuildContext context){
-                          return const CustomLoading();
-                        }
+                    showDialog(
+                      barrierDismissible: false,
+                      context: context,
+                      builder: (BuildContext context) {
+                        return const CustomLoading();
+                      }
                     );
                   }
                   if (state is LoginSuccess) {
@@ -68,13 +70,13 @@ class _LoginPageState extends State<LoginPage> {
                       return Stack(
                         children: <Widget>[
                           Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 20),
+                            padding: const EdgeInsets.symmetric(horizontal: 20.0),
                             child: SingleChildScrollView(
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.center,
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
-                                  const SizedBox(height: 120),
+                                  const SizedBox(height: 120.0),
                                   Column(
                                     children: [
                                       Image.asset(
@@ -94,12 +96,12 @@ class _LoginPageState extends State<LoginPage> {
                                           labelText: R.strings.titleUsername,
                                           floatingLabelBehavior: FloatingLabelBehavior.auto,
                                         ),
-                                        style: const TextStyle(fontSize: 20),
+                                        style: const TextStyle(fontSize: 20.0),
                                         controller: _usernameController,
                                       ),
                                     ],
                                   ),
-                                  const SizedBox(height: 40),
+                                  const SizedBox(height: 40.0),
                                   Column(
                                     children: [
                                       TextField(
@@ -118,12 +120,12 @@ class _LoginPageState extends State<LoginPage> {
                                           ),
                                         ),
                                         obscureText: _isHiddenPassword,
-                                        style: const TextStyle(fontSize: 20),
+                                        style: const TextStyle(fontSize: 20.0),
                                         controller: _passwordController,
                                       ),
                                     ],
                                   ),
-                                  const SizedBox(height: 60),
+                                  const SizedBox(height: 60.0),
                                   GestureDetector(
                                     onTap: () {
                                       if (_usernameController.text.trim().isEmpty || _passwordController.text.trim().isEmpty) {

@@ -20,7 +20,7 @@ class _SplashPageState extends State<SplashPage> {
   @override
   void initState() {
     super.initState();
-    Timer(Duration(seconds: 2), () {
+    Timer(const Duration(seconds: 2), () {
       _checkLogin();
     });
   }
@@ -43,17 +43,6 @@ class _SplashPageState extends State<SplashPage> {
           MaterialPageRoute(builder: (_) => const LoginPage())
       );
     }
-    // final userId = loginLocal[0].userId;
-    // // final userId = await StorageHelper().getString(Constants.userId) ?? "";
-    // if (userId.isNotEmpty) {
-    //   Navigator.of(context).pushReplacement(
-    //       MaterialPageRoute(builder: (_) => const DrawerMenuPage())
-    //   );
-    // } else {
-    //   Navigator.of(context).pushReplacement(
-    //       MaterialPageRoute(builder: (_) => const LoginPage())
-    //   );
-    // }
   }
 
   @override

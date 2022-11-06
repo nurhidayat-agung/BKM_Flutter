@@ -30,10 +30,10 @@ class _DrawerMenuPageState extends State<DrawerMenuPage> {
   @override
   void initState() {
     super.initState();
-    _getuserDetail();
+    _getUserDetail();
   }
 
-  Future _getuserDetail() async {
+  Future _getUserDetail() async {
     try {
       var userDetail = await UserDetailRepository().getUserDetailLocal();
       if (userDetail.isNotEmpty) {
@@ -83,14 +83,14 @@ class _DrawerMenuPageState extends State<DrawerMenuPage> {
         leading: Icon(
           d.icon,
           color:
-              i == selectedDrawerIndex ? R.colors.colorPrimary : R.colors.grey3,
+              i == selectedDrawerIndex ? R.colors.colorPrimaryDark : R.colors.bgGrey,
         ),
         title: Text(
           d.title,
           style: TextStyle(
             color: i == selectedDrawerIndex
-                ? R.colors.colorPrimary
-                : R.colors.grey3,
+                ? R.colors.colorPrimaryDark
+                : R.colors.bgGrey,
           ),
         ),
         selected: i == selectedDrawerIndex,

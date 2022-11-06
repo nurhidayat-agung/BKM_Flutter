@@ -16,4 +16,11 @@ class Strings {
 
   String titleDialogLogOut    = "Log Out / Exit";
   String logOut               = "Log Out";
+
+  String menuTrip             = "Pengangkutan Baru";
+  String menuHistory          = "Riwayat Pengangkutan";
+  String menuSalary           = "Slip Gaji";
+  String menuHelp             = "Bantuan";
+  String menuService          = "Buku Servis";
+  String menuPart             = "Penggantian Part";
 }

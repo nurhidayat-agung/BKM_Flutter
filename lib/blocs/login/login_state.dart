@@ -9,7 +9,6 @@ class LoginInitial extends LoginState {
   List<Object> get props => [];
 }
 
-
 class LoginLoading extends LoginState {
   const LoginLoading();
   @override

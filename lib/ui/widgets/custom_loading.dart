@@ -29,7 +29,7 @@ class CustomLoading extends StatelessWidget {
                   height: 30.0,
                   width: 30.0,
                   child: CircularProgressIndicator(
-                    valueColor: AlwaysStoppedAnimation<Color>(R.colors.colorPrimary),
+                    valueColor: AlwaysStoppedAnimation(R.colors.colorPrimary),
                   ),
                 ),
                 Text(
