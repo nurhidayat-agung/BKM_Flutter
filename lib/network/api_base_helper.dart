@@ -2,10 +2,11 @@ import 'dart:io';
 
 import 'package:dio/dio.dart';
 import 'package:newbkmmobile/core/constants.dart';
+import 'package:newbkmmobile/core/failure.dart';
+import 'package:newbkmmobile/core/r.dart';
 import 'package:newbkmmobile/core/storage_helper.dart';
 import 'package:newbkmmobile/models/error_resp.dart';
 import 'package:newbkmmobile/repositories/login_repository.dart';
-import '../core/failure.dart';
 
 class APIBaseHelper {
   final Dio _dio = Dio();
@@ -36,7 +37,7 @@ class APIBaseHelper {
       );
       responseJson = _returnResponse(response);
     } on SocketException {
-      throw ErrorException("No internet connection");
+      throw ErrorException(R.strings.noInternetConnection);
     }
 
     return responseJson;
@@ -67,7 +68,7 @@ class APIBaseHelper {
       );
       responseJson = _returnResponse(response);
     } on SocketException {
-      throw ErrorException("No internet connection");
+      throw ErrorException(R.strings.noInternetConnection);
     }
 
     return responseJson;

@@ -19,12 +19,12 @@ class _HomePageState extends State<HomePage> {
   int numberOfTrip = 0;
   int currentPos = 0;
   List<GridItem> listGrid = [
-    GridItem(title: R.strings.menuTrip, image: AssetImage(R.assets.menuTrip)),
-    GridItem(title: R.strings.menuHistory, image: AssetImage(R.assets.menuHistory)),
-    GridItem(title: R.strings.menuSalary, image: AssetImage(R.assets.menuSalary)),
-    GridItem(title: R.strings.menuHelp, image: AssetImage(R.assets.menuHelp)),
-    GridItem(title: R.strings.menuService, image: AssetImage(R.assets.menuService)),
-    GridItem(title: R.strings.menuPart, image: AssetImage(R.assets.menuPart)),
+    GridItem(title: R.strings.menuTrip, image: AssetImage(R.assets.menuTrip), color: Colors.deepPurple[300]!),
+    GridItem(title: R.strings.menuHistory, image: AssetImage(R.assets.menuHistory), color: Colors.lightBlue[500]!),
+    GridItem(title: R.strings.menuSalary, image: AssetImage(R.assets.menuSalary), color: Colors.orange[800]!),
+    GridItem(title: R.strings.menuHelp, image: AssetImage(R.assets.menuHelp), color: Colors.green[600]!),
+    GridItem(title: R.strings.menuService, image: AssetImage(R.assets.menuService), color: Colors.brown[400]!),
+    GridItem(title: R.strings.menuPart, image: AssetImage(R.assets.menuPart), color: Colors.amber[800]!),
   ];
 
   @override
@@ -88,7 +88,7 @@ class _HomePageState extends State<HomePage> {
                           }).toList(),
                         ),
                         Padding(
-                          padding: const EdgeInsets.all(4.0),
+                          padding: const EdgeInsets.all(8.0),
                           child: GridView.builder(
                             physics: const ScrollPhysics(),
                             scrollDirection: Axis.vertical,
@@ -100,61 +100,68 @@ class _HomePageState extends State<HomePage> {
                               crossAxisSpacing: 5.0,
                             ),
                             itemBuilder: (BuildContext context, int index) =>
-                                      Card(
-                                        child: Padding(
-                                          padding: const EdgeInsets.all(8.0),
-                                          child: Stack(
-                                            alignment: Alignment.center,
-                                            children: [
-                                              Center(
-                                                child: ImageIcon(
-                                                  listGrid[index].image,
-                                                  size: 60.0,
-                                                ),
+                              Card(
+                                color: listGrid[index].color,
+                                elevation: 0.0,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(10.0),
+                                ),
+                                child: Padding(
+                                  padding: const EdgeInsets.all(12.0),
+                                  child: Stack(
+                                    alignment: Alignment.center,
+                                    children: [
+                                      Center(
+                                        child: ImageIcon(
+                                          listGrid[index].image,
+                                          color: Colors.white,
+                                          size: 80.0,
+                                        ),
+                                      ),
+                                      Visibility(
+                                        visible: index == 0 && numberOfTrip > 0 ? true : false,
+                                        child: Positioned(
+                                          top: 30.0,
+                                          right: 20.0,
+                                          child: Card(
+                                            color: Colors.red,
+                                            shape: RoundedRectangleBorder(
+                                              borderRadius: BorderRadius.circular(80),
+                                              //set border radius more than 50% of height and width to make circle
+                                            ),
+                                            child: Padding(
+                                              padding: const EdgeInsets.symmetric(
+                                                vertical: 4.0,
+                                                horizontal: 8.0,
                                               ),
-                                              Visibility(
-                                                visible: index == 0 && numberOfTrip > 0 ? true : false,
-                                                child: Positioned(
-                                                  top: 30.0,
-                                                  right: 30.0,
-                                                  child: Card(
-                                                    color: Colors.red,
-                                                    shape: RoundedRectangleBorder(
-                                                      borderRadius: BorderRadius.circular(80),
-                                                      //set border radius more than 50% of height and width to make circle
-                                                    ),
-                                                    child: Padding(
-                                                      padding: const EdgeInsets.symmetric(
-                                                        vertical: 4.0,
-                                                        horizontal: 8.0,
-                                                      ),
-                                                      child: Center(
-                                                        child: Text(
-                                                          numberOfTrip.toString(),
-                                                          style: const TextStyle(
-                                                            color: Colors.white,
-                                                            fontSize: 12.0,
-                                                          ),
-                                                        ),
-                                                      ),
-                                                    ),
-                                                  ),
-                                                ),
-                                              ),
-                                              Align(
-                                                alignment: FractionalOffset.bottomCenter,
+                                              child: Center(
                                                 child: Text(
-                                                  listGrid[index].title,
+                                                  numberOfTrip.toString(),
                                                   style: const TextStyle(
-                                                    fontSize: 16.0,
+                                                    color: Colors.white,
+                                                    fontSize: 12.0,
                                                   ),
-                                                  textAlign: TextAlign.center,
                                                 ),
                                               ),
-                                            ],
+                                            ),
                                           ),
                                         ),
-                            ),
+                                      ),
+                                      Align(
+                                        alignment: FractionalOffset.bottomCenter,
+                                        child: Text(
+                                          listGrid[index].title,
+                                          style: const TextStyle(
+                                            color: Colors.white,
+                                            fontSize: 18.0,
+                                          ),
+                                          textAlign: TextAlign.center,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
                           ),
                         ),
                       ],
@@ -166,8 +173,8 @@ class _HomePageState extends State<HomePage> {
                 ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                     content: Text(state.message)));
               }
-              throw ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                  content: Text("Error create widget")));
+              throw ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                  content: Text(R.strings.errorWidget)));
             },
           ),
         ],

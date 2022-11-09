@@ -60,7 +60,7 @@ class _DrawerMenuPageState extends State<DrawerMenuPage> {
       case 2:
       return const Center();
       default:
-        return const Center(child: Text("Error"));
+        return Center(child: Text(R.strings.errorWidget));
     }
   }
 
@@ -82,8 +82,9 @@ class _DrawerMenuPageState extends State<DrawerMenuPage> {
       listDrawerOptions.add(ListTile(
         leading: Icon(
           d.icon,
-          color:
-              i == selectedDrawerIndex ? R.colors.colorPrimaryDark : R.colors.bgGrey,
+          color: i == selectedDrawerIndex
+              ? R.colors.colorPrimary
+              : R.colors.bgGrey,
         ),
         title: Text(
           d.title,

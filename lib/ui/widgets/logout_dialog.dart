@@ -50,7 +50,7 @@ class LogoutDialog extends StatelessWidget {
                     child: Padding(
                       padding: const EdgeInsets.all(10.0),
                       child: Text(
-                        R.strings.titleDialogLogOut,
+                        R.strings.titleDialogLogout,
                         style: TextStyle(
                           color: R.colors.grey3,
                           fontSize: 18.0,
@@ -77,10 +77,10 @@ class LogoutDialog extends StatelessWidget {
                         primary: R.colors.colorPrimary,
                       ),
                       child: Text(
-                        R.strings.logOut,
+                        R.strings.logout,
                         style: const TextStyle(
                           color: Colors.white,
-                          fontSize: 18.0,
+                          fontSize: 16.0,
                         ),
                         textAlign: TextAlign.center,
                       ),

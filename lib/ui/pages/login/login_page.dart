@@ -34,98 +34,145 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      children: [
-        const BackgroundImage(),
-        Scaffold(
-          backgroundColor: Colors.transparent,
-          body: SizedBox(
-            height: MediaQuery.of(context).size.height,
-            child: BlocProvider(
-              create: (context) => _loginBloc,
-              child: BlocListener<LoginBloc, LoginState>(
-                listener: (context, state) async {
-                  if (state is LoginLoading) {
-                    showDialog(
-                      barrierDismissible: false,
-                      context: context,
-                      builder: (BuildContext context) {
-                        return const CustomLoading();
-                      }
-                    );
+    return Scaffold(
+      backgroundColor: R.colors.colorPrimary,
+      body: SizedBox(
+        height: MediaQuery.of(context).size.height,
+        child: BlocProvider(
+          create: (context) => _loginBloc,
+          child: BlocListener<LoginBloc, LoginState>(
+            listener: (context, state) async {
+              if (state is LoginLoading) {
+                showDialog(
+                  barrierDismissible: false,
+                  context: context,
+                  builder: (BuildContext context) {
+                    return const CustomLoading();
                   }
-                  if (state is LoginSuccess) {
-                    Navigator.of(context).pop();
-                    Navigator.of(context).pushReplacement(
-                        MaterialPageRoute(builder: (_) => const DrawerMenuPage())
-                    );
-                  } else if (state is LoginError) {
-                    Navigator.of(context).pop();
-                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                        content: Text(state.message)));
-                  }
-                },
-                child: BlocBuilder<LoginBloc, LoginState>(
-                    builder: (context, state) {
-                      return Stack(
-                        children: <Widget>[
-                          Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                            child: SingleChildScrollView(
+                );
+              }
+              if (state is LoginSuccess) {
+                Navigator.of(context).pop();
+                Navigator.of(context).pushReplacement(
+                    MaterialPageRoute(builder: (_) => const DrawerMenuPage())
+                );
+              } else if (state is LoginError) {
+                Navigator.of(context).pop();
+                ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                    content: Text(state.message)));
+              }
+            },
+            child: BlocBuilder<LoginBloc, LoginState>(
+                builder: (context, state) {
+                  return SingleChildScrollView(
+                    child: ConstrainedBox(
+                      constraints: BoxConstraints(
+                        maxHeight: MediaQuery.of(context).size.height,
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          const SizedBox(height: 100.0),
+                          Column(
+                            children: [
+                              Image.asset(
+                                R.assets.icBKM,
+                                height: 80.0,
+                                fit: BoxFit.contain,
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 20.0),
+                          Align(
+                            alignment: Alignment.center,
+                            child: Text(R.strings.vendorName,
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontSize: 16.0,
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: 50.0),
+                          Expanded(
+                            child: Container(
+                              width: double.infinity,
+                              padding: const EdgeInsets.all(40.0),
+                              decoration: const BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.only(
+                                  topLeft: Radius.circular(40.0),
+                                  topRight: Radius.circular(40.0),
+                                ),
+                              ),
                               child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
-                                  const SizedBox(height: 120.0),
-                                  Column(
-                                    children: [
-                                      Image.asset(
-                                        R.assets.icBKM,
-                                        height: 60.0,
-                                        fit: BoxFit.contain,
+                                  Align(
+                                    alignment: Alignment.center,
+                                    child: Text(R.strings.titleLogin,
+                                      style: TextStyle(
+                                        color: R.colors.colorPrimary,
+                                        fontSize: 30.0,
+                                        fontWeight: FontWeight.bold,
                                       ),
-                                    ],
-                                  ),
-                                  Text(R.strings.vendorName),
-                                  const SizedBox(height: 100.0),
-                                  Column(
-                                    children: [
-                                      TextField(
-                                        decoration: InputDecoration(
-                                          fillColor: R.colors.colorPrimary,
-                                          labelText: R.strings.titleUsername,
-                                          floatingLabelBehavior: FloatingLabelBehavior.auto,
-                                        ),
-                                        style: const TextStyle(fontSize: 20.0),
-                                        controller: _usernameController,
-                                      ),
-                                    ],
+                                    ),
                                   ),
                                   const SizedBox(height: 40.0),
-                                  Column(
-                                    children: [
-                                      TextField(
-                                        decoration: InputDecoration(
-                                          fillColor: R.colors.colorPrimary,
-                                          labelText: R.strings.titlePassword,
-                                          floatingLabelBehavior: FloatingLabelBehavior.auto,
-                                          suffixIcon: InkWell(
-                                            onTap: _togglePasswordView,
-                                            child: Icon(
-                                              _isHiddenPassword
-                                                  ? Icons.visibility_off
-                                                  : Icons.visibility,
-                                              color: R.colors.colorPrimary,
-                                            ),
-                                          ),
+                                  TextField(
+                                    decoration: InputDecoration(
+                                      enabledBorder: OutlineInputBorder(
+                                        borderRadius: BorderRadius.circular(10),
+                                        borderSide: BorderSide(
+                                          color: R.colors.bgGrey,
                                         ),
-                                        obscureText: _isHiddenPassword,
-                                        style: const TextStyle(fontSize: 20.0),
-                                        controller: _passwordController,
                                       ),
-                                    ],
+                                      focusedBorder: OutlineInputBorder(
+                                          borderRadius: BorderRadius.circular(10),
+                                          borderSide: BorderSide(
+                                            color: Colors.blue[600]!,
+                                          )
+                                      ),
+                                      labelText: R.strings.titleUsername,
+                                    ),
+                                    style: TextStyle(
+                                      color: R.colors.colorPrimary,
+                                      fontSize: 18.0,
+                                    ),
+                                    controller: _usernameController,
                                   ),
-                                  const SizedBox(height: 60.0),
+                                  const SizedBox(height: 30.0),
+                                  TextField(
+                                    decoration: InputDecoration(
+                                      enabledBorder: OutlineInputBorder(
+                                        borderRadius: BorderRadius.circular(10),
+                                        borderSide: BorderSide(
+                                          color: R.colors.bgGrey,
+                                        ),
+                                      ),
+                                      focusedBorder: OutlineInputBorder(
+                                          borderRadius: BorderRadius.circular(10),
+                                          borderSide: BorderSide(
+                                            color: Colors.blue[600]!,
+                                          )
+                                      ),
+                                      labelText: R.strings.titlePassword,
+                                      suffixIcon: InkWell(
+                                        onTap: _togglePasswordView,
+                                        child: Icon(
+                                          _isHiddenPassword
+                                              ? Icons.visibility_off
+                                              : Icons.visibility,
+                                          color: Colors.blue[600]!,
+                                        ),
+                                      ),
+                                    ),
+                                    obscureText: _isHiddenPassword,
+                                    style: TextStyle(
+                                      color: R.colors.colorPrimary,
+                                      fontSize: 18.0,
+                                    ),
+                                    controller: _passwordController,
+                                  ),
+                                  const SizedBox(height: 40.0),
                                   GestureDetector(
                                     onTap: () {
                                       if (_usernameController.text.trim().isEmpty || _passwordController.text.trim().isEmpty) {
@@ -176,16 +223,17 @@ class _LoginPageState extends State<LoginPage> {
                                             begin: Alignment.centerLeft,
                                             end: Alignment.centerRight,
                                             colors: [
-                                              R.colors.bgGrey,
-                                              R.colors.bgGrey,
+                                              Colors.deepPurple[800]!,
+                                              Colors.deepPurple[400]!,
                                             ],
                                           )
                                       ),
                                       child: Text(
                                         R.strings.titleLogin,
                                         style: const TextStyle(
-                                          fontSize: 20.0,
                                           color: Colors.white,
+                                          fontSize: 20.0,
+                                          fontWeight: FontWeight.bold,
                                         ),
                                       ),
                                     ),
@@ -195,14 +243,14 @@ class _LoginPageState extends State<LoginPage> {
                             ),
                           ),
                         ],
-                      );
-                    },
-                ),
-              ),
+                      ),
+                    ),
+                  );
+                },
             ),
           ),
         ),
-      ],
+      ),
     );
   }
 }
