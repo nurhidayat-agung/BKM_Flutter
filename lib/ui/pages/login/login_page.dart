@@ -5,7 +5,6 @@ import 'package:newbkmmobile/core/r.dart';
 import 'package:newbkmmobile/repositories/login_repository.dart';
 import 'package:newbkmmobile/repositories/user_detail_repository.dart';
 import 'package:newbkmmobile/ui/pages/drawer_menu_page.dart';
-import 'package:newbkmmobile/ui/widgets/background_image.dart';
 import 'package:newbkmmobile/ui/widgets/custom_loading.dart';
 
 class LoginPage extends StatefulWidget {
@@ -120,13 +119,13 @@ class _LoginPageState extends State<LoginPage> {
                                   TextField(
                                     decoration: InputDecoration(
                                       enabledBorder: OutlineInputBorder(
-                                        borderRadius: BorderRadius.circular(10),
+                                        borderRadius: BorderRadius.circular(10.0),
                                         borderSide: BorderSide(
-                                          color: R.colors.bgGrey,
+                                          color: Colors.grey[350]!,
                                         ),
                                       ),
                                       focusedBorder: OutlineInputBorder(
-                                          borderRadius: BorderRadius.circular(10),
+                                          borderRadius: BorderRadius.circular(10.0),
                                           borderSide: BorderSide(
                                             color: Colors.blue[600]!,
                                           )
@@ -143,13 +142,13 @@ class _LoginPageState extends State<LoginPage> {
                                   TextField(
                                     decoration: InputDecoration(
                                       enabledBorder: OutlineInputBorder(
-                                        borderRadius: BorderRadius.circular(10),
+                                        borderRadius: BorderRadius.circular(10.0),
                                         borderSide: BorderSide(
-                                          color: R.colors.bgGrey,
+                                          color: Colors.grey[350]!,
                                         ),
                                       ),
                                       focusedBorder: OutlineInputBorder(
-                                          borderRadius: BorderRadius.circular(10),
+                                          borderRadius: BorderRadius.circular(10.0),
                                           borderSide: BorderSide(
                                             color: Colors.blue[600]!,
                                           )

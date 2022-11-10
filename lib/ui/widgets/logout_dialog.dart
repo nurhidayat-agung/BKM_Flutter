@@ -52,7 +52,7 @@ class LogoutDialog extends StatelessWidget {
                       child: Text(
                         R.strings.titleDialogLogout,
                         style: TextStyle(
-                          color: R.colors.grey3,
+                          color: R.colors.colorText,
                           fontSize: 18.0,
                         ),
                       ),
@@ -72,7 +72,7 @@ class LogoutDialog extends StatelessWidget {
                       },
                       style: ElevatedButton.styleFrom(
                           shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10),
+                            borderRadius: BorderRadius.circular(10.0),
                           ),
                         primary: R.colors.colorPrimary,
                       ),
@@ -91,7 +91,7 @@ class LogoutDialog extends StatelessWidget {
                       },
                       style: ElevatedButton.styleFrom(
                           shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10),
+                            borderRadius: BorderRadius.circular(10.0),
                           ),
                         primary: R.colors.colorAccent
                       ),

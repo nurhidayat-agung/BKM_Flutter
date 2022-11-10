@@ -5,8 +5,6 @@ abstract class UserDetailEvent extends Equatable {
 }
 
 class UserDetail extends UserDetailEvent {
-
   @override
   List<Object> get props => [];
-
 }

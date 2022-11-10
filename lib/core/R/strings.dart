@@ -22,7 +22,7 @@ class Strings {
   String titleDialogLogout    = "Log Out / Exit";
   String logout               = "Log Out";
 
-  // menu
+  // title menu
   String menuTrip             = "Pengangkutan Baru";
   String menuHistory          = "Riwayat Pengangkutan";
   String menuSalary           = "Slip Gaji";
@@ -33,4 +33,5 @@ class Strings {
   // error message
   String errorWidget          = "Error create widget";
   String noInternetConnection = "No internet connection";
+  String emptyData            = "Data tidak ada";
 }

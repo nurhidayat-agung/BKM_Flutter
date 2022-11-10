@@ -20,4 +20,5 @@ class UserDetailBloc extends Bloc<UserDetailEvent, UserDetailState> {
       }
     });
   }
+
 }

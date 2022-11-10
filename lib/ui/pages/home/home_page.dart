@@ -5,6 +5,8 @@ import 'package:newbkmmobile/blocs/user_detail/user_detail_bloc.dart';
 import 'package:newbkmmobile/core/grid_item.dart';
 import 'package:newbkmmobile/core/r.dart';
 import 'package:newbkmmobile/repositories/user_detail_repository.dart';
+import 'package:newbkmmobile/ui/pages/history/history_page.dart';
+import 'package:newbkmmobile/ui/pages/trip/trip_page.dart';
 import 'package:newbkmmobile/ui/widgets/banner_slider.dart';
 
 class HomePage extends StatefulWidget {
@@ -19,12 +21,12 @@ class _HomePageState extends State<HomePage> {
   int numberOfTrip = 0;
   int currentPos = 0;
   List<GridItem> listGrid = [
-    GridItem(title: R.strings.menuTrip, image: AssetImage(R.assets.menuTrip), color: Colors.deepPurple[300]!),
-    GridItem(title: R.strings.menuHistory, image: AssetImage(R.assets.menuHistory), color: Colors.lightBlue[500]!),
-    GridItem(title: R.strings.menuSalary, image: AssetImage(R.assets.menuSalary), color: Colors.orange[800]!),
-    GridItem(title: R.strings.menuHelp, image: AssetImage(R.assets.menuHelp), color: Colors.green[600]!),
-    GridItem(title: R.strings.menuService, image: AssetImage(R.assets.menuService), color: Colors.brown[400]!),
-    GridItem(title: R.strings.menuPart, image: AssetImage(R.assets.menuPart), color: Colors.amber[800]!),
+    GridItem(title: R.strings.menuTrip, image: AssetImage(R.assets.menuTrip), color: Colors.deepPurple[300]!, widget: const TripPage()),
+    GridItem(title: R.strings.menuHistory, image: AssetImage(R.assets.menuHistory), color: Colors.lightBlue[500]!, widget: const HistoryPage()),
+    GridItem(title: R.strings.menuSalary, image: AssetImage(R.assets.menuSalary), color: Colors.orange[800]!, widget: const TripPage()),
+    GridItem(title: R.strings.menuHelp, image: AssetImage(R.assets.menuHelp), color: Colors.green[600]!, widget: const TripPage()),
+    GridItem(title: R.strings.menuService, image: AssetImage(R.assets.menuService), color: Colors.brown[400]!, widget: const TripPage()),
+    GridItem(title: R.strings.menuPart, image: AssetImage(R.assets.menuPart), color: Colors.amber[800]!, widget: const TripPage()),
   ];
 
   @override
@@ -82,7 +84,7 @@ class _HomePageState extends State<HomePage> {
                               ),
                               decoration: BoxDecoration(
                                 shape: BoxShape.circle,
-                                color: currentPos == index ? R.colors.colorPrimary : R.colors.grey1
+                                color: currentPos == index ? R.colors.colorPrimary : Colors.grey[350]!
                               ),
                             );
                           }).toList(),
@@ -100,65 +102,73 @@ class _HomePageState extends State<HomePage> {
                               crossAxisSpacing: 5.0,
                             ),
                             itemBuilder: (BuildContext context, int index) =>
-                              Card(
-                                color: listGrid[index].color,
-                                elevation: 0.0,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(10.0),
-                                ),
-                                child: Padding(
-                                  padding: const EdgeInsets.all(12.0),
-                                  child: Stack(
-                                    alignment: Alignment.center,
-                                    children: [
-                                      Center(
-                                        child: ImageIcon(
-                                          listGrid[index].image,
-                                          color: Colors.white,
-                                          size: 80.0,
+                              GestureDetector(
+                                onTap: () {
+                                  Navigator.of(context)
+                                      .push(MaterialPageRoute(builder: (BuildContext context) {
+                                    return listGrid[index].widget;
+                                  }));
+                                },
+                                child: Card(
+                                  color: listGrid[index].color,
+                                  elevation: 0.0,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(10.0),
+                                  ),
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(12.0),
+                                    child: Stack(
+                                      alignment: Alignment.center,
+                                      children: [
+                                        Center(
+                                          child: ImageIcon(
+                                            listGrid[index].image,
+                                            color: Colors.white,
+                                            size: 80.0,
+                                          ),
                                         ),
-                                      ),
-                                      Visibility(
-                                        visible: index == 0 && numberOfTrip > 0 ? true : false,
-                                        child: Positioned(
-                                          top: 30.0,
-                                          right: 20.0,
-                                          child: Card(
-                                            color: Colors.red,
-                                            shape: RoundedRectangleBorder(
-                                              borderRadius: BorderRadius.circular(80),
-                                              //set border radius more than 50% of height and width to make circle
-                                            ),
-                                            child: Padding(
-                                              padding: const EdgeInsets.symmetric(
-                                                vertical: 4.0,
-                                                horizontal: 8.0,
+                                        Visibility(
+                                          visible: index == 0 && numberOfTrip > 0 ? true : false,
+                                          child: Positioned(
+                                            top: 30.0,
+                                            right: 20.0,
+                                            child: Card(
+                                              color: Colors.red,
+                                              shape: RoundedRectangleBorder(
+                                                borderRadius: BorderRadius.circular(80.0),
+                                                //set border radius more than 50% of height and width to make circle
                                               ),
-                                              child: Center(
-                                                child: Text(
-                                                  numberOfTrip.toString(),
-                                                  style: const TextStyle(
-                                                    color: Colors.white,
-                                                    fontSize: 12.0,
+                                              child: Padding(
+                                                padding: const EdgeInsets.symmetric(
+                                                  vertical: 4.0,
+                                                  horizontal: 8.0,
+                                                ),
+                                                child: Center(
+                                                  child: Text(
+                                                    numberOfTrip.toString(),
+                                                    style: const TextStyle(
+                                                      color: Colors.white,
+                                                      fontSize: 12.0,
+                                                    ),
                                                   ),
                                                 ),
                                               ),
                                             ),
                                           ),
                                         ),
-                                      ),
-                                      Align(
-                                        alignment: FractionalOffset.bottomCenter,
-                                        child: Text(
-                                          listGrid[index].title,
-                                          style: const TextStyle(
-                                            color: Colors.white,
-                                            fontSize: 18.0,
+                                        Align(
+                                          alignment: FractionalOffset.bottomCenter,
+                                          child: Text(
+                                            listGrid[index].title,
+                                            style: const TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 18.0,
+                                            ),
+                                            textAlign: TextAlign.center,
                                           ),
-                                          textAlign: TextAlign.center,
                                         ),
-                                      ),
-                                    ],
+                                      ],
+                                    ),
                                   ),
                                 ),
                               ),

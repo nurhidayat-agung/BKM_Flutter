@@ -84,14 +84,14 @@ class _DrawerMenuPageState extends State<DrawerMenuPage> {
           d.icon,
           color: i == selectedDrawerIndex
               ? R.colors.colorPrimary
-              : R.colors.bgGrey,
+              : R.colors.colorTextLight,
         ),
         title: Text(
           d.title,
           style: TextStyle(
             color: i == selectedDrawerIndex
                 ? R.colors.colorPrimaryDark
-                : R.colors.bgGrey,
+                : R.colors.colorTextLight,
           ),
         ),
         selected: i == selectedDrawerIndex,
@@ -167,7 +167,7 @@ class _DrawerMenuPageState extends State<DrawerMenuPage> {
                           child: Text(
                             phone,
                             style: TextStyle(
-                              color: R.colors.grey1,
+                              color: Colors.grey[350]!,
                               fontSize: 14.0,
                             ),
                           ),
@@ -178,7 +178,7 @@ class _DrawerMenuPageState extends State<DrawerMenuPage> {
                           child: Text(
                             "Pengabdian : $dedication",
                             style: TextStyle(
-                              color: R.colors.grey1,
+                              color: Colors.grey[350]!,
                               fontSize: 14.0,
                             ),
                           ),

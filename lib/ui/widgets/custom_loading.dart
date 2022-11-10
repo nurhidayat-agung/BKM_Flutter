@@ -19,7 +19,7 @@ class CustomLoading extends StatelessWidget {
             padding: const EdgeInsets.all(10.0),
             decoration: BoxDecoration(
               shape: BoxShape.rectangle,
-              color: R.colors.grey2,
+              color: Colors.grey[300],
               borderRadius: BorderRadius.circular(0.0),
             ),
             child: Row(
