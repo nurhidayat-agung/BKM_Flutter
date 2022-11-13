@@ -133,7 +133,7 @@ class _LoginPageState extends State<LoginPage> {
                                       labelText: R.strings.titleUsername,
                                     ),
                                     style: TextStyle(
-                                      color: R.colors.colorPrimary,
+                                      color: R.colors.colorText,
                                       fontSize: 18.0,
                                     ),
                                     controller: _usernameController,
@@ -166,7 +166,7 @@ class _LoginPageState extends State<LoginPage> {
                                     ),
                                     obscureText: _isHiddenPassword,
                                     style: TextStyle(
-                                      color: R.colors.colorPrimary,
+                                      color: R.colors.colorText,
                                       fontSize: 18.0,
                                     ),
                                     controller: _passwordController,

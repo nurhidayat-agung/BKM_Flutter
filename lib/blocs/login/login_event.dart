@@ -19,10 +19,3 @@ class Login extends LoginEvent {
   @override
   String toString() => "Login { username: $username, password: $password }";
 }
-
-class UserDetail extends LoginEvent {
-  const UserDetail();
-
-  @override
-  List<Object> get props => [];
-}

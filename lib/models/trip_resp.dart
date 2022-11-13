@@ -1,6 +1,6 @@
 import 'package:newbkmmobile/models/do_connect_resp.dart';
 
-class HistoryResp {
+class TripResp {
   String? id;
   DoConnectResp? doConnect;
   String? doNumber;
@@ -9,12 +9,18 @@ class HistoryResp {
   String? loadDate;
   String? unloadDate;
   String? driverId;
+  String? driverName;
   String? pksName;
   String? destinationName;
+  String? amountSent;
+  String? amountReceived;
   String? commodityName;
-  String? bonus;
+  String? trvlExpenses;
+  String? vehicleNumber;
+  String? status;
+  String? statusTrip;
 
-  HistoryResp(
+  TripResp(
       {this.id,
         this.doConnect,
         this.doNumber,
@@ -23,12 +29,18 @@ class HistoryResp {
         this.loadDate,
         this.unloadDate,
         this.driverId,
+        this.driverName,
         this.pksName,
         this.destinationName,
+        this.amountSent,
+        this.amountReceived,
         this.commodityName,
-        this.bonus});
+        this.trvlExpenses,
+        this.vehicleNumber,
+        this.status,
+        this.statusTrip});
 
-  HistoryResp.fromJson(Map<String, dynamic> json) {
+  TripResp.fromJson(Map<String, dynamic> json) {
     id = json['id'];
     doConnect = json['do_connect'] != null
         ? DoConnectResp.fromJson(json['do_connect'])
@@ -39,10 +51,16 @@ class HistoryResp {
     loadDate = json['load_date'];
     unloadDate = json['unload_date'];
     driverId = json['driver_id'];
+    driverName = json['driver_name'];
     pksName = json['pks_name'];
     destinationName = json['destination_name'];
+    amountSent = json['amount_sent'];
+    amountReceived = json['amount_received'];
     commodityName = json['commodity_name'];
-    bonus = json['bonus'];
+    trvlExpenses = json['trvl_expenses'];
+    vehicleNumber = json['vehicle_number'];
+    status = json['status'];
+    statusTrip = json['status_trip'];
   }
 
   Map<String, dynamic> toJson() {
@@ -57,10 +75,16 @@ class HistoryResp {
     data['load_date'] = this.loadDate;
     data['unload_date'] = this.unloadDate;
     data['driver_id'] = this.driverId;
+    data['driver_name'] = this.driverName;
     data['pks_name'] = this.pksName;
     data['destination_name'] = this.destinationName;
+    data['amount_sent'] = this.amountSent;
+    data['amount_received'] = this.amountReceived;
     data['commodity_name'] = this.commodityName;
-    data['bonus'] = this.bonus;
+    data['trvl_expenses'] = this.trvlExpenses;
+    data['vehicle_number'] = this.vehicleNumber;
+    data['status'] = this.status;
+    data['status_trip'] = this.statusTrip;
     return data;
   }
 }

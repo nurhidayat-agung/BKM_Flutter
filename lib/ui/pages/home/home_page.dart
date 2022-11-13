@@ -23,10 +23,12 @@ class _HomePageState extends State<HomePage> {
   List<GridItem> listGrid = [
     GridItem(title: R.strings.menuTrip, image: AssetImage(R.assets.menuTrip), color: Colors.deepPurple[300]!, widget: const TripPage()),
     GridItem(title: R.strings.menuHistory, image: AssetImage(R.assets.menuHistory), color: Colors.lightBlue[500]!, widget: const HistoryPage()),
-    GridItem(title: R.strings.menuSalary, image: AssetImage(R.assets.menuSalary), color: Colors.orange[800]!, widget: const TripPage()),
-    GridItem(title: R.strings.menuHelp, image: AssetImage(R.assets.menuHelp), color: Colors.green[600]!, widget: const TripPage()),
-    GridItem(title: R.strings.menuService, image: AssetImage(R.assets.menuService), color: Colors.brown[400]!, widget: const TripPage()),
-    GridItem(title: R.strings.menuPart, image: AssetImage(R.assets.menuPart), color: Colors.amber[800]!, widget: const TripPage()),
+    GridItem(title: R.strings.menuSalary, image: AssetImage(R.assets.menuSalary), color: Colors.green[600]!, widget: const TripPage()),
+    GridItem(title: R.strings.menuWorkshop, image: AssetImage(R.assets.menuWorkshop), color: Colors.orange[800]!, widget: const TripPage()),
+    GridItem(title: R.strings.menuService, image: AssetImage(R.assets.menuService), color: Colors.red[700]!, widget: const TripPage()),
+    GridItem(title: R.strings.menuPart, image: AssetImage(R.assets.menuPart), color: Colors.teal[600]!, widget: const TripPage()),
+    GridItem(title: R.strings.menuHelp, image: AssetImage(R.assets.menuHelp), color: Colors.brown[400]!, widget: const TripPage()),
+
   ];
 
   @override
@@ -59,7 +61,7 @@ class _HomePageState extends State<HomePage> {
                         CarouselSlider.builder(
                           itemCount: listAnnouncement.length,
                           options: CarouselOptions(
-                              height: 300.0,
+                              height: MediaQuery.of(context).size.height/3,
                               autoPlay: true,
                               onPageChanged: (index, reason) {
                                 setState(() {

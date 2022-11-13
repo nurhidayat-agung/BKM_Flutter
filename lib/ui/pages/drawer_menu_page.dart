@@ -176,7 +176,7 @@ class _DrawerMenuPageState extends State<DrawerMenuPage> {
                         Container(
                           margin: const EdgeInsets.only(left: 5.0, right: 10.0),
                           child: Text(
-                            "Pengabdian : $dedication",
+                            "${R.strings.pengabdian} : $dedication",
                             style: TextStyle(
                               color: Colors.grey[350]!,
                               fontSize: 14.0,

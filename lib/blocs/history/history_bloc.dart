@@ -14,10 +14,14 @@ class HistoryBloc extends Bloc<HistoryEvent, HistoryState> {
       try {
         emit(const HistoryLoading());
         final response = await _historyRepository.getHistory();
-        final listHistory = (response.data as List)
-            .map((x) => HistoryResp.fromJson(x))
-            .toList();
-        emit(HistorySuccess(listHistory));
+        try {
+          final listHistory = (response.data as List)
+              .map((x) => HistoryResp.fromJson(x))
+              .toList();
+          emit(HistorySuccess(listHistory));
+        } catch (e) {
+          emit(const HistorySuccess([]));
+        }
       } catch (e) {
         emit(HistoryError(e.toString()));
       }

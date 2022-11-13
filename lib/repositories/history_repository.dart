@@ -10,8 +10,8 @@ class HistoryRepository {
     return response;
   }
 
-  Future<Response> getHistoryDetail(int id) async {
-    Response response = await _helper.get("transaction/histories/$id");
+  Future<Response> getHistoryDetail(String id) async {
+    Response response = await _helper.get("transaction/history_detail/$id");
 
     return response;
   }
