@@ -5,6 +5,7 @@ import 'package:newbkmmobile/core/convert_date.dart';
 import 'package:newbkmmobile/core/r.dart';
 import 'package:newbkmmobile/repositories/history_repository.dart';
 import 'package:newbkmmobile/ui/widgets/full_image_view.dart';
+import 'package:newbkmmobile/ui/widgets/pair_horizontal_text.dart';
 
 class HistoryDetailPage extends StatefulWidget {
   const HistoryDetailPage({Key? key, required this.id}) : super(key: key);
@@ -86,24 +87,25 @@ class _HistoryDetailPageState extends State<HistoryDetailPage> {
                             GestureDetector(
                               onTap: () {
                                 Navigator.of(context).push(MaterialPageRoute(
-                                    builder: (context) =>
-                                        FullImageView(image: state.historyDetailResp.qrcode ?? "")
-                                ));
+                                    builder: (context) => FullImageView(
+                                        image: state.historyDetailResp.qrcode ??
+                                            "")));
                               },
                               child: Image.network(
                                 state.historyDetailResp.qrcode ?? "",
-                                height: 60.0,
-                                width: 60.0,
+                                height: 55.0,
+                                width: 55.0,
                                 fit: BoxFit.fill,
-                                loadingBuilder: (BuildContext context, Widget child,
+                                loadingBuilder: (BuildContext context,
+                                    Widget child,
                                     ImageChunkEvent? loadingProgress) {
                                   if (loadingProgress == null) return child;
                                   return const Center(
                                     child: CircularProgressIndicator(),
                                   );
                                 },
-                                errorBuilder: (BuildContext context, Object exception,
-                                    StackTrace? stackTrace) {
+                                errorBuilder: (BuildContext context,
+                                    Object exception, StackTrace? stackTrace) {
                                   return Container(
                                     color: Colors.transparent,
                                   );
@@ -127,23 +129,108 @@ class _HistoryDetailPageState extends State<HistoryDetailPage> {
                     ),
                     child: Column(
                       children: [
-                        detailHistoryText(R.strings.doKecil, state.historyDetailResp.subDo ?? "", Colors.black),
+                        PairHorizontalText(
+                            title: R.strings.doKecil,
+                            content: state.historyDetailResp.subDo ?? "",
+                            colorTitle: R.colors.colorText,
+                            colorContent: Colors.black,
+                            fontSizeTitle: 14.0,
+                            fontSizeContent: 14.0,
+                            fontWeightTitle: FontWeight.normal,
+                            fontWeightContent: FontWeight.bold,
+                        ),
                         const SizedBox(height: 18.0),
-                        detailHistoryText(R.strings.spbNo, state.historyDetailResp.spbNumber ?? "", Colors.black),
+                        PairHorizontalText(
+                            title: R.strings.spbNo,
+                            content: state.historyDetailResp.spbNumber ?? "",
+                            colorTitle: R.colors.colorText,
+                            colorContent: Colors.black,
+                            fontSizeTitle: 14.0,
+                            fontSizeContent: 14.0,
+                            fontWeightTitle: FontWeight.normal,
+                            fontWeightContent: FontWeight.bold,
+                        ),
                         const SizedBox(height: 18.0),
-                        detailHistoryText(R.strings.pengemudi, state.historyDetailResp.driverName ?? "", Colors.black),
+                        PairHorizontalText(
+                            title: R.strings.pengemudi,
+                            content: state.historyDetailResp.driverName ?? "",
+                            colorTitle: R.colors.colorText,
+                            colorContent: Colors.black,
+                            fontSizeTitle: 14.0,
+                            fontSizeContent: 14.0,
+                            fontWeightTitle: FontWeight.normal,
+                            fontWeightContent: FontWeight.bold,
+                        ),
                         const SizedBox(height: 18.0),
-                        detailHistoryText(R.strings.noKendaraan, state.historyDetailResp.vehicleNumber ?? "", Colors.black),
+                        PairHorizontalText(
+                            title: R.strings.noKendaraan,
+                            content:
+                                state.historyDetailResp.vehicleNumber ?? "",
+                            colorTitle: R.colors.colorText,
+                            colorContent: Colors.black,
+                            fontSizeTitle: 14.0,
+                            fontSizeContent: 14.0,
+                            fontWeightTitle: FontWeight.normal,
+                            fontWeightContent: FontWeight.bold,
+                        ),
                         const SizedBox(height: 18.0),
-                        detailHistoryText(R.strings.uangJalan, state.historyDetailResp.trvlExpenses ?? "", Colors.black),
+                        PairHorizontalText(
+                            title: R.strings.uangJalan,
+                            content: state.historyDetailResp.trvlExpenses ?? "",
+                            colorTitle: R.colors.colorText,
+                            colorContent: Colors.black,
+                            fontSizeTitle: 14.0,
+                            fontSizeContent: 14.0,
+                            fontWeightTitle: FontWeight.normal,
+                            fontWeightContent: FontWeight.bold,
+                        ),
                         const SizedBox(height: 18.0),
-                        detailHistoryText(R.strings.pks, state.historyDetailResp.pksName ?? "", Colors.black),
+                        PairHorizontalText(
+                            title: R.strings.pks,
+                            content: state.historyDetailResp.pksName ?? "",
+                            colorTitle: R.colors.colorText,
+                            colorContent: Colors.black,
+                            fontSizeTitle: 14.0,
+                            fontSizeContent: 14.0,
+                            fontWeightTitle: FontWeight.normal,
+                            fontWeightContent: FontWeight.bold,
+                        ),
                         const SizedBox(height: 18.0),
-                        detailHistoryText(R.strings.tujuanBongkar, state.historyDetailResp.destinationName ?? "", Colors.black),
+                        PairHorizontalText(
+                            title: R.strings.tujuanBongkar,
+                            content:
+                                state.historyDetailResp.destinationName ?? "",
+                            colorTitle: R.colors.colorText,
+                            colorContent: Colors.black,
+                            fontSizeTitle: 14.0,
+                            fontSizeContent: 14.0,
+                            fontWeightTitle: FontWeight.normal,
+                            fontWeightContent: FontWeight.bold,
+                        ),
                         const SizedBox(height: 18.0),
-                        detailHistoryText(R.strings.produk, state.historyDetailResp.commodityName ?? "", Colors.black),
+                        PairHorizontalText(
+                            title: R.strings.produk,
+                            content:
+                                state.historyDetailResp.commodityName ?? "",
+                            colorTitle: R.colors.colorText,
+                            colorContent: Colors.black,
+                            fontSizeTitle: 14.0,
+                            fontSizeContent: 14.0,
+                            fontWeightTitle: FontWeight.normal,
+                            fontWeightContent: FontWeight.bold,
+                        ),
                         const SizedBox(height: 18.0),
-                        detailHistoryText(R.strings.bonus, "+${R.strings.rp}${state.historyDetailResp.bonus}", Colors.green),
+                        PairHorizontalText(
+                            title: R.strings.bonus,
+                            content:
+                                "+${R.strings.rp}${state.historyDetailResp.bonus}",
+                            colorTitle: R.colors.colorText,
+                            colorContent: Colors.green,
+                            fontSizeTitle: 14.0,
+                            fontSizeContent: 14.0,
+                            fontWeightTitle: FontWeight.normal,
+                            fontWeightContent: FontWeight.bold,
+                        ),
                         const SizedBox(height: 18.0),
                       ],
                     ),
@@ -180,13 +267,51 @@ class _HistoryDetailPageState extends State<HistoryDetailPage> {
                           textAlign: TextAlign.left,
                         ),
                         const SizedBox(height: 18.0),
-                        detailHistoryText(R.strings.jmlMuat, "${state.historyDetailResp.amountSent} ${R.strings.kg}", R.colors.colorText),
+                        PairHorizontalText(
+                            title: R.strings.jmlMuat,
+                            content:
+                                "${state.historyDetailResp.amountSent} ${R.strings.kg}",
+                            colorTitle: R.colors.colorText,
+                            colorContent: R.colors.colorText,
+                            fontSizeTitle: 14.0,
+                            fontSizeContent: 14.0,
+                            fontWeightTitle: FontWeight.normal,
+                            fontWeightContent: FontWeight.bold,
+                        ),
                         const SizedBox(height: 18.0),
-                        detailHistoryText(R.strings.jmlBongkar, "${state.historyDetailResp.amountReceived} ${R.strings.kg}" , R.colors.colorText),
+                        PairHorizontalText(
+                            title: R.strings.jmlBongkar,
+                            content:
+                                "${state.historyDetailResp.amountReceived} ${R.strings.kg}",
+                            colorTitle: R.colors.colorText,
+                            colorContent: R.colors.colorText,
+                            fontSizeTitle: 14.0,
+                            fontSizeContent: 14.0,
+                            fontWeightTitle: FontWeight.normal,
+                            fontWeightContent: FontWeight.bold,
+                        ),
                         const SizedBox(height: 18.0),
-                        detailHistoryText(R.strings.tglMuat, state.historyDetailResp.loadDate ?? "", R.colors.colorText),
+                        PairHorizontalText(
+                            title: R.strings.tglMuat,
+                            content: state.historyDetailResp.loadDate ?? "",
+                            colorTitle: R.colors.colorText,
+                            colorContent: R.colors.colorText,
+                            fontSizeTitle: 14.0,
+                            fontSizeContent: 14.0,
+                            fontWeightTitle: FontWeight.normal,
+                            fontWeightContent: FontWeight.bold,
+                        ),
                         const SizedBox(height: 18.0),
-                        detailHistoryText(R.strings.tglBongkar, state.historyDetailResp.unloadDate ?? "", R.colors.colorText),
+                        PairHorizontalText(
+                            title: R.strings.tglBongkar,
+                            content: state.historyDetailResp.unloadDate ?? "",
+                            colorTitle: R.colors.colorText,
+                            colorContent: R.colors.colorText,
+                            fontSizeTitle: 14.0,
+                            fontSizeContent: 14.0,
+                            fontWeightTitle: FontWeight.normal,
+                            fontWeightContent: FontWeight.bold,
+                        ),
                         const SizedBox(height: 18.0),
                         Container(
                           color: Colors.grey[300],
@@ -196,9 +321,8 @@ class _HistoryDetailPageState extends State<HistoryDetailPage> {
                         GestureDetector(
                           onTap: () {
                             Navigator.of(context).push(MaterialPageRoute(
-                                builder: (context) =>
-                                    FullImageView(image: state.historyDetailResp.spb ?? "")
-                            ));
+                                builder: (context) => FullImageView(
+                                    image: state.historyDetailResp.spb ?? "")));
                           },
                           child: Image.network(
                             state.historyDetailResp.spb ?? "",
@@ -212,8 +336,8 @@ class _HistoryDetailPageState extends State<HistoryDetailPage> {
                                 child: CircularProgressIndicator(),
                               );
                             },
-                            errorBuilder: (BuildContext context, Object exception,
-                                StackTrace? stackTrace) {
+                            errorBuilder: (BuildContext context,
+                                Object exception, StackTrace? stackTrace) {
                               return Container(
                                 color: Colors.transparent,
                               );
@@ -228,42 +352,13 @@ class _HistoryDetailPageState extends State<HistoryDetailPage> {
               ),
             );
           } else if (state is HistoryDetailError) {
-            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                content: Text(state.message)));
+            ScaffoldMessenger.of(context)
+                .showSnackBar(SnackBar(content: Text(state.message)));
           }
-          throw ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-              content: Text(R.strings.errorWidget)));
+          throw ScaffoldMessenger.of(context)
+              .showSnackBar(SnackBar(content: Text(R.strings.errorWidget)));
         },
       ),
-    );
-  }
-
-  Row detailHistoryText(String title, String content, Color colorContent) {
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      mainAxisAlignment: MainAxisAlignment.start,
-      children: [
-        Expanded(
-          child: Text(
-            title,
-            style: TextStyle(
-              color: R.colors.colorText,
-              fontSize: 14.0,
-            ),
-          ),
-        ),
-        Expanded(
-          child: Text(
-            content,
-            style: TextStyle(
-              color: colorContent,
-              fontSize: 14.0,
-              fontWeight: FontWeight.bold,
-            ),
-            textAlign: TextAlign.right,
-          ),
-        ),
-      ],
     );
   }
 }

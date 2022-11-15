@@ -15,5 +15,5 @@ class HistoryDetail extends HistoryDetailEvent {
   List<Object> get props => [id];
 
   @override
-  String toString() => "HistoryDetail { username: $id }";
+  String toString() => "HistoryDetail { id: $id }";
 }

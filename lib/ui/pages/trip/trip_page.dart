@@ -53,6 +53,12 @@ class _TripPageState extends State<TripPage> {
                           R.assets.imgNoFeed,
                           scale: 6.0,
                         ),
+                        Text(
+                          R.strings.emptyData,
+                          style: const TextStyle(
+                            fontSize: 14.0,
+                          ),
+                        ),
                       ],
                     ),
                 );

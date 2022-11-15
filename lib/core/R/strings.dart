@@ -33,14 +33,17 @@ class Strings {
 
   //title page
   String titleTripPage            = "Perjalanan";
+  String titleTripDetailPage      = "Detail Perjalanan";
   String titleHistoryPage         = "Riwayat Perjalanan";
   String titleHistoryDetailPage   = "Detail Riwayat";
 
   //global string
+  String muat                     = "Muat";
+  String bongkar                  = "Bongkar";
   String pengabdian               = "Pengabdian";
   String nomorDo                  = "Nomor DO";
   String doKecil                  = "DO Kecil";
-  String spbNo                    = "SPB No";
+  String spbNo                    = "No. SPB";
   String pengemudi                = "Pengemudi";
   String noKendaraan              = "No. Kendaraan";
   String uangJalan                = "Uang Jalan";
@@ -60,5 +63,5 @@ class Strings {
   //error message
   String errorWidget              = "Error create widget";
   String noInternetConnection     = "No internet connection";
-  String emptyData                = "Data tidak ada";
+  String emptyData                = "Data tidak tersedia";
 }
