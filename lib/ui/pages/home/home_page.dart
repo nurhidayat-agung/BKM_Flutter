@@ -58,9 +58,11 @@ class _HomePageState extends State<HomePage> {
                   return Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        CarouselSlider.builder(
-                          itemCount: listAnnouncement.length,
-                          options: CarouselOptions(
+                        Padding(
+                          padding: const EdgeInsets.only(top: 8.0),
+                          child: CarouselSlider.builder(
+                            itemCount: listAnnouncement.length,
+                            options: CarouselOptions(
                               height: MediaQuery.of(context).size.height/3,
                               autoPlay: true,
                               onPageChanged: (index, reason) {
@@ -68,10 +70,11 @@ class _HomePageState extends State<HomePage> {
                                   currentPos = index;
                                 });
                               }
+                            ),
+                            itemBuilder: (ctx, index, _) {
+                              return BannerSlider(announcementLocal: listAnnouncement[index]);
+                            },
                           ),
-                          itemBuilder: (ctx, index, _) {
-                            return BannerSlider(announcementLocal: listAnnouncement[index]);
-                          },
                         ),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.center,
