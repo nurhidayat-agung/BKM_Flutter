@@ -38,9 +38,15 @@ class Strings {
   String titleHistoryDetailPage   = "Detail Riwayat";
 
   //global string
+  String pengabdian               = "Pengabdian";
   String muat                     = "Muat";
   String bongkar                  = "Bongkar";
-  String pengabdian               = "Pengabdian";
+  String tapCamera                = "Tap untuk ambil gambar";
+  String titleChooseImage         = "Ambil Gambar";
+  String takePhoto                = "Ambil dari Kamera";
+  String openGallery              = "Ambil dari Galeri";
+  String cancel                   = "Cancel";
+  String finish                   = "Selesai";
   String nomorDo                  = "Nomor DO";
   String doKecil                  = "DO Kecil";
   String spbNo                    = "No. SPB";

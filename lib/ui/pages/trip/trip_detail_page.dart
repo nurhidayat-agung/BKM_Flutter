@@ -43,13 +43,16 @@ class _TripDetailPageState extends State<TripDetailPage> {
           } else if (state is TripDetailLoading) {
             return const Center(child: CircularProgressIndicator());
           } else if (state is TripDetailSuccess) {
+            _spbController.text = state.tripDetailResp.spbNumber ?? "";
+            _muatController.text = state.tripDetailResp.amountSent ?? "";
+            _bongkarController.text = state.tripDetailResp.amountReceived ?? "";
             final listStatusTrip = state.tripDetailResp.listStatusTrip;
             if (listStatusTrip!.isNotEmpty) {
               _selectedListStatusTrip = listStatusTrip[0];
             } else {
               _selectedListStatusTrip = null;
             }
-            
+
             return SingleChildScrollView(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -187,8 +190,7 @@ class _TripDetailPageState extends State<TripDetailPage> {
                         const SizedBox(height: 18.0),
                         PairHorizontalText(
                           title: R.strings.tujuanBongkar,
-                          content:
-                          state.tripDetailResp.destinationName ?? "",
+                          content: state.tripDetailResp.destinationName ?? "",
                           colorTitle: R.colors.colorText,
                           colorContent: Colors.black,
                           fontSizeTitle: 14.0,
@@ -199,8 +201,7 @@ class _TripDetailPageState extends State<TripDetailPage> {
                         const SizedBox(height: 18.0),
                         PairHorizontalText(
                           title: R.strings.produk,
-                          content:
-                          state.tripDetailResp.commodityName ?? "",
+                          content: state.tripDetailResp.commodityName ?? "",
                           colorTitle: R.colors.colorText,
                           colorContent: Colors.black,
                           fontSizeTitle: 14.0,
@@ -212,7 +213,8 @@ class _TripDetailPageState extends State<TripDetailPage> {
                         StatefulBuilder(
                           builder: (ctx, setState) {
                             return Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 10.0),
                               decoration: BoxDecoration(
                                 color: Colors.white,
                                 border: Border.all(
@@ -267,8 +269,7 @@ class _TripDetailPageState extends State<TripDetailPage> {
                                 borderRadius: BorderRadius.circular(10.0),
                                 borderSide: BorderSide(
                                   color: R.colors.greenLogo,
-                                )
-                            ),
+                                )),
                             labelStyle: TextStyle(
                               color: R.colors.colorText,
                             ),
@@ -300,12 +301,12 @@ class _TripDetailPageState extends State<TripDetailPage> {
                                       borderRadius: BorderRadius.circular(10.0),
                                       borderSide: BorderSide(
                                         color: R.colors.greenLogo,
-                                      )
-                                  ),
+                                      )),
                                   labelStyle: TextStyle(
                                     color: R.colors.colorText,
                                   ),
-                                  labelText: "${R.strings.muat} (${R.strings.kg})",
+                                  labelText:
+                                      "${R.strings.muat} (${R.strings.kg})",
                                 ),
                                 keyboardType: TextInputType.number,
                                 style: TextStyle(
@@ -330,12 +331,12 @@ class _TripDetailPageState extends State<TripDetailPage> {
                                       borderRadius: BorderRadius.circular(10.0),
                                       borderSide: BorderSide(
                                         color: R.colors.greenLogo,
-                                      )
-                                  ),
+                                      )),
                                   labelStyle: TextStyle(
                                     color: R.colors.colorText,
                                   ),
-                                  labelText: "${R.strings.bongkar} (${R.strings.kg})",
+                                  labelText:
+                                      "${R.strings.bongkar} (${R.strings.kg})",
                                 ),
                                 keyboardType: TextInputType.number,
                                 style: TextStyle(
@@ -348,6 +349,109 @@ class _TripDetailPageState extends State<TripDetailPage> {
                           ],
                         ),
                         const SizedBox(height: 18.0),
+                        SizedBox(
+                          width: double.infinity,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                R.strings.tapCamera,
+                                style: TextStyle(
+                                  color: R.colors.colorTextLight,
+                                  fontSize: 16.0,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              const SizedBox(height: 10.0),
+                              GestureDetector(
+                                onTap: () {
+                                  showDialog(
+                                    context: context,
+                                    builder: (ctx) => AlertDialog(
+                                      title: Text(R.strings.titleChooseImage),
+                                      content: SingleChildScrollView(
+                                        child: ListBody(
+                                          children: [
+                                            GestureDetector(
+                                              child: Text(R.strings.takePhoto),
+                                              onTap: () {
+                                                // openCamera();
+                                              },
+                                            ),
+                                            const SizedBox(height: 18.0),
+                                            GestureDetector(
+                                              child:
+                                                  Text(R.strings.openGallery),
+                                              onTap: () {
+                                                // openGallery();
+                                              },
+                                            ),
+                                            const SizedBox(height: 18.0),
+                                            GestureDetector(
+                                              child:
+                                              Text(R.strings.cancel),
+                                              onTap: () {
+                                                // openGallery();
+                                              },
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                  );
+                                },
+                                child: SizedBox(
+                                  width: MediaQuery.of(context).size.width / 2,
+                                  child: Image.network(
+                                    state.tripDetailResp.spb ?? "",
+                                    height: 100.0,
+                                    width: double.infinity,
+                                    fit: BoxFit.fill,
+                                    loadingBuilder: (BuildContext context,
+                                        Widget child,
+                                        ImageChunkEvent? loadingProgress) {
+                                      if (loadingProgress == null) return child;
+                                      return const Center(
+                                        child: CircularProgressIndicator(),
+                                      );
+                                    },
+                                    errorBuilder: (BuildContext context,
+                                        Object exception,
+                                        StackTrace? stackTrace) {
+                                      return const Icon(
+                                        Icons.photo_camera,
+                                        color: Colors.grey,
+                                        size: 100.0,
+                                      );
+                                    },
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(height: 30.0),
+                        SizedBox(
+                          width: double.infinity,
+                          child: ElevatedButton(
+                            onPressed: () {},
+                            style: ElevatedButton.styleFrom(
+                              primary: R.colors.greenLogo,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(10.0),
+                              ),
+                            ),
+                            child: Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Text(
+                                R.strings.finish.toUpperCase(),
+                                style: const TextStyle(
+                                  fontSize: 16.0,
+                                ),
+                              ),
+                            ),
+                          ),
+                        )
                       ],
                     ),
                   ),
@@ -355,11 +459,11 @@ class _TripDetailPageState extends State<TripDetailPage> {
               ),
             );
           } else if (state is TripDetailError) {
-            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                content: Text(state.message)));
+            ScaffoldMessenger.of(context)
+                .showSnackBar(SnackBar(content: Text(state.message)));
           }
-          throw ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-              content: Text(R.strings.errorWidget)));
+          throw ScaffoldMessenger.of(context)
+              .showSnackBar(SnackBar(content: Text(R.strings.errorWidget)));
         },
       ),
     );

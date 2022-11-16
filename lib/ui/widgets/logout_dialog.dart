@@ -77,7 +77,7 @@ class LogoutDialog extends StatelessWidget {
                         primary: R.colors.colorPrimary,
                       ),
                       child: Text(
-                        R.strings.logout,
+                        R.strings.logout.toUpperCase(),
                         style: const TextStyle(
                           color: Colors.white,
                           fontSize: 16.0,
@@ -96,7 +96,7 @@ class LogoutDialog extends StatelessWidget {
                         primary: R.colors.colorAccent
                       ),
                       child: Text(
-                        R.strings.exit,
+                        R.strings.exit.toUpperCase(),
                         style: const TextStyle(
                           color: Colors.white,
                           fontSize: 18.0,
