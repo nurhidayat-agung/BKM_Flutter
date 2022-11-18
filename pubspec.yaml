@@ -57,6 +57,15 @@ dev_dependencies:
   flutter_lints: ^2.0.0
   hive_generator: ^2.0.0
   build_runner: ^2.3.2
+  flutter_launcher_icons: ^0.10.0
+
+flutter_icons:
+  android: "launcher_icon"
+  ios: true
+  image_path: "assets/ic_bkm_512.png"
+  adaptive_icon_background: "assets/ic_launcher_adaptive_back.png" # only available for Android 8.0 devices and above
+  adaptive_icon_foreground: "assets/ic_launcher_adaptive_fore.png" # only available for Android 8.0 devices and above
+  min_sdk_android: 21 # android min sdk min:16, default 21
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

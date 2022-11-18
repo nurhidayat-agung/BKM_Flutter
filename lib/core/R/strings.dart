@@ -1,6 +1,6 @@
 class Strings {
   //main title
-  String appName                  = "BKMMobile";
+  String appName                  = "BKM Mobile";
   String vendorName               = "PT. BERKAT KARIMAR MANDIRI";
 
   //navigation drawer menu

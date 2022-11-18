@@ -99,7 +99,7 @@ class LogoutDialog extends StatelessWidget {
                         R.strings.exit.toUpperCase(),
                         style: const TextStyle(
                           color: Colors.white,
-                          fontSize: 18.0,
+                          fontSize: 16.0,
                         ),
                         textAlign: TextAlign.center,
                       ),

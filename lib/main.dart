@@ -29,7 +29,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: "BKM Mobile",
+      title: R.strings.appName,
       theme: ThemeData(
         primaryColor: R.colors.colorPrimary,
         appBarTheme: AppBarTheme(

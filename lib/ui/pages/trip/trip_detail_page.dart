@@ -1,5 +1,8 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:newbkmmobile/blocs/trip_detail/trip_detail_bloc.dart';
 import 'package:newbkmmobile/core/r.dart';
 import 'package:newbkmmobile/models/trip_detail_resp.dart';
@@ -20,6 +23,8 @@ class _TripDetailPageState extends State<TripDetailPage> {
   final _spbController = TextEditingController();
   final _muatController = TextEditingController();
   final _bongkarController = TextEditingController();
+  final imgPicker = ImagePicker();
+  late File imgFile;
 
   @override
   void initState() {
@@ -29,7 +34,33 @@ class _TripDetailPageState extends State<TripDetailPage> {
 
   @override
   Widget build(BuildContext context) {
-    ListStatusTrip? _selectedListStatusTrip;
+    ListStatusTrip? selectedListStatusTrip;
+
+    void openCamera() async {
+      var imgCamera = await imgPicker.getImage(source: ImageSource.camera);
+      setState(() {
+        imgFile = File(imgCamera?.path ?? "");
+      });
+      if (!mounted) return;
+      Navigator.of(context).pop();
+    }
+
+    void openGallery() async {
+      var imgGallery = await imgPicker.getImage(source: ImageSource.gallery);
+      setState(() {
+        imgFile = File(imgGallery?.path ?? "");
+      });
+      if (!mounted) return;
+      Navigator.of(context).pop();
+    }
+
+    Widget displayImage() {
+      if (imgFile == null) {
+        return Text("No Image Selected!");
+      } else {
+        return Image.file(imgFile, width: 350, height: 350);
+      }
+    }
 
     return Scaffold(
       appBar: AppBar(
@@ -48,9 +79,9 @@ class _TripDetailPageState extends State<TripDetailPage> {
             _bongkarController.text = state.tripDetailResp.amountReceived ?? "";
             final listStatusTrip = state.tripDetailResp.listStatusTrip;
             if (listStatusTrip!.isNotEmpty) {
-              _selectedListStatusTrip = listStatusTrip[0];
+              selectedListStatusTrip = listStatusTrip[0];
             } else {
-              _selectedListStatusTrip = null;
+              selectedListStatusTrip = null;
             }
 
             return SingleChildScrollView(
@@ -245,10 +276,10 @@ class _TripDetailPageState extends State<TripDetailPage> {
                                   );
                                 }).toList(),
                                 underline: Container(),
-                                value: _selectedListStatusTrip,
+                                value: selectedListStatusTrip,
                                 onChanged: (ListStatusTrip? newValue) {
                                   setState(() {
-                                    _selectedListStatusTrip = newValue!;
+                                    selectedListStatusTrip = newValue!;
                                   });
                                 },
                               ),
@@ -375,7 +406,7 @@ class _TripDetailPageState extends State<TripDetailPage> {
                                             GestureDetector(
                                               child: Text(R.strings.takePhoto),
                                               onTap: () {
-                                                // openCamera();
+                                                openCamera();
                                               },
                                             ),
                                             const SizedBox(height: 18.0),
@@ -383,15 +414,14 @@ class _TripDetailPageState extends State<TripDetailPage> {
                                               child:
                                                   Text(R.strings.openGallery),
                                               onTap: () {
-                                                // openGallery();
+                                                openGallery();
                                               },
                                             ),
                                             const SizedBox(height: 18.0),
                                             GestureDetector(
-                                              child:
-                                              Text(R.strings.cancel),
+                                              child: Text(R.strings.cancel),
                                               onTap: () {
-                                                // openGallery();
+                                                Navigator.of(context).pop();
                                               },
                                             ),
                                           ],
@@ -402,29 +432,7 @@ class _TripDetailPageState extends State<TripDetailPage> {
                                 },
                                 child: SizedBox(
                                   width: MediaQuery.of(context).size.width / 2,
-                                  child: Image.network(
-                                    state.tripDetailResp.spb ?? "",
-                                    height: 100.0,
-                                    width: double.infinity,
-                                    fit: BoxFit.fill,
-                                    loadingBuilder: (BuildContext context,
-                                        Widget child,
-                                        ImageChunkEvent? loadingProgress) {
-                                      if (loadingProgress == null) return child;
-                                      return const Center(
-                                        child: CircularProgressIndicator(),
-                                      );
-                                    },
-                                    errorBuilder: (BuildContext context,
-                                        Object exception,
-                                        StackTrace? stackTrace) {
-                                      return const Icon(
-                                        Icons.photo_camera,
-                                        color: Colors.grey,
-                                        size: 100.0,
-                                      );
-                                    },
-                                  ),
+                                  child: displayPhoto(state),
                                 ),
                               ),
                             ],
@@ -467,5 +475,37 @@ class _TripDetailPageState extends State<TripDetailPage> {
         },
       ),
     );
+  }
+
+  Image displayPhoto(TripDetailSuccess state) {
+    if (imgFile == null) {
+      return Image.network(
+        state.tripDetailResp.spb ?? "",
+        height: 100.0,
+        width: double.infinity,
+        fit: BoxFit.fill,
+        loadingBuilder: (BuildContext context, Widget child,
+            ImageChunkEvent? loadingProgress) {
+          if (loadingProgress == null) return child;
+          return const Center(
+            child: CircularProgressIndicator(),
+          );
+        },
+        errorBuilder:
+            (BuildContext context, Object exception, StackTrace? stackTrace) {
+          return const Icon(
+            Icons.photo_camera,
+            color: Colors.grey,
+            size: 100.0,
+          );
+        },
+      );
+    } else {
+      return Image.file(
+        imgFile,
+        height: 350,
+        width: double.infinity,
+      );
+    }
   }
 }
