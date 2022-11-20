@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:newbkmmobile/core/r.dart';
 
 class CustomLoading extends StatelessWidget {
-  const CustomLoading({Key? key}) : super(key: key);
+  const CustomLoading({Key? key, required this.message}) : super(key: key);
+  final String message;
 
   @override
   Widget build(BuildContext context) {
@@ -33,7 +34,7 @@ class CustomLoading extends StatelessWidget {
                   ),
                 ),
                 Text(
-                  R.strings.loadingGetData,
+                  message,
                   style: const TextStyle(
                     fontSize: 15.0,
                   ),

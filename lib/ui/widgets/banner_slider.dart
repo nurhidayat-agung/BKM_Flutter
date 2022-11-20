@@ -25,8 +25,8 @@ class BannerSlider extends StatelessWidget {
               loadingBuilder: (BuildContext context, Widget child,
                   ImageChunkEvent? loadingProgress) {
                 if (loadingProgress == null) return child;
-                return const Center(
-                  child: CircularProgressIndicator(),
+                return Container(
+                  color: Colors.white,
                 );
               },
               errorBuilder: (BuildContext context, Object exception,
@@ -36,7 +36,6 @@ class BannerSlider extends StatelessWidget {
                       .replaceAll('#', '0xff'))),
                 );
               },
-              // color: Color(int.parse(announcementLocal.backgroundColor.replaceAll('#', '0xff'))),
             ),
           ),
           Container(

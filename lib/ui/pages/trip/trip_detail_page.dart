@@ -2,11 +2,13 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:image_picker/image_picker.dart';
+import 'package:newbkmmobile/blocs/save_trip/save_trip_bloc.dart';
 import 'package:newbkmmobile/blocs/trip_detail/trip_detail_bloc.dart';
 import 'package:newbkmmobile/core/r.dart';
 import 'package:newbkmmobile/models/trip_detail_resp.dart';
 import 'package:newbkmmobile/repositories/trip_repository.dart';
+import 'package:newbkmmobile/ui/pages/trip/trip_detail_capture_photo.dart';
+import 'package:newbkmmobile/ui/widgets/custom_loading.dart';
 import 'package:newbkmmobile/ui/widgets/full_image_view.dart';
 import 'package:newbkmmobile/ui/widgets/pair_horizontal_text.dart';
 
@@ -20,11 +22,11 @@ class TripDetailPage extends StatefulWidget {
 
 class _TripDetailPageState extends State<TripDetailPage> {
   final _tripDetailBloc = TripDetailBloc(TripRepository());
-  final _spbController = TextEditingController();
-  final _muatController = TextEditingController();
-  final _bongkarController = TextEditingController();
-  final imgPicker = ImagePicker();
-  late File imgFile;
+  final _saveTripBloc = SaveTripBloc(TripRepository());
+  late TripDetailResp _tripDetail;
+  ListStatusTrip? selectedListStatusTrip;
+  String? _spbNo, _muat, _bongkar;
+  File? _imgFile;
 
   @override
   void initState() {
@@ -34,34 +36,6 @@ class _TripDetailPageState extends State<TripDetailPage> {
 
   @override
   Widget build(BuildContext context) {
-    ListStatusTrip? selectedListStatusTrip;
-
-    void openCamera() async {
-      var imgCamera = await imgPicker.getImage(source: ImageSource.camera);
-      setState(() {
-        imgFile = File(imgCamera?.path ?? "");
-      });
-      if (!mounted) return;
-      Navigator.of(context).pop();
-    }
-
-    void openGallery() async {
-      var imgGallery = await imgPicker.getImage(source: ImageSource.gallery);
-      setState(() {
-        imgFile = File(imgGallery?.path ?? "");
-      });
-      if (!mounted) return;
-      Navigator.of(context).pop();
-    }
-
-    Widget displayImage() {
-      if (imgFile == null) {
-        return Text("No Image Selected!");
-      } else {
-        return Image.file(imgFile, width: 350, height: 350);
-      }
-    }
-
     return Scaffold(
       appBar: AppBar(
         title: Text(R.strings.titleTripDetailPage),
@@ -74,10 +48,11 @@ class _TripDetailPageState extends State<TripDetailPage> {
           } else if (state is TripDetailLoading) {
             return const Center(child: CircularProgressIndicator());
           } else if (state is TripDetailSuccess) {
-            _spbController.text = state.tripDetailResp.spbNumber ?? "";
-            _muatController.text = state.tripDetailResp.amountSent ?? "";
-            _bongkarController.text = state.tripDetailResp.amountReceived ?? "";
-            final listStatusTrip = state.tripDetailResp.listStatusTrip;
+            _tripDetail           = state.tripDetailResp;
+            _spbNo                = _tripDetail.spbNumber ?? "";
+            _muat                 = _tripDetail.amountSent ?? "";
+            _bongkar              = _tripDetail.amountReceived ?? "";
+            final listStatusTrip  = _tripDetail.listStatusTrip;
             if (listStatusTrip!.isNotEmpty) {
               selectedListStatusTrip = listStatusTrip[0];
             } else {
@@ -106,7 +81,7 @@ class _TripDetailPageState extends State<TripDetailPage> {
                             ),
                             const SizedBox(height: 2.0),
                             Text(
-                              state.tripDetailResp.doNumber ?? "",
+                              _tripDetail.doNumber ?? "",
                               style: const TextStyle(
                                 color: Colors.black,
                                 fontSize: 14.0,
@@ -123,11 +98,11 @@ class _TripDetailPageState extends State<TripDetailPage> {
                               onTap: () {
                                 Navigator.of(context).push(MaterialPageRoute(
                                     builder: (context) => FullImageView(
-                                        image: state.tripDetailResp.qrcode ??
+                                        image: _tripDetail.qrcode ??
                                             "")));
                               },
                               child: Image.network(
-                                state.tripDetailResp.qrcode ?? "",
+                                _tripDetail.qrcode ?? "",
                                 height: 55.0,
                                 width: 55.0,
                                 fit: BoxFit.fill,
@@ -162,305 +137,347 @@ class _TripDetailPageState extends State<TripDetailPage> {
                       top: 10.0,
                       right: 8.0,
                     ),
-                    child: Column(
-                      children: [
-                        PairHorizontalText(
-                          title: R.strings.doKecil,
-                          content: state.tripDetailResp.subDo ?? "",
-                          colorTitle: R.colors.colorText,
-                          colorContent: Colors.black,
-                          fontSizeTitle: 14.0,
-                          fontSizeContent: 14.0,
-                          fontWeightTitle: FontWeight.normal,
-                          fontWeightContent: FontWeight.bold,
-                        ),
-                        const SizedBox(height: 18.0),
-                        PairHorizontalText(
-                          title: R.strings.pengemudi,
-                          content: state.tripDetailResp.driverName ?? "",
-                          colorTitle: R.colors.colorText,
-                          colorContent: Colors.black,
-                          fontSizeTitle: 14.0,
-                          fontSizeContent: 14.0,
-                          fontWeightTitle: FontWeight.normal,
-                          fontWeightContent: FontWeight.bold,
-                        ),
-                        const SizedBox(height: 18.0),
-                        PairHorizontalText(
-                          title: R.strings.noKendaraan,
-                          content: state.tripDetailResp.vehicleNumber ?? "",
-                          colorTitle: R.colors.colorText,
-                          colorContent: Colors.black,
-                          fontSizeTitle: 14.0,
-                          fontSizeContent: 14.0,
-                          fontWeightTitle: FontWeight.normal,
-                          fontWeightContent: FontWeight.bold,
-                        ),
-                        const SizedBox(height: 18.0),
-                        PairHorizontalText(
-                          title: R.strings.uangJalan,
-                          content: state.tripDetailResp.trvlExpenses ?? "",
-                          colorTitle: R.colors.colorText,
-                          colorContent: Colors.black,
-                          fontSizeTitle: 14.0,
-                          fontSizeContent: 14.0,
-                          fontWeightTitle: FontWeight.normal,
-                          fontWeightContent: FontWeight.bold,
-                        ),
-                        const SizedBox(height: 18.0),
-                        PairHorizontalText(
-                          title: R.strings.pks,
-                          content: state.tripDetailResp.pksName ?? "",
-                          colorTitle: R.colors.colorText,
-                          colorContent: Colors.black,
-                          fontSizeTitle: 14.0,
-                          fontSizeContent: 14.0,
-                          fontWeightTitle: FontWeight.normal,
-                          fontWeightContent: FontWeight.bold,
-                        ),
-                        const SizedBox(height: 18.0),
-                        PairHorizontalText(
-                          title: R.strings.tujuanBongkar,
-                          content: state.tripDetailResp.destinationName ?? "",
-                          colorTitle: R.colors.colorText,
-                          colorContent: Colors.black,
-                          fontSizeTitle: 14.0,
-                          fontSizeContent: 14.0,
-                          fontWeightTitle: FontWeight.normal,
-                          fontWeightContent: FontWeight.bold,
-                        ),
-                        const SizedBox(height: 18.0),
-                        PairHorizontalText(
-                          title: R.strings.produk,
-                          content: state.tripDetailResp.commodityName ?? "",
-                          colorTitle: R.colors.colorText,
-                          colorContent: Colors.black,
-                          fontSizeTitle: 14.0,
-                          fontSizeContent: 14.0,
-                          fontWeightTitle: FontWeight.normal,
-                          fontWeightContent: FontWeight.bold,
-                        ),
-                        const SizedBox(height: 18.0),
-                        StatefulBuilder(
-                          builder: (ctx, setState) {
-                            return Container(
-                              padding:
-                                  const EdgeInsets.symmetric(horizontal: 10.0),
-                              decoration: BoxDecoration(
-                                color: Colors.white,
-                                border: Border.all(
-                                  color: R.colors.greenLogo,
-                                  width: 0.8,
-                                ),
-                                borderRadius: const BorderRadius.all(
-                                  Radius.circular(
-                                    10.0,
+                    child: Form(
+                      child: Column(
+                        children: [
+                          PairHorizontalText(
+                            title: R.strings.doKecil,
+                            content: _tripDetail.subDo ?? "",
+                            colorTitle: R.colors.colorText,
+                            colorContent: Colors.black,
+                            fontSizeTitle: 14.0,
+                            fontSizeContent: 14.0,
+                            fontWeightTitle: FontWeight.normal,
+                            fontWeightContent: FontWeight.bold,
+                          ),
+                          const SizedBox(height: 18.0),
+                          PairHorizontalText(
+                            title: R.strings.pengemudi,
+                            content: _tripDetail.driverName ?? "",
+                            colorTitle: R.colors.colorText,
+                            colorContent: Colors.black,
+                            fontSizeTitle: 14.0,
+                            fontSizeContent: 14.0,
+                            fontWeightTitle: FontWeight.normal,
+                            fontWeightContent: FontWeight.bold,
+                          ),
+                          const SizedBox(height: 18.0),
+                          PairHorizontalText(
+                            title: R.strings.noKendaraan,
+                            content: _tripDetail.vehicleNumber ?? "",
+                            colorTitle: R.colors.colorText,
+                            colorContent: Colors.black,
+                            fontSizeTitle: 14.0,
+                            fontSizeContent: 14.0,
+                            fontWeightTitle: FontWeight.normal,
+                            fontWeightContent: FontWeight.bold,
+                          ),
+                          const SizedBox(height: 18.0),
+                          PairHorizontalText(
+                            title: R.strings.uangJalan,
+                            content: _tripDetail.trvlExpenses ?? "",
+                            colorTitle: R.colors.colorText,
+                            colorContent: Colors.black,
+                            fontSizeTitle: 14.0,
+                            fontSizeContent: 14.0,
+                            fontWeightTitle: FontWeight.normal,
+                            fontWeightContent: FontWeight.bold,
+                          ),
+                          const SizedBox(height: 18.0),
+                          PairHorizontalText(
+                            title: R.strings.pks,
+                            content: _tripDetail.pksName ?? "",
+                            colorTitle: R.colors.colorText,
+                            colorContent: Colors.black,
+                            fontSizeTitle: 14.0,
+                            fontSizeContent: 14.0,
+                            fontWeightTitle: FontWeight.normal,
+                            fontWeightContent: FontWeight.bold,
+                          ),
+                          const SizedBox(height: 18.0),
+                          PairHorizontalText(
+                            title: R.strings.tujuanBongkar,
+                            content: _tripDetail.destinationName ?? "",
+                            colorTitle: R.colors.colorText,
+                            colorContent: Colors.black,
+                            fontSizeTitle: 14.0,
+                            fontSizeContent: 14.0,
+                            fontWeightTitle: FontWeight.normal,
+                            fontWeightContent: FontWeight.bold,
+                          ),
+                          const SizedBox(height: 18.0),
+                          PairHorizontalText(
+                            title: R.strings.produk,
+                            content: _tripDetail.commodityName ?? "",
+                            colorTitle: R.colors.colorText,
+                            colorContent: Colors.black,
+                            fontSizeTitle: 14.0,
+                            fontSizeContent: 14.0,
+                            fontWeightTitle: FontWeight.normal,
+                            fontWeightContent: FontWeight.bold,
+                          ),
+                          const SizedBox(height: 18.0),
+                          StatefulBuilder(
+                            builder: (ctx, setState) {
+                              return Container(
+                                padding:
+                                    const EdgeInsets.symmetric(horizontal: 10.0),
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  border: Border.all(
+                                    color: R.colors.greenLogo,
+                                    width: 0.8,
+                                  ),
+                                  borderRadius: const BorderRadius.all(
+                                    Radius.circular(
+                                      10.0,
+                                    ),
                                   ),
                                 ),
-                              ),
-                              child: DropdownButton<ListStatusTrip>(
-                                icon: Icon(
-                                  Icons.keyboard_arrow_down,
-                                  color: R.colors.greenLogo,
-                                ),
-                                isExpanded: true,
-                                items: listStatusTrip.map((ListStatusTrip val) {
-                                  return DropdownMenuItem<ListStatusTrip>(
-                                    value: val,
-                                    child: Text(
-                                      val.longName ?? "",
-                                      style: TextStyle(
-                                        color: R.colors.colorText,
+                                child: DropdownButton<ListStatusTrip>(
+                                  icon: Icon(
+                                    Icons.keyboard_arrow_down,
+                                    color: R.colors.greenLogo,
+                                  ),
+                                  isExpanded: true,
+                                  items: listStatusTrip.map((ListStatusTrip val) {
+                                    return DropdownMenuItem<ListStatusTrip>(
+                                      value: val,
+                                      child: Text(
+                                        val.longName ?? "",
+                                        style: TextStyle(
+                                          color: R.colors.colorText,
+                                        ),
                                       ),
-                                    ),
-                                  );
-                                }).toList(),
-                                underline: Container(),
-                                value: selectedListStatusTrip,
-                                onChanged: (ListStatusTrip? newValue) {
-                                  setState(() {
-                                    selectedListStatusTrip = newValue!;
-                                  });
-                                },
-                              ),
-                            );
-                          },
-                        ),
-                        const SizedBox(height: 18.0),
-                        TextField(
-                          cursorColor: R.colors.colorText,
-                          decoration: InputDecoration(
-                            enabledBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(10.0),
-                              borderSide: BorderSide(
-                                color: R.colors.greenLogo,
-                              ),
-                            ),
-                            focusedBorder: OutlineInputBorder(
+                                    );
+                                  }).toList(),
+                                  onChanged: (ListStatusTrip? newValue) {
+                                    setState(() {
+                                      selectedListStatusTrip = newValue!;
+                                    });
+                                  },
+                                  underline: Container(),
+                                  value: selectedListStatusTrip,
+                                ),
+                              );
+                            },
+                          ),
+                          const SizedBox(height: 18.0),
+                          TextFormField(
+                            cursorColor: R.colors.colorText,
+                            decoration: InputDecoration(
+                              enabledBorder: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(10.0),
                                 borderSide: BorderSide(
                                   color: R.colors.greenLogo,
-                                )),
-                            labelStyle: TextStyle(
+                                ),
+                              ),
+                              focusedBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(10.0),
+                                  borderSide: BorderSide(
+                                    color: R.colors.greenLogo,
+                                  )),
+                              labelStyle: TextStyle(
+                                color: R.colors.colorText,
+                              ),
+                              labelText: R.strings.spbNo,
+                            ),
+                            initialValue: _spbNo,
+                            keyboardType: TextInputType.number,
+                            onChanged: (newValue) {
+                              _spbNo = newValue;
+                            },
+                            style: TextStyle(
                               color: R.colors.colorText,
+                              fontSize: 16.0,
                             ),
-                            labelText: R.strings.spbNo,
                           ),
-                          keyboardType: TextInputType.number,
-                          style: TextStyle(
-                            color: R.colors.colorText,
-                            fontSize: 16.0,
-                          ),
-                          controller: _spbController,
-                        ),
-                        const SizedBox(height: 18.0),
-                        Row(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Expanded(
-                              child: TextField(
-                                cursorColor: R.colors.colorText,
-                                decoration: InputDecoration(
-                                  enabledBorder: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(10.0),
-                                    borderSide: BorderSide(
-                                      color: R.colors.greenLogo,
-                                    ),
-                                  ),
-                                  focusedBorder: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(10.0),
-                                      borderSide: BorderSide(
-                                        color: R.colors.greenLogo,
-                                      )),
-                                  labelStyle: TextStyle(
-                                    color: R.colors.colorText,
-                                  ),
-                                  labelText:
-                                      "${R.strings.muat} (${R.strings.kg})",
-                                ),
-                                keyboardType: TextInputType.number,
-                                style: TextStyle(
-                                  color: R.colors.colorText,
-                                  fontSize: 16.0,
-                                ),
-                                controller: _muatController,
-                              ),
-                            ),
-                            const SizedBox(width: 10.0),
-                            Expanded(
-                              child: TextField(
-                                cursorColor: R.colors.colorText,
-                                decoration: InputDecoration(
-                                  enabledBorder: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(10.0),
-                                    borderSide: BorderSide(
-                                      color: R.colors.greenLogo,
-                                    ),
-                                  ),
-                                  focusedBorder: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(10.0),
-                                      borderSide: BorderSide(
-                                        color: R.colors.greenLogo,
-                                      )),
-                                  labelStyle: TextStyle(
-                                    color: R.colors.colorText,
-                                  ),
-                                  labelText:
-                                      "${R.strings.bongkar} (${R.strings.kg})",
-                                ),
-                                keyboardType: TextInputType.number,
-                                style: TextStyle(
-                                  color: R.colors.colorText,
-                                  fontSize: 16.0,
-                                ),
-                                controller: _bongkarController,
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 18.0),
-                        SizedBox(
-                          width: double.infinity,
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
+                          const SizedBox(height: 18.0),
+                          Row(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              Text(
-                                R.strings.tapCamera,
-                                style: TextStyle(
-                                  color: R.colors.colorTextLight,
-                                  fontSize: 16.0,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                              const SizedBox(height: 10.0),
-                              GestureDetector(
-                                onTap: () {
-                                  showDialog(
-                                    context: context,
-                                    builder: (ctx) => AlertDialog(
-                                      title: Text(R.strings.titleChooseImage),
-                                      content: SingleChildScrollView(
-                                        child: ListBody(
-                                          children: [
-                                            GestureDetector(
-                                              child: Text(R.strings.takePhoto),
-                                              onTap: () {
-                                                openCamera();
-                                              },
-                                            ),
-                                            const SizedBox(height: 18.0),
-                                            GestureDetector(
-                                              child:
-                                                  Text(R.strings.openGallery),
-                                              onTap: () {
-                                                openGallery();
-                                              },
-                                            ),
-                                            const SizedBox(height: 18.0),
-                                            GestureDetector(
-                                              child: Text(R.strings.cancel),
-                                              onTap: () {
-                                                Navigator.of(context).pop();
-                                              },
-                                            ),
-                                          ],
-                                        ),
+                              Expanded(
+                                child: TextFormField(
+                                  cursorColor: R.colors.colorText,
+                                  decoration: InputDecoration(
+                                    enabledBorder: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(10.0),
+                                      borderSide: BorderSide(
+                                        color: R.colors.greenLogo,
                                       ),
                                     ),
-                                  );
-                                },
-                                child: SizedBox(
-                                  width: MediaQuery.of(context).size.width / 2,
-                                  child: displayPhoto(state),
+                                    focusedBorder: OutlineInputBorder(
+                                        borderRadius: BorderRadius.circular(10.0),
+                                        borderSide: BorderSide(
+                                          color: R.colors.greenLogo,
+                                        )),
+                                    labelStyle: TextStyle(
+                                      color: R.colors.colorText,
+                                    ),
+                                    labelText:
+                                        "${R.strings.muat} (${R.strings.kg})",
+                                  ),
+                                  initialValue: _muat,
+                                  keyboardType: TextInputType.number,
+                                  onChanged: (newValue) {
+                                    _muat = newValue;
+                                  },
+                                  style: TextStyle(
+                                    color: R.colors.colorText,
+                                    fontSize: 16.0,
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(width: 10.0),
+                              Expanded(
+                                child: TextFormField(
+                                  cursorColor: R.colors.colorText,
+                                  decoration: InputDecoration(
+                                    enabledBorder: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(10.0),
+                                      borderSide: BorderSide(
+                                        color: R.colors.greenLogo,
+                                      ),
+                                    ),
+                                    focusedBorder: OutlineInputBorder(
+                                        borderRadius: BorderRadius.circular(10.0),
+                                        borderSide: BorderSide(
+                                          color: R.colors.greenLogo,
+                                        )),
+                                    labelStyle: TextStyle(
+                                      color: R.colors.colorText,
+                                    ),
+                                    labelText:
+                                        "${R.strings.bongkar} (${R.strings.kg})",
+                                  ),
+                                  initialValue: _bongkar,
+                                  keyboardType: TextInputType.number,
+                                  onChanged: (newValue) {
+                                    _bongkar = newValue;
+                                  },
+                                  style: TextStyle(
+                                    color: R.colors.colorText,
+                                    fontSize: 16.0,
+                                  ),
                                 ),
                               ),
                             ],
                           ),
-                        ),
-                        const SizedBox(height: 30.0),
-                        SizedBox(
-                          width: double.infinity,
-                          child: ElevatedButton(
-                            onPressed: () {},
-                            style: ElevatedButton.styleFrom(
-                              primary: R.colors.greenLogo,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(10.0),
-                              ),
+                          const SizedBox(height: 18.0),
+                          SizedBox(
+                            width: double.infinity,
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  R.strings.tapCamera,
+                                  style: TextStyle(
+                                    color: R.colors.colorTextLight,
+                                    fontSize: 16.0,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                const SizedBox(height: 10.0),
+                                TripDetailCapturePhoto(
+                                  spbImg: _tripDetail.spb ?? "",
+                                  onPhotoSelected: (file) {
+                                    _imgFile = file;
+                                  },
+                                ),
+                              ],
                             ),
-                            child: Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: Text(
-                                R.strings.finish.toUpperCase(),
-                                style: const TextStyle(
-                                  fontSize: 16.0,
+                          ),
+                          const SizedBox(height: 30.0),
+                          SizedBox(
+                            width: double.infinity,
+                            child: ElevatedButton(
+                              onPressed: () {
+                                showDialog(
+                                    context: context,
+                                    builder: (BuildContext ctx) {
+                                      return AlertDialog(
+                                        content: Text(R.strings.msgConfirmSave),
+                                        actions: [
+                                          TextButton(
+                                              onPressed: () {
+                                                Navigator.of(context).pop();
+                                                _saveTripBloc.add(SaveTrip(
+                                                    id: _tripDetail.id ?? "",
+                                                    statusTrip: selectedListStatusTrip?.id ?? "",
+                                                    numberOfLoad: _muat ?? "",
+                                                    numberOfUnload: _bongkar ?? "",
+                                                    spbNo: _spbNo ?? "",
+                                                    trigger: "btn_submit",
+                                                    spbImg: _imgFile ?? File(""))
+                                                );
+                                              },
+                                              child: Text(R.strings.yes)),
+                                          TextButton(
+                                              onPressed: () {
+                                                Navigator.of(context).pop();
+                                              },
+                                              child: Text(R.strings.no))
+                                        ],
+                                      );
+                                    });
+                              },
+                              style: ElevatedButton.styleFrom(
+                                primary: R.colors.greenLogo,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(10.0),
+                                ),
+                              ),
+                              child: BlocListener<SaveTripBloc, SaveTripState>(
+                                bloc: _saveTripBloc,
+                                listener: (context, state) {
+                                  if (state is SaveTripInitial) {
+                                    Padding(
+                                      padding: const EdgeInsets.all(8.0),
+                                      child: Text(
+                                        R.strings.finish.toUpperCase(),
+                                        style: const TextStyle(
+                                          fontSize: 16.0,
+                                        ),
+                                      ),
+                                    );
+                                  }
+                                  if (state is SaveTripLoading) {
+                                    CustomLoading(
+                                        message: R.strings.loadingGetData);
+                                  }
+                                  if (state is SaveTripSuccess) {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                        SnackBar(
+                                            content: Text(
+                                                state.debugResp.msg?.message ??
+                                                    "")));
+                                    Navigator.pop(context);
+                                  }
+                                  if (state is SaveTripError) {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                        SnackBar(content: Text(state.message)));
+                                  }
+                                },
+                                child: BlocBuilder<SaveTripBloc, SaveTripState>(
+                                  bloc: _saveTripBloc,
+                                  builder: (context, state) {
+                                    return Padding(
+                                      padding: const EdgeInsets.all(8.0),
+                                      child: Text(
+                                        R.strings.finish.toUpperCase(),
+                                        style: const TextStyle(
+                                          fontSize: 16.0,
+                                        ),
+                                      ),
+                                    );
+                                  },
                                 ),
                               ),
                             ),
-                          ),
-                        )
-                      ],
+                          )
+                        ],
+                      ),
                     ),
                   ),
                 ],
@@ -475,37 +492,5 @@ class _TripDetailPageState extends State<TripDetailPage> {
         },
       ),
     );
-  }
-
-  Image displayPhoto(TripDetailSuccess state) {
-    if (imgFile == null) {
-      return Image.network(
-        state.tripDetailResp.spb ?? "",
-        height: 100.0,
-        width: double.infinity,
-        fit: BoxFit.fill,
-        loadingBuilder: (BuildContext context, Widget child,
-            ImageChunkEvent? loadingProgress) {
-          if (loadingProgress == null) return child;
-          return const Center(
-            child: CircularProgressIndicator(),
-          );
-        },
-        errorBuilder:
-            (BuildContext context, Object exception, StackTrace? stackTrace) {
-          return const Icon(
-            Icons.photo_camera,
-            color: Colors.grey,
-            size: 100.0,
-          );
-        },
-      );
-    } else {
-      return Image.file(
-        imgFile,
-        height: 350,
-        width: double.infinity,
-      );
-    }
   }
 }

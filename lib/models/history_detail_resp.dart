@@ -1,6 +1,8 @@
+import 'package:newbkmmobile/models/do_connect_resp.dart';
+
 class HistoryDetailResp {
   String? id;
-  String? doConnect;
+  DoConnectResp? doConnect;
   String? subDo;
   String? spbNumber;
   String? doNumber;
@@ -42,7 +44,9 @@ class HistoryDetailResp {
 
   HistoryDetailResp.fromJson(Map<String, dynamic> json) {
     id = json['id'];
-    doConnect = json['do_connect'];
+    doConnect = json['do_connect'] != null
+        ? DoConnectResp.fromJson(json['do_connect'])
+        : null;
     subDo = json['sub_do'];
     spbNumber = json['spb_number'];
     doNumber = json['do_number'];
@@ -65,7 +69,9 @@ class HistoryDetailResp {
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
     data['id'] = this.id;
-    data['do_connect'] = this.doConnect;
+    if (this.doConnect != null) {
+      data['do_connect'] = this.doConnect!.toJson();
+    }
     data['sub_do'] = this.subDo;
     data['spb_number'] = this.spbNumber;
     data['do_number'] = this.doNumber;

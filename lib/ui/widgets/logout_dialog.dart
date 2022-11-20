@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:newbkmmobile/core/r.dart';
@@ -19,13 +21,8 @@ class LogoutDialog extends StatelessWidget {
   }
 
   Widget dialogContent(BuildContext context) {
-    Future _logout() async {
-      await LoginRepository().deleteAllLoginLocal();
-      await UserDetailRepository().deleteAllUserDetailLocal();
-    }
-
     return Container(
-      margin: const EdgeInsets.only(left: 0.0,right: 0.0),
+      margin: const EdgeInsets.only(left: 0.0, right: 0.0),
       child: Stack(
         children: [
           Container(
@@ -48,69 +45,124 @@ class LogoutDialog extends StatelessWidget {
               children: [
                 Center(
                     child: Padding(
-                      padding: const EdgeInsets.all(10.0),
-                      child: Text(
-                        R.strings.titleDialogLogout,
-                        style: TextStyle(
-                          color: R.colors.colorText,
-                          fontSize: 18.0,
-                        ),
-                      ),
-                    )//
-                ),
+                  padding: const EdgeInsets.all(10.0),
+                  child: Text(
+                    R.strings.titleDialogLogout,
+                    style: TextStyle(
+                      color: R.colors.colorText,
+                      fontSize: 18.0,
+                    ),
+                  ),
+                ) //
+                    ),
                 const SizedBox(height: 20.0),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    ElevatedButton(
-                      onPressed:() {
-                        _logout();
-                        Navigator.of(context).pushAndRemoveUntil(
-                          MaterialPageRoute(builder: (context) =>
-                            const LoginPage()), (route) => false
-                        );
-                      },
-                      style: ElevatedButton.styleFrom(
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10.0),
-                          ),
-                        primary: R.colors.colorPrimary,
-                      ),
-                      child: Text(
-                        R.strings.logout.toUpperCase(),
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 16.0,
-                        ),
-                        textAlign: TextAlign.center,
-                      ),
-                    ),
-                    ElevatedButton(
-                      onPressed:() {
-                        SystemNavigator.pop();
-                      },
-                      style: ElevatedButton.styleFrom(
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10.0),
-                          ),
-                        primary: R.colors.colorAccent
-                      ),
-                      child: Text(
-                        R.strings.exit.toUpperCase(),
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 16.0,
-                        ),
-                        textAlign: TextAlign.center,
-                      ),
-                    ),
-                  ],
-                )
+                buttonLogout(context),
               ],
             ),
           ),
         ],
       ),
     );
+  }
+
+  Row buttonLogout(BuildContext context) {
+    Future _logout() async {
+      await LoginRepository().deleteAllLoginLocal();
+      await UserDetailRepository().deleteAllUserDetailLocal();
+    }
+
+    if (Platform.isIOS) {
+      return Row(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        children: [
+          ElevatedButton(
+            onPressed: () {
+              _logout();
+              Navigator.of(context).pushAndRemoveUntil(
+                  MaterialPageRoute(builder: (context) => const LoginPage()),
+                      (route) => false);
+            },
+            style: ElevatedButton.styleFrom(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10.0),
+              ),
+              primary: R.colors.colorPrimary,
+            ),
+            child: Text(
+              R.strings.logout.toUpperCase(),
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 16.0,
+              ),
+              textAlign: TextAlign.center,
+            ),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+            style: ElevatedButton.styleFrom(
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10.0),
+                ),
+                primary: R.colors.colorAccent),
+            child: Text(
+              R.strings.cancel.toUpperCase(),
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 16.0,
+              ),
+              textAlign: TextAlign.center,
+            ),
+          ),
+        ],
+      );
+    } else {
+      return Row(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        children: [
+          ElevatedButton(
+            onPressed: () {
+              _logout();
+              Navigator.of(context).pushAndRemoveUntil(
+                  MaterialPageRoute(builder: (context) => const LoginPage()),
+                      (route) => false);
+            },
+            style: ElevatedButton.styleFrom(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10.0),
+              ),
+              primary: R.colors.colorPrimary,
+            ),
+            child: Text(
+              R.strings.logout.toUpperCase(),
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 16.0,
+              ),
+              textAlign: TextAlign.center,
+            ),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              SystemNavigator.pop();
+            },
+            style: ElevatedButton.styleFrom(
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10.0),
+                ),
+                primary: R.colors.colorAccent),
+            child: Text(
+              R.strings.exit.toUpperCase(),
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 16.0,
+              ),
+              textAlign: TextAlign.center,
+            ),
+          ),
+        ],
+      );
+    }
   }
 }

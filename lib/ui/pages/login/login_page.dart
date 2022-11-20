@@ -46,7 +46,7 @@ class _LoginPageState extends State<LoginPage> {
                   barrierDismissible: false,
                   context: context,
                   builder: (BuildContext context) {
-                    return const CustomLoading();
+                    return CustomLoading(message: R.strings.loadingGetData);
                   }
                 );
               }

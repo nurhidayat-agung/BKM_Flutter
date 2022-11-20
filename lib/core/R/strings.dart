@@ -47,6 +47,9 @@ class Strings {
   String openGallery              = "Ambil dari Galeri";
   String cancel                   = "Cancel";
   String finish                   = "Selesai";
+  String msgConfirmSave           = "Apakah Anda yakin ingin menyimpan data ini?";
+  String yes                      = "Ya";
+  String no                       = "Tidak";
   String nomorDo                  = "Nomor DO";
   String doKecil                  = "DO Kecil";
   String spbNo                    = "No. SPB";
