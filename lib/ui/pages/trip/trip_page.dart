@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:newbkmmobile/blocs/trip/trip_bloc.dart';
 import 'package:newbkmmobile/core/r.dart';
 import 'package:newbkmmobile/repositories/trip_repository.dart';
+import 'package:newbkmmobile/ui/pages/trip/trip_detail_page.dart';
 import 'package:newbkmmobile/ui/pages/trip/trip_row.dart';
 
 class TripPage extends StatefulWidget {
@@ -41,7 +42,17 @@ class _TripPageState extends State<TripPage> {
                 return ListView.builder(
                     itemCount: state.listTrip.length,
                     itemBuilder: (BuildContext context, int index) {
-                      return TripRow(trip: state.listTrip[index]);
+                      return GestureDetector(
+                        onTap: () {
+                          Navigator.of(context).push(MaterialPageRoute(
+                              builder: (context) =>
+                                  TripDetailPage(id: state.listTrip[index].id ?? "")
+                          )).then((value) => setState(() {
+                            _tripBloc.add(Trip());
+                          }));
+                        },
+                        child: TripRow(trip: state.listTrip[index]),
+                      );
                     }
                 );
               } else {
