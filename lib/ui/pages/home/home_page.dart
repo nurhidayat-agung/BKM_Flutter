@@ -6,6 +6,7 @@ import 'package:newbkmmobile/core/grid_item.dart';
 import 'package:newbkmmobile/core/r.dart';
 import 'package:newbkmmobile/repositories/user_detail_repository.dart';
 import 'package:newbkmmobile/ui/pages/history/history_page.dart';
+import 'package:newbkmmobile/ui/pages/payslip/payslip_page.dart';
 import 'package:newbkmmobile/ui/pages/trip/trip_page.dart';
 import 'package:newbkmmobile/ui/widgets/banner_slider.dart';
 
@@ -23,7 +24,7 @@ class _HomePageState extends State<HomePage> {
   List<GridItem> listGrid = [
     GridItem(title: R.strings.menuTrip, image: AssetImage(R.assets.menuTrip), color: Colors.deepPurple[300]!, widget: const TripPage()),
     GridItem(title: R.strings.menuHistory, image: AssetImage(R.assets.menuHistory), color: Colors.lightBlue[500]!, widget: const HistoryPage()),
-    GridItem(title: R.strings.menuSalary, image: AssetImage(R.assets.menuSalary), color: Colors.green[600]!, widget: const TripPage()),
+    GridItem(title: R.strings.menuSalary, image: AssetImage(R.assets.menuSalary), color: Colors.green[600]!, widget: const PaySlipPage()),
     GridItem(title: R.strings.menuWorkshop, image: AssetImage(R.assets.menuWorkshop), color: Colors.orange[800]!, widget: const TripPage()),
     GridItem(title: R.strings.menuService, image: AssetImage(R.assets.menuService), color: Colors.red[700]!, widget: const TripPage()),
     GridItem(title: R.strings.menuPart, image: AssetImage(R.assets.menuPart), color: Colors.teal[600]!, widget: const TripPage()),

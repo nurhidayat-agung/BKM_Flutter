@@ -36,6 +36,7 @@ class Strings {
   String titleTripDetailPage      = "Detail Perjalanan";
   String titleHistoryPage         = "Riwayat Perjalanan";
   String titleHistoryDetailPage   = "Detail Riwayat";
+  String titlePaySlipPage         = "Slip Gaji";
 
   //global string
   String pengabdian               = "Pengabdian";
@@ -65,9 +66,31 @@ class Strings {
   String jmlBongkar               = "Jumlah Bongkar";
   String tglMuat                  = "Tanggal Muat";
   String tglBongkar               = "Tanggal Bongkar";
-  String rp                       = "Rp.";
+  String rp                       = "Rp";
   String kg                       = "kg";
   String titleDataTimbang         = "Data Timbang";
+  String aturTanggal              = "Atur Tanggal";
+  String pendapatan               = "Pendapatan";
+  String gajiTrip                 = "Gaji Trip";
+  String bonusTrip                = "Bonus Trip";
+  String penyesuaian              = "Penyesuaian";
+  String thr                      = "THR";
+  String insentif                 = "Insentif";
+  String bonusAntarTeman          = "Bonus Antar Teman";
+  String total                    = "Total";
+  String potongan                 = "Potongan";
+  String bpjsKet                  = "BPJS Ketenagakerjaan";
+  String bpjsKes                  = "BPJS Kesehatan";
+  String pengeluaran              = "Pengeluaran";
+  String angsuranSusut            = "Angsuran Susut";
+  String angsuranPinjaman         = "Angsuran Pinjaman";
+  String angsuranLain             = "Angsuran Lain";
+  String info                     = "Info";
+  String jmlPerjalanan            = "Jumlah Perjalanan";
+  String totalTabungan            = "Total Tabungan";
+  String sisaHutangYTD            = "Sisa Hutang YTD";
+  String sisaPinjamanYTD          = "Sisa Pinjaman YTD";
+  String nettoGaji                = "Netto Gaji";
 
   //error message
   String errorWidget              = "Error create widget";

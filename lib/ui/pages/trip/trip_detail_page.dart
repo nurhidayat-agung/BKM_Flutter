@@ -276,7 +276,8 @@ class _TripDetailPageState extends State<TripDetailPage> {
                                   borderRadius: BorderRadius.circular(10.0),
                                   borderSide: BorderSide(
                                     color: R.colors.greenLogo,
-                                  )),
+                                  ),
+                              ),
                               labelStyle: TextStyle(
                                 color: R.colors.colorText,
                               ),
@@ -311,7 +312,8 @@ class _TripDetailPageState extends State<TripDetailPage> {
                                         borderRadius: BorderRadius.circular(10.0),
                                         borderSide: BorderSide(
                                           color: R.colors.greenLogo,
-                                        )),
+                                        ),
+                                    ),
                                     labelStyle: TextStyle(
                                       color: R.colors.colorText,
                                     ),
@@ -344,7 +346,8 @@ class _TripDetailPageState extends State<TripDetailPage> {
                                         borderRadius: BorderRadius.circular(10.0),
                                         borderSide: BorderSide(
                                           color: R.colors.greenLogo,
-                                        )),
+                                        ),
+                                    ),
                                     labelStyle: TextStyle(
                                       color: R.colors.colorText,
                                     ),

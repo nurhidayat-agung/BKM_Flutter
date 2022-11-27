@@ -223,7 +223,7 @@ class _HistoryDetailPageState extends State<HistoryDetailPage> {
                         PairHorizontalText(
                             title: R.strings.bonus,
                             content:
-                                "+${R.strings.rp}${state.historyDetailResp.bonus}",
+                                "+${R.strings.rp}. ${state.historyDetailResp.bonus}",
                             colorTitle: R.colors.colorText,
                             colorContent: Colors.green,
                             fontSizeTitle: 14.0,

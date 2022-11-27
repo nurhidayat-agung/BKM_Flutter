@@ -128,7 +128,7 @@ class _LoginPageState extends State<LoginPage> {
                                           borderRadius: BorderRadius.circular(10.0),
                                           borderSide: BorderSide(
                                             color: Colors.blue[600]!,
-                                          )
+                                          ),
                                       ),
                                       labelText: R.strings.titleUsername,
                                     ),
@@ -151,7 +151,7 @@ class _LoginPageState extends State<LoginPage> {
                                           borderRadius: BorderRadius.circular(10.0),
                                           borderSide: BorderSide(
                                             color: Colors.blue[600]!,
-                                          )
+                                          ),
                                       ),
                                       labelText: R.strings.titlePassword,
                                       suffixIcon: InkWell(
