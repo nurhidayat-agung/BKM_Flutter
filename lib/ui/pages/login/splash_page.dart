@@ -14,7 +14,6 @@ class SplashPage extends StatefulWidget {
 }
 
 class _SplashPageState extends State<SplashPage> {
-
   @override
   void initState() {
     super.initState();
@@ -29,28 +28,42 @@ class _SplashPageState extends State<SplashPage> {
     if (loginLocal.isNotEmpty) {
       if (loginLocal[0].userId.isNotEmpty) {
         Navigator.of(context).pushReplacement(
-            MaterialPageRoute(builder: (_) => const DrawerMenuPage())
-        );
+            MaterialPageRoute(builder: (_) => const DrawerMenuPage()));
       } else {
         Navigator.of(context).pushReplacement(
-            MaterialPageRoute(builder: (_) => const LoginPage())
-        );
+            MaterialPageRoute(builder: (_) => const LoginPage()));
       }
     } else {
       Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (_) => const LoginPage())
-      );
+          MaterialPageRoute(builder: (_) => const LoginPage()));
     }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: R.colors.colorPrimary,
       body: Center(
-        child: Image.asset(
-          R.assets.icBKM,
-          scale: 4.0,
+        child: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topRight,
+              end: Alignment.bottomLeft,
+              stops: const [
+                0.5,
+                1.0,
+              ],
+              colors: [
+                Colors.indigo[900]!,
+                Colors.indigo[400]!,
+              ],
+            ),
+          ),
+          child: Center(
+            child: Image.asset(
+              R.assets.logoBKM,
+              scale: 5.0,
+            ),
+          ),
         ),
       ),
     );

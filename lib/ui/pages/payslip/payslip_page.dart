@@ -92,51 +92,57 @@ class _PaySlipPageState extends State<PaySlipPage> {
                   padding: const EdgeInsets.all(8.0),
                   child: Row(
                     children: [
-                      Text(R.strings.aturTanggal),
+                      Text(
+                        R.strings.aturTanggal,
+                        style: const TextStyle(
+                          fontSize: 16.0,
+                        ),
+                      ),
                       const SizedBox(width: 10.0),
-                      SizedBox(
-                        height: 30.0,
-                        width: MediaQuery.of(context).size.width/1.8,
-                        child: TextFormField(
-                          cursorColor: R.colors.colorText,
-                          decoration: InputDecoration(
-                            enabledBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(5.0),
-                              borderSide: BorderSide(
-                                color: R.colors.greenLogo,
-                              ),
-                            ),
-                            focusedBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(10.0),
-                              borderSide: BorderSide(
-                                color: R.colors.greenLogo,
-                              ),
-                            ),
-                            suffixIcon: Icon(
-                              Icons.keyboard_arrow_down,
+                      GestureDetector(
+                        onTap: () {
+                          showMonthPicker(
+                            context: context,
+                            initialDate: selectedDateTime,
+                            firstDate:DateTime(2000),
+                            lastDate: DateTime(2100),
+                          ).then((date) {
+                            setState(() {
+                              selectedDateTime = date!;
+                              _paySlipBloc.add(PaySlip(month: selectedDateTime.month, year: selectedDateTime.year));
+                            });
+                          });
+                        },
+                        child: Card(
+                          elevation: 0.0,
+                          shape: RoundedRectangleBorder(
+                            side: BorderSide(
                               color: R.colors.greenLogo,
                             ),
+                            borderRadius: BorderRadius.circular(10.0), //<-- SEE HERE
                           ),
-                          initialValue: "${Constants.listMonthIndonesia[selectedDateTime.month-1]} ${selectedDateTime.year}",
-                          onTap: () {
-                            showMonthPicker(
-                              context: context,
-                              initialDate: selectedDateTime,
-                              firstDate:DateTime(2000),
-                              lastDate: DateTime(2100),
-                            ).then((date) {
-                              setState(() {
-                                selectedDateTime = date!;
-                                _paySlipBloc.add(PaySlip(month: selectedDateTime.month, year: selectedDateTime.year));
-                              });
-                            });
-                          },
-                          readOnly: true,
-                          style: TextStyle(
-                            color: R.colors.colorText,
-                            fontSize: 16.0,
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 8.0,
+                              vertical: 4.0,
+                            ),
+                            child: Row(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                Text(
+                                  "${Constants.listMonthIndonesia[selectedDateTime.month-1]} ${selectedDateTime.year}",
+                                  style: const TextStyle(
+                                    fontSize: 16.0,
+                                  ),
+                                ),
+                                const SizedBox(width: 5.0),
+                                Icon(
+                                  Icons.keyboard_arrow_down,
+                                  color: R.colors.greenLogo,
+                                ),
+                              ],
+                            ),
                           ),
-                          textAlignVertical: TextAlignVertical.center,
                         ),
                       ),
                     ],
@@ -151,7 +157,10 @@ class _PaySlipPageState extends State<PaySlipPage> {
                           height: 6.0,
                         ),
                         Padding(
-                          padding: const EdgeInsets.all(8.0),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 8.0,
+                            vertical: 12.0,
+                          ),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
@@ -159,6 +168,7 @@ class _PaySlipPageState extends State<PaySlipPage> {
                                 R.strings.pendapatan,
                                 style: const TextStyle(
                                   color: Colors.black,
+                                  fontSize: 15.0,
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
@@ -264,7 +274,10 @@ class _PaySlipPageState extends State<PaySlipPage> {
                           height: 6.0,
                         ),
                         Padding(
-                          padding: const EdgeInsets.all(8.0),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 8.0,
+                            vertical: 12.0,
+                          ),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
@@ -272,6 +285,7 @@ class _PaySlipPageState extends State<PaySlipPage> {
                                 R.strings.potongan,
                                 style: const TextStyle(
                                   color: Colors.black,
+                                  fontSize: 15.0,
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
@@ -344,7 +358,10 @@ class _PaySlipPageState extends State<PaySlipPage> {
                           height: 6.0,
                         ),
                         Padding(
-                          padding: const EdgeInsets.all(8.0),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 8.0,
+                            vertical: 12.0,
+                          ),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
@@ -352,6 +369,7 @@ class _PaySlipPageState extends State<PaySlipPage> {
                                 R.strings.pengeluaran,
                                 style: const TextStyle(
                                   color: Colors.black,
+                                  fontSize: 15.0,
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
@@ -417,7 +435,10 @@ class _PaySlipPageState extends State<PaySlipPage> {
                           height: 6.0,
                         ),
                         Padding(
-                          padding: const EdgeInsets.all(8.0),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 8.0,
+                            vertical: 12.0,
+                          ),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
@@ -425,10 +446,16 @@ class _PaySlipPageState extends State<PaySlipPage> {
                                 R.strings.info,
                                 style: const TextStyle(
                                   color: Colors.black,
+                                  fontSize: 15.0,
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
-                              const SizedBox(height: 18.0),
+                              const SizedBox(height: 10.0),
+                              Container(
+                                color: Colors.grey[300],
+                                height: 1.0,
+                              ),
+                              const SizedBox(height: 10.0),
                               PairHorizontalText(
                                 title: R.strings.jmlPerjalanan,
                                 content: state.paySlipResp.numberOfTrip ?? "0",
