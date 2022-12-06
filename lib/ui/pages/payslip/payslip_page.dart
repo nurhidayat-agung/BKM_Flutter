@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
-import 'package:month_picker_dialog/month_picker_dialog.dart';
 import 'package:newbkmmobile/blocs/payslip/payslip_bloc.dart';
 import 'package:newbkmmobile/core/constants.dart';
+import 'package:newbkmmobile/core/library/month_picker_dialog/month_picker_dialog.dart';
 import 'package:newbkmmobile/core/r.dart';
 import 'package:newbkmmobile/repositories/payslip_repository.dart';
 import 'package:newbkmmobile/ui/widgets/pair_horizontal_text.dart';
@@ -100,7 +100,7 @@ class _PaySlipPageState extends State<PaySlipPage> {
                       ),
                       const SizedBox(width: 10.0),
                       GestureDetector(
-                        onTap: () {
+                        onTap: () async {
                           showMonthPicker(
                             context: context,
                             initialDate: selectedDateTime,
@@ -112,6 +112,18 @@ class _PaySlipPageState extends State<PaySlipPage> {
                               _paySlipBloc.add(PaySlip(month: selectedDateTime.month, year: selectedDateTime.year));
                             });
                           });
+                          // final selectedPicker = await showMonthYearPicker(
+                          //   context: context,
+                          //   initialDate: selectedDateTime,
+                          //   firstDate: DateTime(2000),
+                          //   lastDate: DateTime(2100),
+                          // );
+                          // if (selectedPicker != null) {
+                          //   setState(() {
+                          //     selectedDateTime = selectedPicker;
+                          //     _paySlipBloc.add(PaySlip(month: selectedDateTime.month, year: selectedDateTime.year));
+                          //   });
+                          // }
                         },
                         child: Card(
                           elevation: 0.0,
