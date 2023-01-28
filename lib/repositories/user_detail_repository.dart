@@ -1,7 +1,4 @@
-import 'dart:convert';
-
 import 'package:dio/dio.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:hive/hive.dart';
 import 'package:newbkmmobile/core/constants.dart';
 import 'package:newbkmmobile/models/announcement_local.dart';
@@ -13,10 +10,6 @@ class UserDetailRepository {
   final _helper = APIBaseHelper();
 
   Future<Box<UserDetailLocal>> openBox() async {
-    const secureStorage = FlutterSecureStorage();
-    final key = await secureStorage.read(key: Constants.key);
-    final encryptionKey = base64Url.decode(key!);
-
     if (!Hive.isAdapterRegistered(1)) {
       Hive.registerAdapter(UserDetailLocalAdapter());
       Hive.registerAdapter(AnnouncementLocalAdapter());
@@ -24,7 +17,6 @@ class UserDetailRepository {
     }
     var box = await Hive.openBox<UserDetailLocal>(
       Constants.boxUserDetail,
-      encryptionCipher: HiveAesCipher(encryptionKey),
     );
 
     return box;
@@ -33,6 +25,7 @@ class UserDetailRepository {
   Future<List<UserDetailLocal>> getUserDetailLocal() async {
     final box = await openBox();
     List<UserDetailLocal> list = box.values.toList();
+
     return list;
   }
 

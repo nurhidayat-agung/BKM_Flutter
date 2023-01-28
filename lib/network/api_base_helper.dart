@@ -4,14 +4,12 @@ import 'package:dio/dio.dart';
 import 'package:newbkmmobile/core/constants.dart';
 import 'package:newbkmmobile/core/failure.dart';
 import 'package:newbkmmobile/core/r.dart';
-import 'package:newbkmmobile/core/storage_helper.dart';
 import 'package:newbkmmobile/models/error_resp.dart';
 import 'package:newbkmmobile/repositories/login_repository.dart';
 
 class APIBaseHelper {
   final Dio _dio = Dio();
   final _baseUrl = Constants.baseUrl;
-  final storageHelper = StorageHelper();
 
   Future<Response> get(String url) async {
     var responseJson;

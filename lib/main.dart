@@ -1,27 +1,11 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-import 'package:newbkmmobile/core/constants.dart';
 import 'package:newbkmmobile/core/r.dart';
 import 'package:newbkmmobile/ui/pages/login/splash_page.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Hive.initFlutter();
-
-  const secureStorage = FlutterSecureStorage();
-  final encryptionKey = await secureStorage.read(key: Constants.key);
-
-  if (encryptionKey == null) {
-    final key = Hive.generateSecureKey();
-    await secureStorage.write(
-      key: Constants.key,
-      value: base64UrlEncode(key),
-    );
-  }
-
   runApp(MyApp());
 }
 
