@@ -1,12 +1,10 @@
-import 'package:dio/dio.dart';
 import 'package:hive/hive.dart';
 import 'package:newbkmmobile/core/constants.dart';
 import 'package:newbkmmobile/models/login_local.dart';
-import 'package:newbkmmobile/network/api_base_helper.dart';
+import 'package:http/http.dart' as http;
 
 class LoginRepository {
-  final _helper = APIBaseHelper();
-  
+
   Future<Box<LoginLocal>> openBox() async {
     if (!Hive.isAdapterRegistered(0)) {
       Hive.registerAdapter(LoginLocalAdapter());
@@ -35,15 +33,19 @@ class LoginRepository {
     await box.deleteFromDisk();
   }
 
-  Future<Response> login(String username, String password) async {
-    FormData formData = FormData.fromMap({
-      "username": username,
-      "password": password,
-    });
+  Future<http.Response> login(String username, String password) async {
+    var map = <String, dynamic>{};
+    map['username'] = username;
+    map['password'] = password;
 
-    Response response = await _helper.post(
-      "auth/login",
-      formData: formData,
+    final response = await http.post(
+      Uri.parse("${Constants.baseUrl}auth/login"),
+      headers: {
+        "Client-Service": "driver-client",
+        "Auth-Key": "bkmrestapi",
+        "Content-Type": "application/x-www-form-urlencoded",
+      },
+      body: map,
     );
 
     return response;

@@ -1,4 +1,4 @@
-import 'dart:async';
+import 'dart:convert';
 
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
@@ -17,7 +17,7 @@ class TripDetailBloc extends Bloc<TripDetailEvent, TripDetailState> {
         try {
           emit(const TripDetailLoading());
           final response = await _tripRepository.getTripDetail(event.id);
-          emit(TripDetailSuccess(TripDetailResp.fromJson(response.data)));
+          emit(TripDetailSuccess(TripDetailResp.fromJson(jsonDecode(response.body))));
         } catch (e) {
           emit(TripDetailError(e.toString()));
         }

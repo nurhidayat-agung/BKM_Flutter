@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:newbkmmobile/models/history_resp.dart';
@@ -15,7 +17,7 @@ class HistoryBloc extends Bloc<HistoryEvent, HistoryState> {
         emit(const HistoryLoading());
         final response = await _historyRepository.getHistory();
         try {
-          final listHistory = (response.data as List)
+          final listHistory = (jsonDecode(response.body) as List)
               .map((x) => HistoryResp.fromJson(x))
               .toList();
           emit(HistorySuccess(listHistory));

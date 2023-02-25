@@ -1,43 +1,81 @@
+import 'dart:convert';
 import 'dart:io';
 
-import 'package:dio/dio.dart';
-import 'package:newbkmmobile/network/api_base_helper.dart';
+import 'package:newbkmmobile/core/constants.dart';
+import 'package:http/http.dart' as http;
+import 'login_repository.dart';
 
 class TripRepository {
-  final _helper = APIBaseHelper();
 
-  Future<Response> getTrip() async {
-    Response response = await _helper.get("transaction/trips");
+  Future<http.Response> getTrip() async {
+    final loginLocal = await LoginRepository().getLoginLocal();
 
-    return response;
-  }
-
-  Future<Response> getTripDetail(String id) async {
-    Response response = await _helper.get("transaction/trip_detail/$id");
-
-    return response;
-  }
-
-  Future<Response> saveTrip(String id, String statusTrip, String numberOfLoad, String numberOfUnload, String spbNo, String trigger, File spbImg) async {
-    FormData formData = FormData.fromMap({
-      "id": id,
-      "status_trip": statusTrip,
-      "number_of_load": numberOfLoad,
-      "number_of_unload": numberOfUnload,
-      "spb_no": spbNo,
-      "trigger": trigger,
-      "spb_img": await MultipartFile.fromFile(
-        spbImg.path,
-        filename: spbImg.path.split('/').last,
-      ),
-    });
-
-    Response response = await _helper.post(
-      "transaction/save_trips",
-      formData: formData,
+    final response = await http.get(
+      Uri.parse("${Constants.baseUrl}transaction/trips"),
+      headers: {
+        "Client-Service": "driver-client",
+        "Auth-Key": "bkmrestapi",
+        "Content-Type": "application/x-www-form-urlencoded",
+        "Authorization": loginLocal[0].token,
+        "User-ID": loginLocal[0].userId,
+      },
     );
 
     return response;
+  }
+
+  Future<http.Response> getTripDetail(String id) async {
+    final loginLocal = await LoginRepository().getLoginLocal();
+
+    final response = await http.get(
+      Uri.parse("${Constants.baseUrl}transaction/trip_detail/$id"),
+      headers: {
+        "Client-Service": "driver-client",
+        "Auth-Key": "bkmrestapi",
+        "Content-Type": "application/x-www-form-urlencoded",
+        "Authorization": loginLocal[0].token,
+        "User-ID": loginLocal[0].userId,
+      },
+    );
+
+    return response;
+  }
+
+  Future<String> saveTrip(String id, String statusTrip, String numberOfLoad, String numberOfUnload, String spbNo, String trigger, File spbImg) async {
+    final loginLocal = await LoginRepository().getLoginLocal();
+
+    var request = http.MultipartRequest(
+      "POST",
+      Uri.parse("${Constants.baseUrl}transaction/save_trips"),
+    );
+
+    request.headers.addAll({
+      "Client-Service": "driver-client",
+      "Auth-Key": "bkmrestapi",
+      "Content-Type": "multipart/form-data",
+      "Authorization": loginLocal[0].token,
+      "User-ID": loginLocal[0].userId,
+    });
+
+    request.fields['id']                = id;
+    request.fields['status_trip']       = statusTrip;
+    request.fields['number_of_load']    = numberOfLoad;
+    request.fields['number_of_unload']  = numberOfUnload;
+    request.fields['spb_no']            = spbNo;
+    request.fields['trigger']           = trigger;
+
+    request.files.add(http.MultipartFile(
+        "spb_img",
+        spbImg!.readAsBytes().asStream(),
+        spbImg!.lengthSync(),
+        filename: spbImg!.path.split("/").last,
+    ));
+
+    var response = await request.send();
+    var responseBytes = await response.stream.toBytes();
+    var responseString = utf8.decode(responseBytes);
+
+    return responseString;
   }
 
 }

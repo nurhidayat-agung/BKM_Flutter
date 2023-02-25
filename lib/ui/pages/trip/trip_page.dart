@@ -38,20 +38,20 @@ class _TripPageState extends State<TripPage> {
             } else if (state is TripLoading) {
               return const Center(child: CircularProgressIndicator());
             } else if (state is TripSuccess) {
-              if (state.listTrip.isNotEmpty) {
+              if (state.listTripResp.isNotEmpty) {
                 return ListView.builder(
-                    itemCount: state.listTrip.length,
+                    itemCount: state.listTripResp.length,
                     itemBuilder: (BuildContext context, int index) {
                       return GestureDetector(
                         onTap: () {
                           Navigator.of(context).push(MaterialPageRoute(
                               builder: (context) =>
-                                  TripDetailPage(id: state.listTrip[index].id ?? "")
+                                  TripDetailPage(id: state.listTripResp[index].id ?? "")
                           )).then((value) => setState(() {
                             _tripBloc.add(Trip());
                           }));
                         },
-                        child: TripRow(trip: state.listTrip[index]),
+                        child: TripRow(tripResp: state.listTripResp[index]),
                       );
                     }
                 );
@@ -75,8 +75,24 @@ class _TripPageState extends State<TripPage> {
                 );
               }
             } else if (state is TripError) {
-              ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                  content: Text(state.message)));
+              return Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Icon(
+                      Icons.error,
+                      color: Colors.red,
+                      size: 50.0,
+                    ),
+                    Text(
+                      state.message,
+                      style: const TextStyle(
+                        fontSize: 14.0,
+                      ),
+                    ),
+                  ],
+                ),
+              );
             }
             throw ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                 content: Text(R.strings.errorWidget)));

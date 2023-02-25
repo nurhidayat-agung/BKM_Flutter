@@ -1,13 +1,12 @@
-import 'package:dio/dio.dart';
 import 'package:hive/hive.dart';
 import 'package:newbkmmobile/core/constants.dart';
 import 'package:newbkmmobile/models/announcement_local.dart';
 import 'package:newbkmmobile/models/user_detail_local.dart';
 import 'package:newbkmmobile/models/vehicle_local.dart';
-import 'package:newbkmmobile/network/api_base_helper.dart';
+import 'package:http/http.dart' as http;
+import 'login_repository.dart';
 
 class UserDetailRepository {
-  final _helper = APIBaseHelper();
 
   Future<Box<UserDetailLocal>> openBox() async {
     if (!Hive.isAdapterRegistered(1)) {
@@ -39,8 +38,19 @@ class UserDetailRepository {
     await box.deleteFromDisk();
   }
 
-  Future<Response> getUserDetailRemote() async {
-    Response response = await _helper.get("transaction/user_info");
+  Future<http.Response> getUserDetailRemote() async {
+    final loginLocal = await LoginRepository().getLoginLocal();
+
+    final response = await http.get(
+      Uri.parse("${Constants.baseUrl}transaction/user_info"),
+      headers: {
+        "Client-Service": "driver-client",
+        "Auth-Key": "bkmrestapi",
+        "Content-Type": "application/x-www-form-urlencoded",
+        "Authorization": loginLocal[0].token,
+        "User-ID": loginLocal[0].userId,
+      },
+    );
 
     return response;
   }

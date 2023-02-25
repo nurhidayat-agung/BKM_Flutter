@@ -3,8 +3,8 @@ import 'package:newbkmmobile/core/r.dart';
 import 'package:newbkmmobile/models/trip_resp.dart';
 
 class TripRow extends StatefulWidget {
-  const TripRow({Key? key, required this.trip}) : super(key: key);
-  final TripResp trip;
+  const TripRow({Key? key, required this.tripResp}) : super(key: key);
+  final TripResp tripResp;
 
   @override
   State<TripRow> createState() => _TripRowState();
@@ -25,7 +25,7 @@ class _TripRowState extends State<TripRow> {
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
               Text(
-                widget.trip.doNumber!,
+                widget.tripResp.doNumber!,
                 style: TextStyle(
                   color: Colors.blue[600],
                   fontSize: 16.0,
@@ -47,7 +47,7 @@ class _TripRowState extends State<TripRow> {
                       ),
                       children: [
                         TextSpan(
-                          text: widget.trip.pksName,
+                          text: widget.tripResp.pksName,
                           style: TextStyle(
                             color: R.colors.colorTextLight,
                           ),
@@ -64,7 +64,7 @@ class _TripRowState extends State<TripRow> {
                           ),
                         ),
                         TextSpan(
-                          text: "${widget.trip.destinationName} | ${widget.trip.commodityName}",
+                          text: "${widget.tripResp.destinationName} | ${widget.tripResp.commodityName}",
                           style: TextStyle(
                             color: R.colors.colorTextLight,
                           ),

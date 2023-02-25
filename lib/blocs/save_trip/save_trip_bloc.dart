@@ -1,4 +1,4 @@
-import 'dart:async';
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:bloc/bloc.dart';
@@ -25,7 +25,7 @@ class SaveTripBloc extends Bloc<SaveTripEvent, SaveTripState> {
               event.spbNo,
               event.trigger,
               event.spbImg);
-          emit(SaveTripSuccess(DebugResp.fromJson(response.data)));
+          emit(SaveTripSuccess(DebugResp.fromJson(jsonDecode(response))));
         } catch (e) {
           emit(SaveTripError(e.toString()));
         }

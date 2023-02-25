@@ -16,10 +16,10 @@ class HistoryLoading extends HistoryState {
 }
 
 class HistorySuccess extends HistoryState {
-  final List<HistoryResp> listHistory;
-  const HistorySuccess(this.listHistory);
+  final List<HistoryResp> listHistoryResp;
+  const HistorySuccess(this.listHistoryResp);
   @override
-  List<Object> get props => [listHistory];
+  List<Object> get props => [listHistoryResp];
 }
 
 class HistoryError extends HistoryState {

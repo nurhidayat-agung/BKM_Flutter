@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:newbkmmobile/blocs/login/login_bloc.dart';
 import 'package:newbkmmobile/core/r.dart';
+import 'package:newbkmmobile/repositories/login_form_repository.dart';
 import 'package:newbkmmobile/repositories/login_repository.dart';
 import 'package:newbkmmobile/repositories/user_detail_repository.dart';
 import 'package:newbkmmobile/ui/pages/drawer_menu_page.dart';
@@ -15,10 +16,10 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
-  final _loginBloc = LoginBloc(LoginRepository(), UserDetailRepository());
+  final _loginBloc          = LoginBloc(LoginRepository(), UserDetailRepository(), LoginFormRepository());
   final _usernameController = TextEditingController();
   final _passwordController = TextEditingController();
-  bool _isHiddenPassword = true;
+  bool _isHiddenPassword    = true;
 
   @override
   void initState() {
@@ -49,8 +50,7 @@ class _LoginPageState extends State<LoginPage> {
                     return CustomLoading(message: R.strings.loadingGetData);
                   }
                 );
-              }
-              if (state is LoginSuccess) {
+              } else if (state is LoginSuccess) {
                 Navigator.of(context).pop();
                 Navigator.of(context).pushReplacement(
                     MaterialPageRoute(builder: (_) => const DrawerMenuPage())

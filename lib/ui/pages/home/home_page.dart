@@ -5,8 +5,11 @@ import 'package:newbkmmobile/blocs/user_detail/user_detail_bloc.dart';
 import 'package:newbkmmobile/core/grid_item.dart';
 import 'package:newbkmmobile/core/r.dart';
 import 'package:newbkmmobile/repositories/user_detail_repository.dart';
+import 'package:newbkmmobile/ui/pages/help/help_page.dart';
 import 'package:newbkmmobile/ui/pages/history/history_page.dart';
 import 'package:newbkmmobile/ui/pages/payslip/payslip_page.dart';
+import 'package:newbkmmobile/ui/pages/service_book/service_book_page.dart';
+import 'package:newbkmmobile/ui/pages/service_part/service_part_page.dart';
 import 'package:newbkmmobile/ui/pages/trip/trip_page.dart';
 import 'package:newbkmmobile/ui/widgets/banner_slider.dart';
 
@@ -18,17 +21,17 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  final _userDetailBloc = UserDetailBloc(UserDetailRepository());
-  int numberOfTrip = 0;
-  int currentPos = 0;
+  final _userDetailBloc   = UserDetailBloc(UserDetailRepository());
+  int numberOfTrip        = 0;
+  int currentPos          = 0;
   List<GridItem> listGrid = [
     GridItem(title: R.strings.menuTrip, image: AssetImage(R.assets.menuTrip), color: Colors.deepPurple[300]!, widget: const TripPage()),
     GridItem(title: R.strings.menuHistory, image: AssetImage(R.assets.menuHistory), color: Colors.lightBlue[500]!, widget: const HistoryPage()),
     GridItem(title: R.strings.menuSalary, image: AssetImage(R.assets.menuSalary), color: Colors.green[600]!, widget: const PaySlipPage()),
     GridItem(title: R.strings.menuWorkshop, image: AssetImage(R.assets.menuWorkshop), color: Colors.orange[800]!, widget: const TripPage()),
-    GridItem(title: R.strings.menuService, image: AssetImage(R.assets.menuService), color: Colors.red[700]!, widget: const TripPage()),
-    GridItem(title: R.strings.menuPart, image: AssetImage(R.assets.menuPart), color: Colors.teal[600]!, widget: const TripPage()),
-    GridItem(title: R.strings.menuHelp, image: AssetImage(R.assets.menuHelp), color: Colors.brown[400]!, widget: const TripPage()),
+    GridItem(title: R.strings.menuService, image: AssetImage(R.assets.menuService), color: Colors.red[700]!, widget: const ServiceBookPage()),
+    GridItem(title: R.strings.menuPart, image: AssetImage(R.assets.menuPart), color: Colors.teal[600]!, widget: const ServicePartPage()),
+    GridItem(title: R.strings.menuHelp, image: AssetImage(R.assets.menuHelp), color: Colors.brown[400]!, widget: const HelpPage()),
 
   ];
 
@@ -186,8 +189,24 @@ class _HomePageState extends State<HomePage> {
                   return const Center();
                 }
               } else if (state is UserDetailError) {
-                ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                    content: Text(state.message)));
+                return Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Icon(
+                        Icons.error,
+                        color: Colors.red,
+                        size: 50.0,
+                      ),
+                      Text(
+                        state.message,
+                        style: const TextStyle(
+                          fontSize: 14.0,
+                        ),
+                      ),
+                    ],
+                  ),
+                );
               }
               throw ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                   content: Text(R.strings.errorWidget)));

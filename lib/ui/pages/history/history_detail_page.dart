@@ -352,8 +352,24 @@ class _HistoryDetailPageState extends State<HistoryDetailPage> {
               ),
             );
           } else if (state is HistoryDetailError) {
-            ScaffoldMessenger.of(context)
-                .showSnackBar(SnackBar(content: Text(state.message)));
+            return Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Icon(
+                    Icons.error,
+                    color: Colors.red,
+                    size: 50.0,
+                  ),
+                  Text(
+                    state.message,
+                    style: const TextStyle(
+                      fontSize: 14.0,
+                    ),
+                  ),
+                ],
+              ),
+            );
           }
           throw ScaffoldMessenger.of(context)
               .showSnackBar(SnackBar(content: Text(R.strings.errorWidget)));

@@ -22,7 +22,7 @@ class TripDetailPage extends StatefulWidget {
 
 class _TripDetailPageState extends State<TripDetailPage> {
   final _tripDetailBloc = TripDetailBloc(TripRepository());
-  final _saveTripBloc = SaveTripBloc(TripRepository());
+  final _saveTripBloc   = SaveTripBloc(TripRepository());
   late TripDetailResp _tripDetail;
   ListStatusTrip? selectedListStatusTrip;
   String? _spbNo, _muat, _bongkar;
@@ -426,7 +426,7 @@ class _TripDetailPageState extends State<TripDetailPage> {
                                     });
                               },
                               style: ElevatedButton.styleFrom(
-                                primary: R.colors.greenLogo,
+                                backgroundColor: R.colors.greenLogo,
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(10.0),
                                 ),
@@ -478,7 +478,7 @@ class _TripDetailPageState extends State<TripDetailPage> {
                                 ),
                               ),
                             ),
-                          )
+                          ),
                         ],
                       ),
                     ),
@@ -487,8 +487,24 @@ class _TripDetailPageState extends State<TripDetailPage> {
               ),
             );
           } else if (state is TripDetailError) {
-            ScaffoldMessenger.of(context)
-                .showSnackBar(SnackBar(content: Text(state.message)));
+            return Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Icon(
+                    Icons.error,
+                    color: Colors.red,
+                    size: 50.0,
+                  ),
+                  Text(
+                    state.message,
+                    style: const TextStyle(
+                      fontSize: 14.0,
+                    ),
+                  ),
+                ],
+              ),
+            );
           }
           throw ScaffoldMessenger.of(context)
               .showSnackBar(SnackBar(content: Text(R.strings.errorWidget)));

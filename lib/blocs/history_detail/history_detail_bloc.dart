@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:newbkmmobile/models/history_detail_resp.dart';
@@ -15,7 +17,7 @@ class HistoryDetailBloc extends Bloc<HistoryDetailEvent, HistoryDetailState> {
         try {
           emit(const HistoryDetailLoading());
           final response = await _historyRepository.getHistoryDetail(event.id);
-          emit(HistoryDetailSuccess(HistoryDetailResp.fromJson(response.data)));
+          emit(HistoryDetailSuccess(HistoryDetailResp.fromJson(jsonDecode(response.body))));
         } catch (e) {
           emit(HistoryDetailError(e.toString()));
         }

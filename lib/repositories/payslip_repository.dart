@@ -1,11 +1,22 @@
-import 'package:dio/dio.dart';
-import 'package:newbkmmobile/network/api_base_helper.dart';
+import 'package:newbkmmobile/core/constants.dart';
+import 'package:http/http.dart' as http;
+import 'login_repository.dart';
 
 class PaySlipRepository {
-  final _helper = APIBaseHelper();
 
-  Future<Response> getPaySlip(int month, int year) async {
-    Response response = await _helper.get("finance/payslip?month=$month&year=$year");
+  Future<http.Response> getPaySlip(int month, int year) async {
+    final loginLocal = await LoginRepository().getLoginLocal();
+
+    final response = await http.get(
+      Uri.parse("${Constants.baseUrl}finance/payslip?month=$month&year=$year"),
+      headers: {
+        "Client-Service": "driver-client",
+        "Auth-Key": "bkmrestapi",
+        "Content-Type": "application/x-www-form-urlencoded",
+        "Authorization": loginLocal[0].token,
+        "User-ID": loginLocal[0].userId,
+      },
+    );
 
     return response;
   }

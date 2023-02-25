@@ -112,18 +112,6 @@ class _PaySlipPageState extends State<PaySlipPage> {
                               _paySlipBloc.add(PaySlip(month: selectedDateTime.month, year: selectedDateTime.year));
                             });
                           });
-                          // final selectedPicker = await showMonthYearPicker(
-                          //   context: context,
-                          //   initialDate: selectedDateTime,
-                          //   firstDate: DateTime(2000),
-                          //   lastDate: DateTime(2100),
-                          // );
-                          // if (selectedPicker != null) {
-                          //   setState(() {
-                          //     selectedDateTime = selectedPicker;
-                          //     _paySlipBloc.add(PaySlip(month: selectedDateTime.month, year: selectedDateTime.year));
-                          //   });
-                          // }
                         },
                         child: Card(
                           elevation: 0.0,
@@ -541,7 +529,24 @@ class _PaySlipPageState extends State<PaySlipPage> {
               ],
             );
           } else if (state is PaySlipError) {
-            return Center(child: Text(state.message));
+            return Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Icon(
+                    Icons.error,
+                    color: Colors.red,
+                    size: 50.0,
+                  ),
+                  Text(
+                    state.message,
+                    style: const TextStyle(
+                      fontSize: 14.0,
+                    ),
+                  ),
+                ],
+              ),
+            );
           }
           throw ScaffoldMessenger.of(context)
               .showSnackBar(SnackBar(content: Text(R.strings.errorWidget)));

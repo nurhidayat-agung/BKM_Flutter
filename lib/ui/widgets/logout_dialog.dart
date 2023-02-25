@@ -2,7 +2,10 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:newbkmmobile/blocs/logout/logout_bloc.dart';
 import 'package:newbkmmobile/core/r.dart';
+import 'package:newbkmmobile/repositories/login_form_repository.dart';
 import 'package:newbkmmobile/repositories/login_repository.dart';
 import 'package:newbkmmobile/repositories/user_detail_repository.dart';
 import 'package:newbkmmobile/ui/pages/login/login_page.dart';
@@ -21,6 +24,9 @@ class LogoutDialog extends StatelessWidget {
   }
 
   Widget dialogContent(BuildContext context) {
+    final logoutBloc = LogoutBloc(
+        LoginRepository(), UserDetailRepository(), LoginFormRepository());
+
     return Container(
       margin: const EdgeInsets.only(left: 0.0, right: 0.0),
       child: Stack(
@@ -56,7 +62,44 @@ class LogoutDialog extends StatelessWidget {
                 ) //
                     ),
                 const SizedBox(height: 20.0),
-                buttonLogout(context),
+                BlocProvider(
+                  create: (ctx) => logoutBloc,
+                  child: BlocListener<LogoutBloc, LogoutState>(
+                    listener: (ctx, state) {
+                      if (state is LogoutSuccess) {
+                        Navigator.of(ctx).pop();
+                        Navigator.of(ctx).pushAndRemoveUntil(
+                            MaterialPageRoute(
+                                builder: (ctx) => const LoginPage()),
+                            (route) => false);
+                      } else if (state is LogoutError) {
+                        Navigator.of(ctx).pop();
+                        ScaffoldMessenger.of(ctx).showSnackBar(
+                            SnackBar(content: Text(state.message)));
+                      }
+                    },
+                    child: BlocBuilder<LogoutBloc, LogoutState>(
+                      bloc: logoutBloc,
+                      builder: (ctx, state) {
+                        return logoutButton(context, logoutBloc);
+                        // if (state is LogoutInitial) {
+                        //   return const Center(
+                        //       child: CircularProgressIndicator());
+                        // } else if (state is LogoutLoading) {
+                        //   return const Center(
+                        //       child: CircularProgressIndicator());
+                        // } else if (state is LogoutSuccess) {
+                        //   return logoutButton(context, logoutBloc);
+                        // } else if (state is LogoutError) {
+                        //   return const Center(
+                        //       child: CircularProgressIndicator());
+                        // }
+                        // throw ScaffoldMessenger.of(context).showSnackBar(
+                        //     SnackBar(content: Text(R.strings.errorWidget)));
+                      },
+                    ),
+                  ),
+                ),
               ],
             ),
           ),
@@ -65,11 +108,12 @@ class LogoutDialog extends StatelessWidget {
     );
   }
 
-  Row buttonLogout(BuildContext context) {
-    Future _logout() async {
-      await LoginRepository().deleteAllLoginLocal();
-      await UserDetailRepository().deleteAllUserDetailLocal();
-    }
+  Row logoutButton(BuildContext context, LogoutBloc logoutBloc) {
+    // Future logout() async {
+    //   await LoginRepository().deleteAllLoginLocal();
+    //   await UserDetailRepository().deleteAllUserDetailLocal();
+    //   await LoginFormRepository().deleteAllLoginFormLocal();
+    // }
 
     if (Platform.isIOS) {
       return Row(
@@ -77,16 +121,17 @@ class LogoutDialog extends StatelessWidget {
         children: [
           ElevatedButton(
             onPressed: () {
-              _logout();
-              Navigator.of(context).pushAndRemoveUntil(
-                  MaterialPageRoute(builder: (context) => const LoginPage()),
-                      (route) => false);
+              // logout();
+              // Navigator.of(context).pushAndRemoveUntil(
+              //     MaterialPageRoute(builder: (context) => const LoginPage()),
+              //         (route) => false);
+              logoutBloc.add(Logout());
             },
             style: ElevatedButton.styleFrom(
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(10.0),
               ),
-              primary: R.colors.colorPrimary,
+              backgroundColor: R.colors.colorPrimary,
             ),
             child: Text(
               R.strings.logout.toUpperCase(),
@@ -105,7 +150,7 @@ class LogoutDialog extends StatelessWidget {
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10.0),
                 ),
-                primary: R.colors.colorAccent),
+                backgroundColor: R.colors.colorAccent),
             child: Text(
               R.strings.cancel.toUpperCase(),
               style: const TextStyle(
@@ -123,16 +168,17 @@ class LogoutDialog extends StatelessWidget {
         children: [
           ElevatedButton(
             onPressed: () {
-              _logout();
-              Navigator.of(context).pushAndRemoveUntil(
-                  MaterialPageRoute(builder: (context) => const LoginPage()),
-                      (route) => false);
+              // logout();
+              // Navigator.of(context).pushAndRemoveUntil(
+              //     MaterialPageRoute(builder: (context) => const LoginPage()),
+              //         (route) => false);
+              logoutBloc.add(Logout());
             },
             style: ElevatedButton.styleFrom(
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(10.0),
               ),
-              primary: R.colors.colorPrimary,
+              backgroundColor: R.colors.colorPrimary,
             ),
             child: Text(
               R.strings.logout.toUpperCase(),
@@ -151,7 +197,7 @@ class LogoutDialog extends StatelessWidget {
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10.0),
                 ),
-                primary: R.colors.colorAccent),
+                backgroundColor: R.colors.colorAccent),
             child: Text(
               R.strings.exit.toUpperCase(),
               style: const TextStyle(

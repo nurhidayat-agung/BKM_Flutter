@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:newbkmmobile/blocs/user_detail/user_detail_bloc.dart';
 import 'package:newbkmmobile/core/drawer_item.dart';
 import 'package:newbkmmobile/core/r.dart';
 import 'package:newbkmmobile/repositories/user_detail_repository.dart';
-import 'package:newbkmmobile/ui/pages/change_password/change_password.dart';
+import 'package:newbkmmobile/ui/pages/change_password/change_password_page.dart';
 import 'package:newbkmmobile/ui/widgets/logout_dialog.dart';
 
 import 'home/home_page.dart';
@@ -15,40 +17,18 @@ class DrawerMenuPage extends StatefulWidget {
 }
 
 class _DrawerMenuPageState extends State<DrawerMenuPage> {
-  final listDrawer = [
+  final _userDetailBloc     = UserDetailBloc(UserDetailRepository());
+  final listDrawer          = [
     DrawerItem(R.strings.mainMenu, Icons.home),
     DrawerItem(R.strings.changePassword, Icons.key),
     DrawerItem(R.strings.exit, Icons.logout),
   ];
-
-  String urlPhoto = "";
-  String fullName = "";
-  String phone = "";
-  String dedication = "";
-  int selectedDrawerIndex = 0;
+  int selectedDrawerIndex   = 0;
 
   @override
   void initState() {
     super.initState();
-    _getUserDetail();
-  }
-
-  Future _getUserDetail() async {
-    try {
-      var userDetail = await UserDetailRepository().getUserDetailLocal();
-      if (userDetail.isNotEmpty) {
-        setState(() {
-          fullName = userDetail[0].fullName;
-          phone = userDetail[0].mobileNumber;
-          dedication = userDetail[0].dedication;
-          urlPhoto = userDetail[0].profilImg;
-        });
-      }
-    } catch (e) {
-      if (!mounted) return;
-      ScaffoldMessenger.of(context)
-          .showSnackBar(SnackBar(content: Text(e.toString())));
-    }
+    _userDetailBloc.add(UserDetail());
   }
 
   _getDrawerItemWidget(int pos) {
@@ -58,7 +38,7 @@ class _DrawerMenuPageState extends State<DrawerMenuPage> {
       case 1:
         return const ChangePasswordPage();
       case 2:
-      return const Center();
+        return const Center();
       default:
         return Center(child: Text(R.strings.errorWidget));
     }
@@ -67,7 +47,9 @@ class _DrawerMenuPageState extends State<DrawerMenuPage> {
   _onSelectItem(int index) {
     if (index == 2) {
       Navigator.of(context).pop();
-      showDialog(context: context, builder: (BuildContext context) => const LogoutDialog());
+      showDialog(
+          context: context,
+          builder: (BuildContext context) => const LogoutDialog());
     } else {
       setState(() => selectedDrawerIndex = index);
       Navigator.of(context).pop();
@@ -110,87 +92,125 @@ class _DrawerMenuPageState extends State<DrawerMenuPage> {
         iconTheme: const IconThemeData(color: Colors.white),
       ),
       drawer: Drawer(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: <Widget>[
-            DrawerHeader(
-              margin: EdgeInsets.zero,
-              padding: EdgeInsets.zero,
-              decoration: BoxDecoration(
-                color: R.colors.colorPrimary,
-              ),
-              child: Stack(
+        child: BlocBuilder<UserDetailBloc, UserDetailState>(
+          bloc: _userDetailBloc,
+          builder: (context, state) {
+            if (state is UserDetailInitial) {
+              return const Center(child: CircularProgressIndicator());
+            } else if (state is UserDetailLoading) {
+              return const Center(child: CircularProgressIndicator());
+            } else if (state is UserDetailSuccess) {
+              return Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  Positioned(
-                    bottom: 15.0,
-                    left: 15.0,
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      crossAxisAlignment: CrossAxisAlignment.start,
+                  DrawerHeader(
+                    margin: EdgeInsets.zero,
+                    padding: EdgeInsets.zero,
+                    decoration: BoxDecoration(
+                      color: R.colors.colorPrimary,
+                    ),
+                    child: Stack(
                       children: [
-                        SizedBox(
-                          child: Card(
-                            color: Colors.white,
-                            elevation: 0.0,
-                            shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(100.0)),
-                            child: Container(
-                              height: 70.0,
-                              width: 70.0,
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(100.0),
-                                image: DecorationImage(
-                                  image: NetworkImage(urlPhoto),
-                                  onError: (error, stackTrace) =>
-                                      const Text(""),
-                                  fit: BoxFit.cover,
+                        Positioned(
+                          bottom: 15.0,
+                          left: 15.0,
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              SizedBox(
+                                child: Card(
+                                  color: Colors.white,
+                                  elevation: 0.0,
+                                  shape: RoundedRectangleBorder(
+                                      borderRadius:
+                                          BorderRadius.circular(100.0)),
+                                  child: Container(
+                                    height: 70.0,
+                                    width: 70.0,
+                                    decoration: BoxDecoration(
+                                      borderRadius:
+                                          BorderRadius.circular(100.0),
+                                      image: DecorationImage(
+                                        image: NetworkImage(state
+                                            .listUserDetailLocal[0].profilImg),
+                                        onError: (error, stackTrace) =>
+                                            const Text(""),
+                                        fit: BoxFit.cover,
+                                      ),
+                                    ),
+                                  ),
                                 ),
                               ),
-                            ),
-                          ),
-                        ),
-                        const SizedBox(height: 5.0),
-                        Container(
-                          margin: const EdgeInsets.only(left: 5.0, right: 10.0),
-                          child: Text(
-                            fullName,
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontSize: 14.0,
-                            ),
-                          ),
-                        ),
-                        const SizedBox(height: 5.0),
-                        Container(
-                          margin: const EdgeInsets.only(left: 5.0, right: 10.0),
-                          child: Text(
-                            phone,
-                            style: TextStyle(
-                              color: Colors.grey[350]!,
-                              fontSize: 14.0,
-                            ),
-                          ),
-                        ),
-                        const SizedBox(height: 5.0),
-                        Container(
-                          margin: const EdgeInsets.only(left: 5.0, right: 10.0),
-                          child: Text(
-                            "${R.strings.pengabdian} : $dedication",
-                            style: TextStyle(
-                              color: Colors.grey[350]!,
-                              fontSize: 14.0,
-                            ),
+                              const SizedBox(height: 5.0),
+                              Container(
+                                margin: const EdgeInsets.only(
+                                    left: 5.0, right: 10.0),
+                                child: Text(
+                                  state.listUserDetailLocal[0].fullName,
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 14.0,
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(height: 5.0),
+                              Container(
+                                margin: const EdgeInsets.only(
+                                    left: 5.0, right: 10.0),
+                                child: Text(
+                                  state.listUserDetailLocal[0].mobileNumber,
+                                  style: TextStyle(
+                                    color: Colors.grey[350]!,
+                                    fontSize: 14.0,
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(height: 5.0),
+                              Container(
+                                margin: const EdgeInsets.only(
+                                    left: 5.0, right: 10.0),
+                                child: Text(
+                                  "${R.strings.pengabdian} : ${state.listUserDetailLocal[0].dedication}",
+                                  style: TextStyle(
+                                    color: Colors.grey[350]!,
+                                    fontSize: 14.0,
+                                  ),
+                                ),
+                              ),
+                            ],
                           ),
                         ),
                       ],
                     ),
                   ),
+                  Column(children: listDrawerOptions),
                 ],
-              ),
-            ),
-            Column(children: listDrawerOptions),
-          ],
+              );
+            } else if (state is UserDetailError) {
+              return Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Icon(
+                      Icons.error,
+                      color: Colors.red,
+                      size: 50.0,
+                    ),
+                    Text(
+                      state.message,
+                      style: const TextStyle(
+                        fontSize: 14.0,
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            }
+            throw ScaffoldMessenger.of(context)
+                .showSnackBar(SnackBar(content: Text(R.strings.errorWidget)));
+          },
         ),
       ),
       body: _getDrawerItemWidget(selectedDrawerIndex),

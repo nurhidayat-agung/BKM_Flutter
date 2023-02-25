@@ -3,6 +3,7 @@ class Constants {
   static String key               = "bkmmobilekey";
   static String boxLogin          = "login";
   static String boxUserDetail     = "user_detail";
+  static String boxLoginForm      = "login_form";
 
   static String userId            = "user_id";
   static String token             = "token";

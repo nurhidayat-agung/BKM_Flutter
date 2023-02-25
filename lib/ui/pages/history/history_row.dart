@@ -1,5 +1,3 @@
-import 'dart:ffi';
-
 import 'package:flutter/material.dart';
 import 'package:newbkmmobile/core/convert_date.dart';
 import 'package:newbkmmobile/core/r.dart';
@@ -7,10 +5,10 @@ import 'package:newbkmmobile/models/history_resp.dart';
 import 'package:newbkmmobile/ui/pages/history/history_detail_page.dart';
 
 class HistoryRow extends StatefulWidget {
-  const HistoryRow({Key? key, required this.index, required this.history, required this.historyBefore}) : super(key: key);
+  const HistoryRow({Key? key, required this.index, required this.historyResp, required this.historyRespBefore}) : super(key: key);
   final int index;
-  final HistoryResp history;
-  final HistoryResp historyBefore;
+  final HistoryResp historyResp;
+  final HistoryResp historyRespBefore;
 
   @override
   State<HistoryRow> createState() => _HistoryRowState();
@@ -20,16 +18,16 @@ class _HistoryRowState extends State<HistoryRow> {
   final _convertDate = ConvertDate();
 
   _getAllDoNumber() {
-    if (widget.history.doConnect != null) {
-      var id1 = int.parse(widget.history.id ?? "0");
-      var id2 = int.parse(widget.history.doConnect?.id ?? "0");
+    if (widget.historyResp.doConnect != null) {
+      var id1 = int.parse(widget.historyResp.id ?? "0");
+      var id2 = int.parse(widget.historyResp.doConnect?.id ?? "0");
       if (id1 > id2) {
-        return "${widget.history.doConnect?.doNumber?.substring(0, 4)} & ${widget.history.doNumber!}";
+        return "${widget.historyResp.doConnect?.doNumber?.substring(0, 4)} & ${widget.historyResp.doNumber!}";
       } else {
-        return "${widget.history.doNumber?.substring(0, 4)} & ${widget.history.doConnect?.doNumber!}";
+        return "${widget.historyResp.doNumber?.substring(0, 4)} & ${widget.historyResp.doConnect?.doNumber!}";
       }
     } else {
-        return widget.history.doNumber ?? "";
+        return widget.historyResp.doNumber ?? "";
     }
   }
 
@@ -41,7 +39,7 @@ class _HistoryRowState extends State<HistoryRow> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Visibility(
-            visible: widget.index == 0 || _convertDate.convertToMMMMyyyy(widget.history.loadDate ?? "") != _convertDate.convertToMMMMyyyy(widget.historyBefore.loadDate ?? "") ? true : false,
+            visible: widget.index == 0 || _convertDate.convertToMMMMyyyy(widget.historyResp.loadDate ?? "") != _convertDate.convertToMMMMyyyy(widget.historyRespBefore.loadDate ?? "") ? true : false,
             child: Padding(
               padding: const EdgeInsets.only(
                 left: 8.0,
@@ -50,7 +48,7 @@ class _HistoryRowState extends State<HistoryRow> {
                 bottom: 2.0,
               ),
               child: Text(
-                _convertDate.convertToMMMMyyyy(widget.history.loadDate ?? ""),
+                _convertDate.convertToMMMMyyyy(widget.historyResp.loadDate ?? ""),
                 style: TextStyle(
                   color: R.colors.colorText,
                   fontSize: 16.0,
@@ -63,7 +61,7 @@ class _HistoryRowState extends State<HistoryRow> {
             onTap: () {
               Navigator.of(context).push(MaterialPageRoute(
                   builder: (context) =>
-                      HistoryDetailPage(id: widget.history.id ?? "")
+                      HistoryDetailPage(id: widget.historyResp.id ?? "")
               ));
             },
             child: Card(
@@ -84,7 +82,7 @@ class _HistoryRowState extends State<HistoryRow> {
                     ),
                     const SizedBox(height: 5.0),
                     Text(
-                      "${_convertDate.convertToddMMMyyyy1(widget.history.loadDate!)} - ${_convertDate.convertToddMMMyyyy1(widget.history.unloadDate!)}",
+                      "${_convertDate.convertToddMMMyyyy1(widget.historyResp.loadDate!)} - ${_convertDate.convertToddMMMyyyy1(widget.historyResp.unloadDate!)}",
                       style: const TextStyle(
                         color: Colors.grey,
                         fontSize: 12.0,
@@ -107,7 +105,7 @@ class _HistoryRowState extends State<HistoryRow> {
                             ),
                             children: [
                               TextSpan(
-                                text: widget.history.pksName,
+                                text: widget.historyResp.pksName,
                                 style: TextStyle(
                                   color: R.colors.colorTextLight,
                                 ),
@@ -123,7 +121,7 @@ class _HistoryRowState extends State<HistoryRow> {
                                 ),
                               ),
                               TextSpan(
-                                  text: widget.history.destinationName,
+                                  text: widget.historyResp.destinationName,
                                   style: TextStyle(
                                     color: R.colors.colorTextLight,
                                   ),

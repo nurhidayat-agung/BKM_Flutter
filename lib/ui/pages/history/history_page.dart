@@ -38,15 +38,15 @@ class _HistoryPageState extends State<HistoryPage> {
             } else if (state is HistoryLoading) {
               return const Center(child: CircularProgressIndicator());
             } else if (state is HistorySuccess) {
-              if (state.listHistory.isNotEmpty) {
+              if (state.listHistoryResp.isNotEmpty) {
                 return ListView.builder(
-                    itemCount: state.listHistory.length,
+                    itemCount: state.listHistoryResp.length,
                     itemBuilder: (BuildContext context, int index) {
                       if (index == 0) {
                         return HistoryRow(
                           index: index,
-                          history: state.listHistory[index],
-                          historyBefore: HistoryResp(
+                          historyResp: state.listHistoryResp[index],
+                          historyRespBefore: HistoryResp(
                             id: "",
                             doConnect: null,
                             doNumber: "",
@@ -64,8 +64,8 @@ class _HistoryPageState extends State<HistoryPage> {
                       } else {
                         return HistoryRow(
                           index: index,
-                          history: state.listHistory[index],
-                          historyBefore: state.listHistory[index-1],
+                          historyResp: state.listHistoryResp[index],
+                          historyRespBefore: state.listHistoryResp[index-1],
                         );
                       }
                     }
@@ -90,8 +90,24 @@ class _HistoryPageState extends State<HistoryPage> {
                 );
               }
             } else if (state is HistoryError) {
-              ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                  content: Text(state.message)));
+              return Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Icon(
+                      Icons.error,
+                      color: Colors.red,
+                      size: 50.0,
+                    ),
+                    Text(
+                      state.message,
+                      style: const TextStyle(
+                        fontSize: 14.0,
+                      ),
+                    ),
+                  ],
+                ),
+              );
             }
             throw ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                 content: Text(R.strings.errorWidget)));

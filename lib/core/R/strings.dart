@@ -10,11 +10,12 @@ class Strings {
 
   //loading
   String loadingGetData           = "Mengambil Data Dari Server...";
+  String loadingSendData          = "Mengirim Data Ke Server...";
 
   //login
   String titleUsername            = "User Name";
   String titlePassword            = "Password";
-  String msgFormNotComplete       = "Mohon lengkapi semua data";
+  String msgFormNotComplete       = "Mohon lengkapi semua data.";
   String ok                       = "OK";
   String titleLogin               = "Login";
 
@@ -28,15 +29,23 @@ class Strings {
   String menuSalary               = "Slip Gaji";
   String menuWorkshop             = "Workshops";
   String menuService              = "Buku Servis";
-  String menuPart                 = "Penggantian Part";
+  String menuPart                 = "Pergantian Part";
   String menuHelp                 = "Bantuan";
 
   //title page
-  String titleTripPage            = "Perjalanan";
-  String titleTripDetailPage      = "Detail Perjalanan";
-  String titleHistoryPage         = "Riwayat Perjalanan";
-  String titleHistoryDetailPage   = "Detail Riwayat";
-  String titlePaySlipPage         = "Slip Gaji";
+  String titleTripPage                      = "Perjalanan";
+  String titleTripDetailPage                = "Detail Perjalanan";
+  String titleHistoryPage                   = "Riwayat Perjalanan";
+  String titleHistoryDetailPage             = "Detail Riwayat";
+  String titlePaySlipPage                   = "Slip Gaji";
+  String titleWorkshopPage                  = "Workshops";
+  String titleServiceBookPage               = "Buku Servis";
+  String titleServiceBookDetailPage         = "Detail Buku Servis";
+  String titleServicePartPage               = "Pergantian Part";
+  String titleReplacementPartHistoryPage    = "Riwayat Pergantian Part";
+  String titleHelpPage                      = "Bantuan";
+  String titleHelpDetailPage                = "Detail Bantuan";
+  String titleChangePasswordPage            = "Ganti Password";
 
   //global string
   String pengabdian               = "Pengabdian";
@@ -91,6 +100,26 @@ class Strings {
   String sisaHutangYTD            = "Sisa Hutang YTD";
   String sisaPinjamanYTD          = "Sisa Pinjaman YTD";
   String nettoGaji                = "Netto Gaji";
+  String tglServis                = "Tanggal Servis";
+  String kmServis                 = "KM Servis";
+  String aktualKmServis           = "Aktual KM Servis";
+  String keterangan               = "Keterangan";
+  String cariNamaPart             = "Cari Nama Part";
+  String namaPart                 = "Nama Part";
+  String kodePart                 = "Kode Part";
+  String nomor                    = "No.";
+  String merkPart                 = "Merk Part";
+  String pemohon                  = "Pemohon";
+  String tglGanti                 = "Tanggal Ganti";
+  String umur                     = "Umur (hari)";
+  String gantiPassword            = "Ganti Password";
+  String petunjukPenggunaan       = "Petunjuk Penggunaan";
+  String descChangePassword       = "Masukkan password lama kemudian password baru.";
+  String titleOldPassword         = "Password lama";
+  String titleNewPassword         = "Password baru";
+  String titleConfirmPassword     = "Konfirmasi password";
+  String submit                   = "Submit";
+  String msgConfirmChangePassword = "Apakah Anda yakin ingin mengganti password?";
 
   //error message
   String errorWidget              = "Error create widget";

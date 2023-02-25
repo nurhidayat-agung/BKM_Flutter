@@ -1,4 +1,4 @@
-import 'dart:async';
+import 'dart:convert';
 
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
@@ -17,8 +17,8 @@ class PaySlipBloc extends Bloc<PaySlipEvent, PaySlipState> {
         try {
           emit(const PaySlipLoading());
           final response = await _paySlipRepository.getPaySlip(event.month, event.year);
-          if (response.data != null) {
-            emit(PaySlipSuccess(PaySlipResp.fromJson(response.data)));
+          if (jsonDecode(response.body) != null) {
+            emit(PaySlipSuccess(PaySlipResp.fromJson(jsonDecode(response.body))));
           } else {
             emit(PaySlipSuccess(PaySlipResp()));
           }

@@ -16,10 +16,10 @@ class TripLoading extends TripState {
 }
 
 class TripSuccess extends TripState {
-  final List<TripResp> listTrip;
-  const TripSuccess(this.listTrip);
+  final List<TripResp> listTripResp;
+  const TripSuccess(this.listTripResp);
   @override
-  List<Object> get props => [listTrip];
+  List<Object> get props => [listTripResp];
 }
 
 class TripError extends TripState {
