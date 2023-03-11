@@ -16,15 +16,14 @@ class ChangePasswordPage extends StatefulWidget {
 }
 
 class _ChangePasswordPageState extends State<ChangePasswordPage> {
-  final _loginFormBloc = LoginFormBloc(LoginFormRepository());
-  final _changePasswordBloc =
-      ChangePasswordBloc(LoginFormRepository(), ChangePasswordRepository());
-  final _oldPasswordController = TextEditingController();
-  final _newPasswordController = TextEditingController();
-  final _confirmPasswordController = TextEditingController();
-  bool _isHiddenOldPassword = true;
-  bool _isHiddenNewPassword = true;
-  bool _isHiddenConfirmPassword = true;
+  final _loginFormBloc              = LoginFormBloc(LoginFormRepository());
+  final _changePasswordBloc         = ChangePasswordBloc(LoginFormRepository(), ChangePasswordRepository());
+  final _oldPasswordController      = TextEditingController();
+  final _newPasswordController      = TextEditingController();
+  final _confirmPasswordController  = TextEditingController();
+  bool _isHiddenOldPassword         = true;
+  bool _isHiddenNewPassword         = true;
+  bool _isHiddenConfirmPassword     = true;
 
   @override
   void initState() {
@@ -295,7 +294,7 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
                             child: Text(
                               R.strings.submit.toUpperCase(),
                               style: const TextStyle(
-                                fontSize: 16.0,
+                                fontSize: 20.0,
                               ),
                             ),
                           ),

@@ -10,16 +10,15 @@ class UserDetailInitial extends UserDetailState {
 }
 
 class UserDetailLoading extends UserDetailState {
-  const UserDetailLoading();
   @override
   List<Object> get props => [];
 }
 
 class UserDetailSuccess extends UserDetailState {
-  final List<UserDetailLocal> listUserDetailLocal;
-  const UserDetailSuccess(this.listUserDetailLocal);
+  final UserDetailResp userDetailResp;
+  const UserDetailSuccess(this.userDetailResp);
   @override
-  List<Object> get props => [listUserDetailLocal];
+  List<Object> get props => [userDetailResp];
 }
 
 class UserDetailError extends UserDetailState {

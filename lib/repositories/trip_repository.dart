@@ -2,8 +2,8 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:newbkmmobile/core/constants.dart';
+import 'package:newbkmmobile/repositories/login_repository.dart';
 import 'package:http/http.dart' as http;
-import 'login_repository.dart';
 
 class TripRepository {
 
@@ -66,9 +66,9 @@ class TripRepository {
 
     request.files.add(http.MultipartFile(
         "spb_img",
-        spbImg!.readAsBytes().asStream(),
-        spbImg!.lengthSync(),
-        filename: spbImg!.path.split("/").last,
+        spbImg.readAsBytes().asStream(),
+        spbImg.lengthSync(),
+        filename: spbImg.path.split("/").last,
     ));
 
     var response = await request.send();

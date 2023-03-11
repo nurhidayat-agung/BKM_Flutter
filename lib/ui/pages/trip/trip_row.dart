@@ -14,7 +14,7 @@ class _TripRowState extends State<TripRow> {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.all(8.0),
+      padding: const EdgeInsets.symmetric(horizontal: 8.0),
       child: Card(
         elevation: 0.0,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6.0)),

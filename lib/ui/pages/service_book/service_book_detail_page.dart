@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:newbkmmobile/core/convert_date.dart';
 import 'package:newbkmmobile/core/r.dart';
 import 'package:newbkmmobile/models/service_book_resp.dart';
-import 'package:newbkmmobile/ui/widgets/pair_horizontal_text.dart';
+import 'package:newbkmmobile/ui/widgets/space_between_horizontal_text.dart';
 
 class ServiceBookDetailPage extends StatefulWidget {
   const ServiceBookDetailPage({Key? key, required this.dataServiceBook}) : super(key: key);
@@ -32,7 +32,7 @@ class _ServiceBookDetailPageState extends State<ServiceBookDetailPage> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const SizedBox(height: 8.0),
-              PairHorizontalText(
+              SpaceBetweenHorizontalText(
                 title: R.strings.tglServis,
                 content: "${_convertDate.convertToddMMMyyyy1(widget.dataServiceBook.serviceDate!)}",
                 colorTitle: R.colors.colorText,
@@ -43,7 +43,7 @@ class _ServiceBookDetailPageState extends State<ServiceBookDetailPage> {
                 fontWeightContent: FontWeight.bold,
               ),
               const SizedBox(height: 18.0),
-              PairHorizontalText(
+              SpaceBetweenHorizontalText(
                 title: R.strings.kmServis,
                 content: "${widget.dataServiceBook.km}",
                 colorTitle: R.colors.colorText,
@@ -54,7 +54,7 @@ class _ServiceBookDetailPageState extends State<ServiceBookDetailPage> {
                 fontWeightContent: FontWeight.bold,
               ),
               const SizedBox(height: 18.0),
-              PairHorizontalText(
+              SpaceBetweenHorizontalText(
                 title: R.strings.aktualKmServis,
                 content: "${widget.dataServiceBook.actualKm}",
                 colorTitle: R.colors.colorText,
@@ -65,7 +65,7 @@ class _ServiceBookDetailPageState extends State<ServiceBookDetailPage> {
                 fontWeightContent: FontWeight.bold,
               ),
               const SizedBox(height: 18.0),
-              PairHorizontalText(
+              SpaceBetweenHorizontalText(
                 title: R.strings.keterangan,
                 content: "${widget.dataServiceBook.description}",
                 colorTitle: R.colors.colorText,

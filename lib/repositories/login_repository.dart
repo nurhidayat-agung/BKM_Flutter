@@ -34,7 +34,7 @@ class LoginRepository {
   }
 
   Future<http.Response> login(String username, String password) async {
-    var map = <String, dynamic>{};
+    var map         = <String, dynamic>{};
     map['username'] = username;
     map['password'] = password;
 

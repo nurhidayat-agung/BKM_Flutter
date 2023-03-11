@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-class PairHorizontalText extends StatelessWidget {
-  const PairHorizontalText(
+class SpaceBetweenHorizontalText extends StatelessWidget {
+  const SpaceBetweenHorizontalText(
       {Key? key,
       required this.title,
       required this.content,

@@ -5,7 +5,7 @@ import 'package:newbkmmobile/core/r.dart';
 import 'package:newbkmmobile/models/service_part_resp.dart';
 import 'package:newbkmmobile/repositories/service_part_repository.dart';
 import 'package:newbkmmobile/ui/pages/service_part/replacement_part_history_row.dart';
-import 'package:newbkmmobile/ui/widgets/pair_horizontal_text.dart';
+import 'package:newbkmmobile/ui/widgets/space_between_horizontal_text.dart';
 
 class ReplacementPartHistoryPage extends StatefulWidget {
   const ReplacementPartHistoryPage({Key? key, required this.dataServicePart}) : super(key: key);
@@ -51,7 +51,7 @@ class _ReplacementPartHistoryPageState
                     const SizedBox(height: 18.0),
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 12.0),
-                      child: PairHorizontalText(
+                      child: SpaceBetweenHorizontalText(
                         title: R.strings.namaPart,
                         content: widget.dataServicePart.itemName ?? "",
                         colorTitle: R.colors.colorText,
@@ -65,7 +65,7 @@ class _ReplacementPartHistoryPageState
                     const SizedBox(height: 18.0),
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 12.0),
-                      child: PairHorizontalText(
+                      child: SpaceBetweenHorizontalText(
                         title: R.strings.kodePart,
                         content: widget.dataServicePart.itemCode ?? "",
                         colorTitle: R.colors.colorText,
@@ -101,7 +101,7 @@ class _ReplacementPartHistoryPageState
                     const SizedBox(height: 18.0),
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 12.0),
-                      child: PairHorizontalText(
+                      child: SpaceBetweenHorizontalText(
                         title: R.strings.namaPart,
                         content: widget.dataServicePart.itemName ?? "",
                         colorTitle: R.colors.colorText,
@@ -115,7 +115,7 @@ class _ReplacementPartHistoryPageState
                     const SizedBox(height: 18.0),
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 12.0),
-                      child: PairHorizontalText(
+                      child: SpaceBetweenHorizontalText(
                         title: R.strings.kodePart,
                         content: widget.dataServicePart.itemCode ?? "",
                         colorTitle: R.colors.colorText,

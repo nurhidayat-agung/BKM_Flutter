@@ -19,7 +19,7 @@ class LoginSuccess extends LoginState {
   final LoginResp loginResp;
   const LoginSuccess(this.loginResp);
   @override
-  List<Object> get props => [LoginResp];
+  List<Object> get props => [loginResp];
 }
 
 class LoginError extends LoginState {

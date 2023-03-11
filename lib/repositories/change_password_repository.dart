@@ -1,15 +1,15 @@
 import 'package:newbkmmobile/core/constants.dart';
-import 'package:http/http.dart' as http;
 import 'package:newbkmmobile/repositories/login_repository.dart';
+import 'package:http/http.dart' as http;
 
 class ChangePasswordRepository {
 
   Future<http.Response> changePassword(String oldPassword, String newPassword, String confirmPassword) async {
     final loginLocal = await LoginRepository().getLoginLocal();
 
-    var map = <String, dynamic>{};
-    map['password'] = oldPassword;
-    map['password_new'] = newPassword;
+    var map                 = <String, dynamic>{};
+    map['password']         = oldPassword;
+    map['password_new']     = newPassword;
     map['password_confirm'] = confirmPassword;
 
     final response = await http.post(

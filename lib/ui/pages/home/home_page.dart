@@ -11,6 +11,7 @@ import 'package:newbkmmobile/ui/pages/payslip/payslip_page.dart';
 import 'package:newbkmmobile/ui/pages/service_book/service_book_page.dart';
 import 'package:newbkmmobile/ui/pages/service_part/service_part_page.dart';
 import 'package:newbkmmobile/ui/pages/trip/trip_page.dart';
+import 'package:newbkmmobile/ui/pages/workshop/workshop_page.dart';
 import 'package:newbkmmobile/ui/widgets/banner_slider.dart';
 
 class HomePage extends StatefulWidget {
@@ -28,7 +29,7 @@ class _HomePageState extends State<HomePage> {
     GridItem(title: R.strings.menuTrip, image: AssetImage(R.assets.menuTrip), color: Colors.deepPurple[300]!, widget: const TripPage()),
     GridItem(title: R.strings.menuHistory, image: AssetImage(R.assets.menuHistory), color: Colors.lightBlue[500]!, widget: const HistoryPage()),
     GridItem(title: R.strings.menuSalary, image: AssetImage(R.assets.menuSalary), color: Colors.green[600]!, widget: const PaySlipPage()),
-    GridItem(title: R.strings.menuWorkshop, image: AssetImage(R.assets.menuWorkshop), color: Colors.orange[800]!, widget: const TripPage()),
+    GridItem(title: R.strings.menuWorkshop, image: AssetImage(R.assets.menuWorkshop), color: Colors.orange[800]!, widget: const WorkshopPage()),
     GridItem(title: R.strings.menuService, image: AssetImage(R.assets.menuService), color: Colors.red[700]!, widget: const ServiceBookPage()),
     GridItem(title: R.strings.menuPart, image: AssetImage(R.assets.menuPart), color: Colors.teal[600]!, widget: const ServicePartPage()),
     GridItem(title: R.strings.menuHelp, image: AssetImage(R.assets.menuHelp), color: Colors.brown[400]!, widget: const HelpPage()),
@@ -54,10 +55,11 @@ class _HomePageState extends State<HomePage> {
               } else if (state is UserDetailLoading) {
                 return const Center(child: CircularProgressIndicator());
               } else if (state is UserDetailSuccess) {
-                if (state.listUserDetailLocal[0].numberOfTrip.isNotEmpty && int.parse(state.listUserDetailLocal[0].numberOfTrip) > 0) {
-                  numberOfTrip = int.parse(state.listUserDetailLocal[0].numberOfTrip);
+                final userDetailLocal = state.userDetailResp.toLocal();
+                if (userDetailLocal.numberOfTrip.isNotEmpty && int.parse(userDetailLocal.numberOfTrip) > 0) {
+                  numberOfTrip = int.parse(state.userDetailResp.numberOfTrip!);
                 }
-                final listAnnouncement = state.listUserDetailLocal[0].announcement;
+                final listAnnouncement = userDetailLocal.announcement;
                 if (listAnnouncement.isNotEmpty) {
                   return Column(
                       mainAxisAlignment: MainAxisAlignment.center,

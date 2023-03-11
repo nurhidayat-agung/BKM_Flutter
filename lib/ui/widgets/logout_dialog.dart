@@ -82,20 +82,6 @@ class LogoutDialog extends StatelessWidget {
                       bloc: logoutBloc,
                       builder: (ctx, state) {
                         return logoutButton(context, logoutBloc);
-                        // if (state is LogoutInitial) {
-                        //   return const Center(
-                        //       child: CircularProgressIndicator());
-                        // } else if (state is LogoutLoading) {
-                        //   return const Center(
-                        //       child: CircularProgressIndicator());
-                        // } else if (state is LogoutSuccess) {
-                        //   return logoutButton(context, logoutBloc);
-                        // } else if (state is LogoutError) {
-                        //   return const Center(
-                        //       child: CircularProgressIndicator());
-                        // }
-                        // throw ScaffoldMessenger.of(context).showSnackBar(
-                        //     SnackBar(content: Text(R.strings.errorWidget)));
                       },
                     ),
                   ),
@@ -109,22 +95,12 @@ class LogoutDialog extends StatelessWidget {
   }
 
   Row logoutButton(BuildContext context, LogoutBloc logoutBloc) {
-    // Future logout() async {
-    //   await LoginRepository().deleteAllLoginLocal();
-    //   await UserDetailRepository().deleteAllUserDetailLocal();
-    //   await LoginFormRepository().deleteAllLoginFormLocal();
-    // }
-
     if (Platform.isIOS) {
       return Row(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
           ElevatedButton(
             onPressed: () {
-              // logout();
-              // Navigator.of(context).pushAndRemoveUntil(
-              //     MaterialPageRoute(builder: (context) => const LoginPage()),
-              //         (route) => false);
               logoutBloc.add(Logout());
             },
             style: ElevatedButton.styleFrom(
@@ -168,10 +144,6 @@ class LogoutDialog extends StatelessWidget {
         children: [
           ElevatedButton(
             onPressed: () {
-              // logout();
-              // Navigator.of(context).pushAndRemoveUntil(
-              //     MaterialPageRoute(builder: (context) => const LoginPage()),
-              //         (route) => false);
               logoutBloc.add(Logout());
             },
             style: ElevatedButton.styleFrom(

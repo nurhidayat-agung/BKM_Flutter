@@ -19,7 +19,7 @@ class SaveTripSuccess extends SaveTripState {
   final DebugResp debugResp;
   const SaveTripSuccess(this.debugResp);
   @override
-  List<Object> get props => [DebugResp];
+  List<Object> get props => [debugResp];
 }
 
 class SaveTripError extends SaveTripState {

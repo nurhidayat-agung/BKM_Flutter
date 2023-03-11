@@ -100,6 +100,21 @@ class Strings {
   String sisaHutangYTD            = "Sisa Hutang YTD";
   String sisaPinjamanYTD          = "Sisa Pinjaman YTD";
   String nettoGaji                = "Netto Gaji";
+  String daftarPerbaikan          = "Daftar Perbaikan";
+  String titleFormWorkshop        = "Alasan Masuk Bengkel";
+  String daftar                   = "Daftar";
+  String antrian                  = "Antrian";
+  String riwayat                  = "Riwayat";
+  String kodePend                 = "Kode Pend.";
+  String namaDriver               = "Nama Driver";
+  String noPol                    = "No Pol.";
+  String tglPend                  = "Tgl Pend.";
+  String tglMasuk                 = "Tgl Masuk";
+  String tglKeluar                = "Tgl Keluar";
+  String kendala                  = "Kendala";
+  String deskripsi                = "Deskripsi";
+  String status                   = "Status";
+  String daftarBarang             = "Daftar Barang";
   String tglServis                = "Tanggal Servis";
   String kmServis                 = "KM Servis";
   String aktualKmServis           = "Aktual KM Servis";
@@ -120,6 +135,7 @@ class Strings {
   String titleConfirmPassword     = "Konfirmasi password";
   String submit                   = "Submit";
   String msgConfirmChangePassword = "Apakah Anda yakin ingin mengganti password?";
+  String colon                    = ":";
 
   //error message
   String errorWidget              = "Error create widget";

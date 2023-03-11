@@ -5,6 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:newbkmmobile/blocs/check_login/check_login_bloc.dart';
 import 'package:newbkmmobile/core/r.dart';
 import 'package:newbkmmobile/repositories/login_repository.dart';
+import 'package:newbkmmobile/repositories/user_detail_repository.dart';
 import 'package:newbkmmobile/ui/pages/drawer_menu_page.dart';
 import 'package:newbkmmobile/ui/pages/login/login_page.dart';
 
@@ -16,14 +17,11 @@ class SplashPage extends StatefulWidget {
 }
 
 class _SplashPageState extends State<SplashPage> {
-  final _checkLoginBloc = CheckLoginBloc(LoginRepository());
+  final _checkLoginBloc = CheckLoginBloc(LoginRepository(), UserDetailRepository());
 
   @override
   initState() {
     super.initState();
-    // Timer(const Duration(seconds: 2), () {
-    //   _checkLoginBloc.add(CheckLogin());
-    // });
     _checkLoginBloc.add(CheckLogin());
   }
 

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:newbkmmobile/blocs/user_detail/user_detail_bloc.dart';
+import 'package:newbkmmobile/blocs/user_detail_local/user_detail_local_bloc.dart';
 import 'package:newbkmmobile/core/drawer_item.dart';
 import 'package:newbkmmobile/core/r.dart';
 import 'package:newbkmmobile/repositories/user_detail_repository.dart';
@@ -17,18 +17,18 @@ class DrawerMenuPage extends StatefulWidget {
 }
 
 class _DrawerMenuPageState extends State<DrawerMenuPage> {
-  final _userDetailBloc     = UserDetailBloc(UserDetailRepository());
-  final listDrawer          = [
+  final _userDetailLocalBloc  = UserDetailLocalBloc(UserDetailRepository());
+  final listDrawer            = [
     DrawerItem(R.strings.mainMenu, Icons.home),
     DrawerItem(R.strings.changePassword, Icons.key),
     DrawerItem(R.strings.exit, Icons.logout),
   ];
-  int selectedDrawerIndex   = 0;
+  int selectedDrawerIndex     = 0;
 
   @override
   void initState() {
     super.initState();
-    _userDetailBloc.add(UserDetail());
+    _userDetailLocalBloc.add(UserDetailLocalFromDB());
   }
 
   _getDrawerItemWidget(int pos) {
@@ -92,14 +92,14 @@ class _DrawerMenuPageState extends State<DrawerMenuPage> {
         iconTheme: const IconThemeData(color: Colors.white),
       ),
       drawer: Drawer(
-        child: BlocBuilder<UserDetailBloc, UserDetailState>(
-          bloc: _userDetailBloc,
+        child: BlocBuilder<UserDetailLocalBloc, UserDetailLocalState>(
+          bloc: _userDetailLocalBloc,
           builder: (context, state) {
-            if (state is UserDetailInitial) {
+            if (state is UserDetailLocalInitial) {
               return const Center(child: CircularProgressIndicator());
-            } else if (state is UserDetailLoading) {
+            } else if (state is UserDetailLocalLoading) {
               return const Center(child: CircularProgressIndicator());
-            } else if (state is UserDetailSuccess) {
+            } else if (state is UserDetailLocalFromDBSuccess) {
               return Column(
                 mainAxisAlignment: MainAxisAlignment.start,
                 crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -188,7 +188,7 @@ class _DrawerMenuPageState extends State<DrawerMenuPage> {
                   Column(children: listDrawerOptions),
                 ],
               );
-            } else if (state is UserDetailError) {
+            } else if (state is UserDetailLocalError) {
               return Center(
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,

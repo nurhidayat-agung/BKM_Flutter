@@ -19,7 +19,7 @@ class HistoryDetailSuccess extends HistoryDetailState {
   final HistoryDetailResp historyDetailResp;
   const HistoryDetailSuccess(this.historyDetailResp);
   @override
-  List<Object> get props => [HistoryDetailResp];
+  List<Object> get props => [historyDetailResp];
 }
 
 class HistoryDetailError extends HistoryDetailState {

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:newbkmmobile/core/convert_date.dart';
 import 'package:newbkmmobile/core/r.dart';
 import 'package:newbkmmobile/models/replacement_part_history_resp.dart';
-import 'package:newbkmmobile/ui/widgets/pair_horizontal_text.dart';
+import 'package:newbkmmobile/ui/widgets/space_between_horizontal_text.dart';
 
 class ReplacementPartHistoryRow extends StatefulWidget {
   const ReplacementPartHistoryRow({Key? key, required this.index, required this.dataReplacementPartHistory}) : super(key: key);
@@ -27,7 +27,7 @@ class _ReplacementPartHistoryRowState extends State<ReplacementPartHistoryRow> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const SizedBox(height: 8.0),
-            PairHorizontalText(
+            SpaceBetweenHorizontalText(
               title: R.strings.nomor,
               content: "${widget.dataReplacementPartHistory.transactionCode}",
               colorTitle: R.colors.colorText,
@@ -38,7 +38,7 @@ class _ReplacementPartHistoryRowState extends State<ReplacementPartHistoryRow> {
               fontWeightContent: FontWeight.bold,
             ),
             const SizedBox(height: 18.0),
-            PairHorizontalText(
+            SpaceBetweenHorizontalText(
               title: R.strings.merkPart,
               content: "${widget.dataReplacementPartHistory.brandName}",
               colorTitle: R.colors.colorText,
@@ -49,7 +49,7 @@ class _ReplacementPartHistoryRowState extends State<ReplacementPartHistoryRow> {
               fontWeightContent: FontWeight.bold,
             ),
             const SizedBox(height: 18.0),
-            PairHorizontalText(
+            SpaceBetweenHorizontalText(
               title: R.strings.pemohon,
               content: "${widget.dataReplacementPartHistory.requestBy}",
               colorTitle: R.colors.colorText,
@@ -60,7 +60,7 @@ class _ReplacementPartHistoryRowState extends State<ReplacementPartHistoryRow> {
               fontWeightContent: FontWeight.bold,
             ),
             const SizedBox(height: 18.0),
-            PairHorizontalText(
+            SpaceBetweenHorizontalText(
               title: R.strings.tglGanti,
               content: "${_convertDate.convertToddMMMyyyy1(widget.dataReplacementPartHistory.transactionDate!)}",
               colorTitle: R.colors.colorText,
@@ -71,7 +71,7 @@ class _ReplacementPartHistoryRowState extends State<ReplacementPartHistoryRow> {
               fontWeightContent: FontWeight.bold,
             ),
             const SizedBox(height: 18.0),
-            PairHorizontalText(
+            SpaceBetweenHorizontalText(
               title: R.strings.umur,
               content: "${widget.dataReplacementPartHistory.days}",
               colorTitle: R.colors.colorText,

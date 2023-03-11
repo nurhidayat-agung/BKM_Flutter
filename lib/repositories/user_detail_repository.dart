@@ -3,8 +3,8 @@ import 'package:newbkmmobile/core/constants.dart';
 import 'package:newbkmmobile/models/announcement_local.dart';
 import 'package:newbkmmobile/models/user_detail_local.dart';
 import 'package:newbkmmobile/models/vehicle_local.dart';
+import 'package:newbkmmobile/repositories/login_repository.dart';
 import 'package:http/http.dart' as http;
-import 'login_repository.dart';
 
 class UserDetailRepository {
 

@@ -1,7 +1,7 @@
 import 'package:newbkmmobile/core/constants.dart';
+import 'package:newbkmmobile/repositories/login_repository.dart';
+import 'package:newbkmmobile/repositories/user_detail_repository.dart';
 import 'package:http/http.dart' as http;
-import 'login_repository.dart';
-import 'user_detail_repository.dart';
 
 class ServiceBookRepository {
 

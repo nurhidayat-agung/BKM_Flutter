@@ -19,7 +19,7 @@ class PaySlipSuccess extends PaySlipState {
   final PaySlipResp paySlipResp;
   const PaySlipSuccess(this.paySlipResp);
   @override
-  List<Object> get props => [PaySlipResp];
+  List<Object> get props => [paySlipResp];
 }
 
 class PaySlipError extends PaySlipState {
