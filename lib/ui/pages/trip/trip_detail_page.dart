@@ -451,16 +451,50 @@ class _TripDetailPageState extends State<TripDetailPage> {
                                           message: R.strings.loadingGetData);
                                     }
                                     if (state is SaveTripSuccess) {
-                                      ScaffoldMessenger.of(context).showSnackBar(
-                                          SnackBar(
-                                              content: Text(
-                                                  state.debugResp.msg?.message ??
-                                                      "")));
                                       Navigator.pop(context);
+                                      showDialog(
+                                        context: context,
+                                        builder: (ctx) => AlertDialog(
+                                          content: Text(
+                                              state.strResponse ?? ""),
+                                          actions: [
+                                            TextButton(
+                                              onPressed: () {
+                                                Navigator.of(ctx).pop();
+                                              },
+                                              child: Text(
+                                                R.strings.ok,
+                                                style: TextStyle(
+                                                  color: R.colors.colorPrimary,
+                                                ),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      );
                                     }
                                     if (state is SaveTripError) {
-                                      ScaffoldMessenger.of(context).showSnackBar(
-                                          SnackBar(content: Text(state.message)));
+                                      Navigator.pop(context);
+                                      showDialog(
+                                        context: context,
+                                        builder: (ctx) => AlertDialog(
+                                          content: Text(
+                                              state.message ?? ""),
+                                          actions: [
+                                            TextButton(
+                                              onPressed: () {
+                                                Navigator.of(ctx).pop();
+                                              },
+                                              child: Text(
+                                                R.strings.ok,
+                                                style: TextStyle(
+                                                  color: R.colors.colorPrimary,
+                                                ),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      );
                                     }
                                   },
                                   child: BlocBuilder<SaveTripBloc, SaveTripState>(

@@ -25,7 +25,7 @@ class SaveTripBloc extends Bloc<SaveTripEvent, SaveTripState> {
               event.spbNo,
               event.trigger,
               event.spbImg);
-          emit(SaveTripSuccess(DebugResp.fromJson(jsonDecode(response))));
+          emit(SaveTripSuccess(response));
         } catch (e) {
           emit(SaveTripError(e.toString()));
         }

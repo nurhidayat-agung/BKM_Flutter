@@ -16,10 +16,10 @@ class SaveTripLoading extends SaveTripState {
 }
 
 class SaveTripSuccess extends SaveTripState {
-  final DebugResp debugResp;
-  const SaveTripSuccess(this.debugResp);
+  final String strResponse;
+  const SaveTripSuccess(this.strResponse);
   @override
-  List<Object> get props => [debugResp];
+  List<Object> get props => [strResponse];
 }
 
 class SaveTripError extends SaveTripState {
