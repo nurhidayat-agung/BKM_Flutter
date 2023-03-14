@@ -81,7 +81,7 @@ class _WorkshopPageState extends State<WorkshopPage>
                         Text(
                           R.strings.daftarPerbaikan.toUpperCase(),
                           style: const TextStyle(
-                            fontSize: 20.0,
+                            fontSize: 18.0,
                           ),
                         ),
                         const SizedBox(width: 10.0),
@@ -115,7 +115,7 @@ class _WorkshopPageState extends State<WorkshopPage>
                           child: Text(
                             R.strings.antrian,
                             style: const TextStyle(
-                              fontSize: 18.0,
+                              fontSize: 16.0,
                             ),
                           ),
                         ),
@@ -131,7 +131,7 @@ class _WorkshopPageState extends State<WorkshopPage>
                           child: Text(
                             R.strings.riwayat,
                             style: const TextStyle(
-                              fontSize: 18.0,
+                              fontSize: 16.0,
                             ),
                           ),
                         ),
@@ -309,7 +309,7 @@ class _WorkshopPageState extends State<WorkshopPage>
                     R.strings.titleFormWorkshop,
                     style: TextStyle(
                       color: R.colors.colorText,
-                      fontSize: 20.0,
+                      fontSize: 18.0,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
@@ -420,7 +420,7 @@ class _WorkshopPageState extends State<WorkshopPage>
                                 child: Text(
                                   R.strings.submit.toUpperCase(),
                                   style: const TextStyle(
-                                    fontSize: 20.0,
+                                    fontSize: 16.0,
                                   ),
                                 ),
                               ),
@@ -444,7 +444,7 @@ class _WorkshopPageState extends State<WorkshopPage>
                         child: Text(
                           R.strings.cancel.toUpperCase(),
                           style: const TextStyle(
-                            fontSize: 20.0,
+                            fontSize: 16.0,
                           ),
                         ),
                       ),
