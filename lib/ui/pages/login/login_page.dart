@@ -1,3 +1,4 @@
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:newbkmmobile/blocs/login/login_bloc.dart';
@@ -8,6 +9,26 @@ import 'package:newbkmmobile/repositories/user_detail_repository.dart';
 import 'package:newbkmmobile/ui/pages/drawer_menu_page.dart';
 import 'package:newbkmmobile/ui/widgets/custom_loading.dart';
 
+
+class BottomDiagonalClipper extends CustomClipper<Path> {
+  @override
+  Path getClip(Size size) {
+    final path = Path();
+
+    path.moveTo(0, size.height);
+    path.lineTo(size.width, size.height);
+    path.lineTo(size.width, size.height * 0.6);
+    path.lineTo(0, size.height * 0.8);
+
+    path.close();
+    return path;
+  }
+
+  @override
+  bool shouldReclip(covariant CustomClipper<Path> oldClipper) => false;
+}
+
+
 class LoginPage extends StatefulWidget {
   const LoginPage({Key? key}) : super(key: key);
 
@@ -16,15 +37,11 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
-  final _loginBloc          = LoginBloc(LoginRepository(), UserDetailRepository(), LoginFormRepository());
+  final _loginBloc =
+  LoginBloc(LoginRepository(), UserDetailRepository(), LoginFormRepository());
   final _usernameController = TextEditingController();
   final _passwordController = TextEditingController();
-  bool _isHiddenPassword    = true;
-
-  @override
-  void initState() {
-    super.initState();
-  }
+  bool _isHiddenPassword = true;
 
   void _togglePasswordView() {
     setState(() {
@@ -32,221 +49,235 @@ class _LoginPageState extends State<LoginPage> {
     });
   }
 
+  Widget _buildTextField({
+    required TextEditingController controller,
+    required String hintText,
+    bool isPassword = false,
+  }) {
+    return TextField(
+      controller: controller,
+      obscureText: isPassword ? _isHiddenPassword : false,
+      decoration: InputDecoration(
+        hintText: hintText,
+        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(8),
+          borderSide: BorderSide(
+            color: Colors.grey.shade400,
+            width: 1.0,
+          ),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(8),
+          borderSide: BorderSide(
+            color: Colors.grey.shade400,
+            width: 1.0,
+          ),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(8),
+          borderSide: const BorderSide(
+            color: Color(0xFF002E5B),
+            width: 1.5,
+          ),
+        ),
+        suffixIcon: isPassword
+            ? IconButton(
+          icon: Icon(
+            _isHiddenPassword
+                ? Icons.visibility_off_outlined
+                : Icons.visibility_outlined,
+            color: Colors.black54,
+            size: 20,
+          ),
+          onPressed: _togglePasswordView,
+        )
+            : null,
+      ),
+      style: const TextStyle(
+        fontSize: 16,
+        color: Colors.black,
+      ),
+    );
+  }
+
+
   @override
   Widget build(BuildContext context) {
+    // === PERBAIKAN: Mencegah Scaffold mengubah ukuran body saat keyboard muncul ===
     return Scaffold(
-      backgroundColor: R.colors.colorPrimary,
-      body: SizedBox(
-        height: MediaQuery.of(context).size.height,
-        child: BlocProvider(
-          create: (context) => _loginBloc,
-          child: BlocListener<LoginBloc, LoginState>(
-            listener: (context, state) async {
-              if (state is LoginLoading) {
-                showDialog(
-                  barrierDismissible: false,
-                  context: context,
-                  builder: (BuildContext context) {
-                    return CustomLoading(message: R.strings.loadingGetData);
-                  }
-                );
-              } else if (state is LoginSuccess) {
-                Navigator.of(context).pop();
-                Navigator.of(context).pushReplacement(
-                    MaterialPageRoute(builder: (_) => const DrawerMenuPage())
-                );
-              } else if (state is LoginError) {
-                Navigator.of(context).pop();
-                ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                    content: Text(state.message)));
-              }
-            },
-            child: BlocBuilder<LoginBloc, LoginState>(
-                builder: (context, state) {
-                  return SingleChildScrollView(
-                    child: ConstrainedBox(
-                      constraints: BoxConstraints(
-                        maxHeight: MediaQuery.of(context).size.height,
-                      ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
-                          const SizedBox(height: 100.0),
-                          Column(
-                            children: [
-                              Image.asset(
-                                R.assets.icBKM,
-                                height: 80.0,
-                                fit: BoxFit.contain,
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 20.0),
-                          Align(
-                            alignment: Alignment.center,
-                            child: Text(R.strings.vendorName,
-                              style: const TextStyle(
-                                color: Colors.white,
-                                fontSize: 16.0,
-                              ),
-                            ),
-                          ),
-                          const SizedBox(height: 50.0),
-                          Expanded(
-                            child: Container(
-                              width: double.infinity,
-                              padding: const EdgeInsets.all(40.0),
-                              decoration: const BoxDecoration(
-                                color: Colors.white,
-                                borderRadius: BorderRadius.only(
-                                  topLeft: Radius.circular(40.0),
-                                  topRight: Radius.circular(40.0),
-                                ),
-                              ),
-                              child: Column(
-                                children: [
-                                  Align(
-                                    alignment: Alignment.center,
-                                    child: Text(R.strings.titleLogin,
-                                      style: TextStyle(
-                                        color: R.colors.colorPrimary,
-                                        fontSize: 30.0,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                                  ),
-                                  const SizedBox(height: 40.0),
-                                  TextField(
-                                    decoration: InputDecoration(
-                                      enabledBorder: OutlineInputBorder(
-                                        borderRadius: BorderRadius.circular(10.0),
-                                        borderSide: BorderSide(
-                                          color: Colors.grey[350]!,
-                                        ),
-                                      ),
-                                      focusedBorder: OutlineInputBorder(
-                                          borderRadius: BorderRadius.circular(10.0),
-                                          borderSide: BorderSide(
-                                            color: Colors.blue[600]!,
-                                          ),
-                                      ),
-                                      labelText: R.strings.titleUsername,
-                                    ),
-                                    style: TextStyle(
-                                      color: R.colors.colorText,
-                                      fontSize: 18.0,
-                                    ),
-                                    controller: _usernameController,
-                                  ),
-                                  const SizedBox(height: 30.0),
-                                  TextField(
-                                    decoration: InputDecoration(
-                                      enabledBorder: OutlineInputBorder(
-                                        borderRadius: BorderRadius.circular(10.0),
-                                        borderSide: BorderSide(
-                                          color: Colors.grey[350]!,
-                                        ),
-                                      ),
-                                      focusedBorder: OutlineInputBorder(
-                                          borderRadius: BorderRadius.circular(10.0),
-                                          borderSide: BorderSide(
-                                            color: Colors.blue[600]!,
-                                          ),
-                                      ),
-                                      labelText: R.strings.titlePassword,
-                                      suffixIcon: InkWell(
-                                        onTap: _togglePasswordView,
-                                        child: Icon(
-                                          _isHiddenPassword
-                                              ? Icons.visibility_off
-                                              : Icons.visibility,
-                                          color: Colors.blue[600]!,
-                                        ),
-                                      ),
-                                    ),
-                                    obscureText: _isHiddenPassword,
-                                    style: TextStyle(
-                                      color: R.colors.colorText,
-                                      fontSize: 18.0,
-                                    ),
-                                    controller: _passwordController,
-                                  ),
-                                  const SizedBox(height: 40.0),
-                                  GestureDetector(
-                                    onTap: () {
-                                      if (_usernameController.text.trim().isEmpty || _passwordController.text.trim().isEmpty) {
-                                        showDialog(
-                                          context: context,
-                                          builder: (ctx) => AlertDialog(
-                                            content: Text(R.strings.msgFormNotComplete),
-                                            actions: [
-                                              TextButton(
-                                                onPressed: () {
-                                                  Navigator.of(ctx).pop();
-                                                },
-                                                child: Text(
-                                                  R.strings.ok,
-                                                  style: TextStyle(
-                                                    color: R.colors.colorPrimary,
-                                                  ),
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                        );
-                                      } else {
-                                        _loginBloc.add(
-                                          Login(
-                                            username: _usernameController.text,
-                                            password: _passwordController.text,
-                                          ),
-                                        );
-                                      }
-                                    },
-                                    child: Container(
-                                      height: 55.0,
-                                      width: MediaQuery.of(context).size.width,
-                                      padding: const EdgeInsets.symmetric(vertical: 15.0),
-                                      alignment: Alignment.center,
-                                      decoration: BoxDecoration(
-                                          borderRadius: const BorderRadius.all(Radius.circular(10.0)),
-                                          boxShadow: [
-                                            BoxShadow(
-                                              color: R.colors.grey1,
-                                              offset: const Offset(2.0, 4.0),
-                                              blurRadius: 5.0,
-                                              spreadRadius: 2.0,
-                                            )
-                                          ],
-                                          gradient: LinearGradient(
-                                            begin: Alignment.centerLeft,
-                                            end: Alignment.centerRight,
-                                            colors: [
-                                              Colors.deepPurple[800]!,
-                                              Colors.deepPurple[400]!,
-                                            ],
-                                          )
-                                      ),
-                                      child: Text(
-                                        R.strings.titleLogin,
-                                        style: const TextStyle(
-                                          color: Colors.white,
-                                          fontSize: 20.0,
-                                          fontWeight: FontWeight.bold,
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ],
+      resizeToAvoidBottomInset: false,
+      backgroundColor: Colors.white,
+      body: BlocProvider(
+        create: (context) => _loginBloc,
+        child: BlocListener<LoginBloc, LoginState>(
+          listener: (context, state) async {
+            if (state is LoginLoading) {
+              showDialog(
+                barrierDismissible: false,
+                context: context,
+                builder: (context) =>
+                    CustomLoading(message: R.strings.loadingGetData),
+              );
+            } else if (state is LoginSuccess) {
+              Navigator.of(context).pop();
+              Navigator.of(context).pushReplacement(
+                MaterialPageRoute(builder: (_) => const DrawerMenuPage()),
+              );
+            } else if (state is LoginError) {
+              Navigator.of(context).pop();
+              ScaffoldMessenger.of(context)
+                  .showSnackBar(SnackBar(content: Text(state.message)));
+            }
+          },
+          child: Stack(
+            children: [
+              Positioned.fill(
+                child: Align(
+                  alignment: Alignment.bottomCenter,
+                  child: ClipPath(
+                    clipper: BottomDiagonalClipper(),
+                    child: Container(
+                      height: 150,
+                      width: double.infinity,
+                      decoration: const BoxDecoration(
+                        gradient: LinearGradient(
+                          colors: [
+                            Color(0xFF002E5B),
+                            Color(0xFFFF5B2E),
+                          ],
+                          begin: Alignment.bottomLeft,
+                          end: Alignment.topRight,
+                        ),
                       ),
                     ),
-                  );
-                },
-            ),
+                  ),
+                ),
+              ),
+
+              // 🔹 Konten utama login
+              SafeArea(
+                child: LayoutBuilder(
+                  builder: (context, constraints) {
+                    final viewInsets = MediaQuery.of(context).viewInsets.bottom;
+
+                    return SingleChildScrollView(
+                      padding: EdgeInsets.only(bottom: viewInsets),
+                      physics: const BouncingScrollPhysics(),
+                      child: ConstrainedBox(
+                        constraints: BoxConstraints(
+                          minHeight: constraints.maxHeight,
+                        ),
+                        child: IntrinsicHeight(
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 32.0, vertical: 24.0),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                const SizedBox(height: 60),
+
+                                Image.asset(
+                                  "assets/1.png",
+                                  height: 180,
+                                  fit: BoxFit.contain,
+                                  color: null,
+                                ),
+                                const SizedBox(height: 2),
+
+                                const Text(
+                                  "Selamat Datang di BKM",
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.w700,
+                                    color: Colors.black87,
+                                  ),
+                                ),
+                                const SizedBox(height: 6),
+                                const Text(
+                                  "Silahkan masuk dengan akun anda.",
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                    color: Colors.black54,
+                                  ),
+                                ),
+                                const SizedBox(height: 48),
+
+                                // 🔹 Username Field
+                                _buildTextField(
+                                  controller: _usernameController,
+                                  hintText: "username",
+                                ),
+                                const SizedBox(height: 16),
+
+                                // 🔹 Password Field
+                                _buildTextField(
+                                  controller: _passwordController,
+                                  hintText: "password",
+                                  isPassword: true,
+                                ),
+                                const SizedBox(height: 28),
+
+                                // 🔹 Tombol Masuk
+                                SizedBox(
+                                  width: double.infinity,
+                                  height: 48,
+                                  child: ElevatedButton(
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor:
+                                      const Color(0xFF002E5B),
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(8),
+                                      ),
+                                      elevation: 2,
+                                    ),
+                                    onPressed: () {
+                                      if (_usernameController.text.trim().isEmpty ||
+                                          _passwordController.text.trim().isEmpty) {
+                                        // Logika error
+                                      } else {
+                                        _loginBloc.add(Login(
+                                          username: _usernameController.text.trim(),
+                                          password: _passwordController.text.trim(),
+                                        ));
+                                      }
+                                    },
+                                    child: const Text(
+                                      "Masuk",
+                                      style: TextStyle(
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w600,
+                                        color: Colors.white,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+
+                                const Spacer(),
+
+                                // 🔹 Versi Aplikasi (Di atas gradasi)
+                                const Padding(
+                                  padding: EdgeInsets.only(bottom: 20),
+                                  child: Text(
+                                    "Versi 0.3.7 / IN - Staging",
+                                    style: TextStyle(
+                                      fontSize: 10,
+                                      color: Colors.grey,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              ),
+            ],
           ),
         ),
       ),

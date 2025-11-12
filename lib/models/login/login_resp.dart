@@ -1,4 +1,5 @@
-import 'login_local.dart';
+import '../login_local.dart';
+import 'UserSession.dart';
 
 class LoginResp {
   int? status;
@@ -7,8 +8,13 @@ class LoginResp {
   String? token;
   String? firebaseToken;
 
-  LoginResp(
-      {this.status, this.message, this.userId, this.token, this.firebaseToken});
+  LoginResp({
+    this.status,
+    this.message,
+    this.userId,
+    this.token,
+    this.firebaseToken
+  });
 
   LoginResp.fromJson(Map<String, dynamic> json) {
     status = json['status'];
@@ -19,7 +25,7 @@ class LoginResp {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
+    final Map<String, dynamic> data = <String, dynamic>{};
     data['status'] = this.status;
     data['message'] = this.message;
     data['user_id'] = this.userId;

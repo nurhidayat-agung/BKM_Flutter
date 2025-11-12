@@ -1,48 +1,49 @@
 import 'package:flutter/material.dart';
 
 class PickerButtonBar extends StatelessWidget {
-  const PickerButtonBar(
-      {Key? key,
-      this.cancelText,
-      this.confirmText,
-      required this.defaultcancelButtonLabel,
-      required this.defaultokButtonLabel,
-      required this.cancelFunction,
-      required this.okFunction})
-      : super(key: key);
+  const PickerButtonBar({
+    Key? key,
+    this.cancelText,
+    this.confirmText,
+    required this.defaultCancelButtonLabel,
+    required this.defaultOkButtonLabel,
+    required this.cancelFunction,
+    required this.okFunction
+  }) : super(key: key);
+
   final Text? cancelText;
   final Text? confirmText;
-  final String defaultcancelButtonLabel;
-  final String defaultokButtonLabel;
+  final String defaultCancelButtonLabel;
+  final String defaultOkButtonLabel;
   final VoidCallback cancelFunction;
   final VoidCallback okFunction;
 
   @override
   Widget build(BuildContext context) {
-    return ButtonBar(
+    final textStyle = Theme.of(context).textTheme.labelLarge?.copyWith(
+      color: Theme.of(context).primaryColor,
+    );
+
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.end,
       children: <Widget>[
         TextButton(
           onPressed: cancelFunction,
           child: cancelText ??
               Text(
-                defaultcancelButtonLabel,
-                style: Theme.of(context)
-                    .textTheme
-                    .button!
-                    .copyWith(color: Theme.of(context).primaryColor),
+                defaultCancelButtonLabel,
+                style: textStyle,
               ),
         ),
+        const SizedBox(width: 8), // Jarak antar tombol
         TextButton(
           onPressed: okFunction,
           child: confirmText ??
               Text(
-                defaultokButtonLabel,
-                style: Theme.of(context)
-                    .textTheme
-                    .button!
-                    .copyWith(color: Theme.of(context).primaryColor),
+                defaultOkButtonLabel,
+                style: textStyle,
               ),
-        )
+        ),
       ],
     );
   }

@@ -1,9 +1,7 @@
-import 'dart:convert';
-
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:newbkmmobile/models/login_form_local.dart';
-import 'package:newbkmmobile/models/login_resp.dart';
+import 'package:newbkmmobile/models/login/login_resp.dart';
 import 'package:newbkmmobile/models/user_detail_resp.dart';
 import 'package:newbkmmobile/repositories/login_form_repository.dart';
 import 'package:newbkmmobile/repositories/login_repository.dart';
@@ -21,26 +19,30 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
       this._loginRepository,
       this._userDetailRepository,
       this._loginFormRepository,
-  ) : super(LoginInitial()) {
+      ) : super(LoginInitial()) {
     on<LoginEvent>((event, emit) async {
       if (event is Login) {
         try {
           emit(const LoginLoading());
-          final responseLogin = await _loginRepository.login(event.username, event.password);
-          final resultLogin = LoginResp.fromJson(jsonDecode(responseLogin.body));
-          await _loginRepository.addLoginLocal(resultLogin.toLocal());
 
-          final responseUserDetail = await _userDetailRepository.getUserDetailRemote();
-          final resultUserDetail = UserDetailResp.fromJson(jsonDecode(responseUserDetail.body));
-          await _userDetailRepository.addUserDetailLocal(resultUserDetail.toLocal());
+          // 🔹 Panggil login API
+          final resultLogin = await _loginRepository.login(
+            event.username,
+            event.password,
+          );
 
-          await _loginFormRepository.addLoginFormLocal(LoginFormLocal(username: event.username, password: event.password));
-          emit(LoginSuccess(resultLogin));
+
+
+          if (resultLogin.status == 200) {
+
+            emit(LoginSuccess(resultLogin));
+          } else {
+            emit(LoginError(resultLogin.message ?? "Login gagal"));
+          }
         } catch (e) {
-          emit(LoginError(e.toString()));
+          emit(LoginError("Terjadi kesalahan: ${e.toString()}"));
         }
       }
     });
   }
-
 }

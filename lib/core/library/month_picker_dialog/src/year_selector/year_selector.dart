@@ -9,185 +9,207 @@ class YearSelector extends StatefulWidget {
   final DateTime? initialDate, firstDate, lastDate;
   final PublishSubject<UpDownPageLimit> upDownPageLimitPublishSubject;
   final PublishSubject<UpDownButtonEnableState>
-      upDownButtonEnableStatePublishSubject;
+  upDownButtonEnableStatePublishSubject;
   final Locale? locale;
-  final Color? selectedMonthBackgroundColor, selectedMonthTextColor, unselectedMonthTextColor;
+  final Color? selectedMonthBackgroundColor;
+  final Color? selectedMonthTextColor;
+  final Color? unselectedMonthTextColor;
 
   const YearSelector({
     Key? key,
-    required DateTime this.initialDate,
+    required this.initialDate,
     required this.onYearSelected,
     required this.upDownPageLimitPublishSubject,
     required this.upDownButtonEnableStatePublishSubject,
     this.firstDate,
     this.lastDate,
     this.locale,
-    required this.selectedMonthBackgroundColor,
-    required this.selectedMonthTextColor,
-    required this.unselectedMonthTextColor,
+    this.selectedMonthBackgroundColor,
+    this.selectedMonthTextColor,
+    this.unselectedMonthTextColor,
   }) : super(key: key);
+
   @override
-  State<StatefulWidget> createState() => YearSelectorState();
+  State<YearSelector> createState() => YearSelectorState();
 }
 
 class YearSelectorState extends State<YearSelector> {
-  PageController? _pageController;
-
-  @override
-  Widget build(BuildContext context) => PageView.builder(
-        controller: _pageController,
-        scrollDirection: Axis.vertical,
-        physics: const AlwaysScrollableScrollPhysics(),
-        onPageChanged: _onPageChange,
-        itemCount: _getPageCount(),
-        itemBuilder: _yearGridBuilder,
-      );
-
-  Widget _yearGridBuilder(final BuildContext context, final int page) =>
-      GridView.count(
-        physics: const NeverScrollableScrollPhysics(),
-        padding: const EdgeInsets.all(8.0),
-        crossAxisCount: 4,
-        children: List<Widget>.generate(
-          12,
-          (final int index) => _getYearButton(
-              page, index, getLocale(context, selectedLocale: widget.locale)),
-        ).toList(growable: false),
-      );
-
-  Widget _getYearButton(final int page, final int index, final String locale) {
-    final int year = (widget.firstDate == null ? 0 : widget.firstDate!.year) +
-        page * 12 +
-        index;
-    final bool isEnabled = _isEnabled(year);
-    final ThemeData theme = Theme.of(context);
-    final _backgroundColor =
-        widget.selectedMonthBackgroundColor ?? theme.colorScheme.secondary;
-    return TextButton(
-      onPressed: isEnabled ? () => widget.onYearSelected(year) : null,
-      style: TextButton.styleFrom(
-          foregroundColor: year == widget.initialDate!.year
-              ? theme.textTheme.button!
-                  .copyWith(
-                    color: widget.selectedMonthTextColor ??
-                        theme.colorScheme.onSecondary,
-                  )
-                  .color
-              : year == DateTime.now().year
-                  ? _backgroundColor
-                  : widget.unselectedMonthTextColor ?? null, backgroundColor:
-              year == widget.initialDate!.year ? _backgroundColor : null,
-          shape: const CircleBorder()),
-      child: Text(
-        DateFormat.y(locale).format(DateTime(year)),
-      ),
-    );
-  }
-
-  void _onPageChange(final int page) {
-    widget.upDownPageLimitPublishSubject.add(UpDownPageLimit(
-        widget.firstDate == null
-            ? page * 12
-            : widget.firstDate!.year + page * 12,
-        widget.firstDate == null
-            ? page * 12 + 11
-            : widget.firstDate!.year + page * 12 + 11));
-    if (page == 0 || page == _getPageCount() - 1) {
-      widget.upDownButtonEnableStatePublishSubject.add(
-        UpDownButtonEnableState(page > 0, page < _getPageCount() - 1),
-      );
-    }
-  }
-
-  int _getPageCount() {
-    if (widget.firstDate != null && widget.lastDate != null) {
-      if (widget.lastDate!.year - widget.firstDate!.year <= 12)
-        return 1;
-      else
-        return ((widget.lastDate!.year - widget.firstDate!.year + 1) / 12)
-            .ceil();
-    } else if (widget.firstDate != null && widget.lastDate == null) {
-      return (_getItemCount() / 12).ceil();
-    } else if (widget.firstDate == null && widget.lastDate != null) {
-      return (_getItemCount() / 12).ceil();
-    } else
-      return (9999 / 12).ceil();
-  }
-
-  int _getItemCount() {
-    if (widget.firstDate != null && widget.lastDate != null) {
-      return widget.lastDate!.year - widget.firstDate!.year + 1;
-    } else if (widget.firstDate != null && widget.lastDate == null) {
-      return 9999 - widget.firstDate!.year;
-    } else if (widget.firstDate == null && widget.lastDate != null) {
-      return widget.lastDate!.year;
-    } else
-      return 9999;
-  }
+  late final PageController _pageController;
 
   @override
   void initState() {
     super.initState();
     _pageController = PageController(
-        initialPage: widget.firstDate == null
-            ? (widget.initialDate!.year / 12).floor()
-            : ((widget.initialDate!.year - widget.firstDate!.year) / 12)
-                .floor());
-    Future.delayed(Duration.zero, () {
-      widget.upDownPageLimitPublishSubject.add(UpDownPageLimit(
-        widget.firstDate == null
-            ? _pageController!.page!.toInt() * 12
-            : widget.firstDate!.year + _pageController!.page!.toInt() * 12,
-        widget.firstDate == null
-            ? _pageController!.page!.toInt() * 12 + 11
-            : widget.firstDate!.year + _pageController!.page!.toInt() * 12 + 11,
-      ));
+      initialPage: widget.firstDate == null
+          ? (widget.initialDate!.year / 12).floor()
+          : ((widget.initialDate!.year - widget.firstDate!.year) / 12).floor(),
+    );
+
+    // Sinkronisasi awal state tombol & batas halaman
+    Future.microtask(() {
+      final currentPage = _pageController.page?.toInt() ?? 0;
+      widget.upDownPageLimitPublishSubject.add(
+        UpDownPageLimit(
+          widget.firstDate == null
+              ? currentPage * 12
+              : widget.firstDate!.year + currentPage * 12,
+          widget.firstDate == null
+              ? currentPage * 12 + 11
+              : widget.firstDate!.year + currentPage * 12 + 11,
+        ),
+      );
       widget.upDownButtonEnableStatePublishSubject.add(
-        UpDownButtonEnableState(_pageController!.page!.toInt() > 0,
-            _pageController!.page!.toInt() < _getPageCount() - 1),
+        UpDownButtonEnableState(
+          currentPage > 0,
+          currentPage < _getPageCount() - 1,
+        ),
       );
     });
   }
 
   @override
   void dispose() {
-    _pageController!.dispose();
+    _pageController.dispose();
     super.dispose();
   }
 
-  bool _isEnabled(final int year) {
-    if (widget.firstDate == null && widget.lastDate == null)
-      return true;
-    else if (widget.firstDate != null &&
-        widget.lastDate != null &&
-        year >= widget.firstDate!.year &&
-        year <= widget.lastDate!.year)
-      return true;
-    else if (widget.firstDate != null &&
-        widget.lastDate == null &&
-        year >= widget.firstDate!.year)
-      return true;
-    else if (widget.firstDate == null &&
-        widget.lastDate != null &&
-        year <= widget.lastDate!.year)
-      return true;
-    else
-      return false;
+  @override
+  Widget build(BuildContext context) {
+    return PageView.builder(
+      controller: _pageController,
+      scrollDirection: Axis.vertical,
+      physics: const AlwaysScrollableScrollPhysics(),
+      onPageChanged: _onPageChange,
+      itemCount: _getPageCount(),
+      itemBuilder: _yearGridBuilder,
+    );
   }
 
-  void goDown() {
-    _pageController!.animateToPage(
-      _pageController!.page!.toInt() + 1,
-      duration: const Duration(milliseconds: 400),
-      curve: Curves.easeInOut,
+  // Build grid 4 kolom × 3 baris
+  Widget _yearGridBuilder(BuildContext context, int page) {
+    final localeName = getLocale(context, selectedLocale: widget.locale);
+    return GridView.count(
+      physics: const NeverScrollableScrollPhysics(),
+      padding: const EdgeInsets.all(8),
+      crossAxisCount: 4,
+      children: List.generate(
+        12,
+            (index) => _buildYearButton(page, index, localeName),
+      ),
     );
+  }
+
+  Widget _buildYearButton(int page, int index, String locale) {
+    final theme = Theme.of(context);
+    final startYear = widget.firstDate?.year ?? 0;
+    final year = startYear + (page * 12) + index;
+
+    final bool isEnabled = _isEnabled(year);
+    final bool isSelected = year == widget.initialDate?.year;
+    final bool isCurrentYear = year == DateTime.now().year;
+
+    final Color backgroundColor = isSelected
+        ? (widget.selectedMonthBackgroundColor ?? theme.colorScheme.primary)
+        : Colors.transparent;
+
+    final Color foregroundColor = isSelected
+        ? (widget.selectedMonthTextColor ?? theme.colorScheme.onPrimary)
+        : isCurrentYear
+        ? (widget.selectedMonthTextColor ??
+        theme.colorScheme.primary.withOpacity(0.9))
+        : (widget.unselectedMonthTextColor ??
+        theme.colorScheme.onSurface.withOpacity(0.8));
+
+    final TextStyle textStyle =
+        theme.textTheme.labelLarge?.copyWith(color: foregroundColor) ??
+            TextStyle(color: foregroundColor);
+
+    return Padding(
+      padding: const EdgeInsets.all(4.0),
+      child: TextButton(
+        onPressed: isEnabled ? () => widget.onYearSelected(year) : null,
+        style: ButtonStyle(
+          backgroundColor: MaterialStateProperty.all(backgroundColor),
+          foregroundColor: MaterialStateProperty.all(foregroundColor),
+          shape: MaterialStateProperty.all(const CircleBorder()),
+          overlayColor:
+          MaterialStateProperty.all(theme.colorScheme.primaryContainer),
+        ),
+        child: Text(
+          DateFormat.y(locale).format(DateTime(year)),
+          style: textStyle,
+        ),
+      ),
+    );
+  }
+
+  void _onPageChange(int page) {
+    widget.upDownPageLimitPublishSubject.add(
+      UpDownPageLimit(
+        widget.firstDate == null
+            ? page * 12
+            : widget.firstDate!.year + page * 12,
+        widget.firstDate == null
+            ? page * 12 + 11
+            : widget.firstDate!.year + page * 12 + 11,
+      ),
+    );
+    widget.upDownButtonEnableStatePublishSubject.add(
+      UpDownButtonEnableState(
+        page > 0,
+        page < _getPageCount() - 1,
+      ),
+    );
+  }
+
+  int _getPageCount() {
+    if (widget.firstDate != null && widget.lastDate != null) {
+      final diff = widget.lastDate!.year - widget.firstDate!.year + 1;
+      return (diff / 12).ceil();
+    } else if (widget.firstDate != null && widget.lastDate == null) {
+      return ((9999 - widget.firstDate!.year) / 12).ceil();
+    } else if (widget.firstDate == null && widget.lastDate != null) {
+      return (widget.lastDate!.year / 12).ceil();
+    } else {
+      return (9999 / 12).ceil();
+    }
+  }
+
+  bool _isEnabled(int year) {
+    if (widget.firstDate == null && widget.lastDate == null) return true;
+    if (widget.firstDate != null &&
+        widget.lastDate != null &&
+        year >= widget.firstDate!.year &&
+        year <= widget.lastDate!.year) return true;
+    if (widget.firstDate != null &&
+        widget.lastDate == null &&
+        year >= widget.firstDate!.year) return true;
+    if (widget.firstDate == null &&
+        widget.lastDate != null &&
+        year <= widget.lastDate!.year) return true;
+    return false;
+  }
+
+  // Navigasi manual ke halaman berikut / sebelumnya
+  void goDown() {
+    final next = (_pageController.page ?? 0).toInt() + 1;
+    if (next < _getPageCount()) {
+      _pageController.animateToPage(
+        next,
+        duration: const Duration(milliseconds: 400),
+        curve: Curves.easeInOut,
+      );
+    }
   }
 
   void goUp() {
-    _pageController!.animateToPage(
-      _pageController!.page!.toInt() - 1,
-      duration: const Duration(milliseconds: 400),
-      curve: Curves.easeInOut,
-    );
+    final prev = (_pageController.page ?? 0).toInt() - 1;
+    if (prev >= 0) {
+      _pageController.animateToPage(
+        prev,
+        duration: const Duration(milliseconds: 400),
+        curve: Curves.easeInOut,
+      );
+    }
   }
 }

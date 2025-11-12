@@ -4,8 +4,8 @@ import 'package:intl/intl.dart';
 class MonthButton extends StatelessWidget {
   const MonthButton({
     Key? key,
-    required DateTime this.openDate,
-    required DateTime this.selectedDate,
+    required this.openDate,
+    required this.selectedDate,
     this.firstDate,
     this.lastDate,
     required this.date,
@@ -40,16 +40,17 @@ class MonthButton extends StatelessWidget {
 
   bool _isEnabled(final DateTime date) {
     if ((firstDate == null &&
-            (lastDate == null ||
-                (lastDate != null && lastDate!.compareTo(date) >= 0))) ||
+        (lastDate == null ||
+            (lastDate != null && lastDate!.compareTo(date) >= 0))) ||
         (firstDate != null &&
             ((lastDate != null &&
-                    firstDate!.compareTo(date) <= 0 &&
-                    lastDate!.compareTo(date) >= 0) ||
+                firstDate!.compareTo(date) <= 0 &&
+                lastDate!.compareTo(date) >= 0) ||
                 (lastDate == null && firstDate!.compareTo(date) <= 0)))) {
       return _holdsSelectionPredicate(date);
-    } else
+    } else {
       return false;
+    }
   }
 
   @override
@@ -57,26 +58,28 @@ class MonthButton extends StatelessWidget {
     final bool isEnabled = _isEnabled(date);
     final _backgroundColor =
         selectedMonthBackgroundColor ?? theme.colorScheme.secondary;
+
     return TextButton(
       onPressed: isEnabled
           ? () => onMonthSelected(DateTime(date.year, date.month))
           : null,
       style: TextButton.styleFrom(
         foregroundColor: date.month == selectedDate.month &&
-                date.year == selectedDate.year
-            ? theme.textTheme.button!
-                .copyWith(
-                  color:
-                      selectedMonthTextColor ?? theme.colorScheme.onSecondary,
-                )
-                .color
+            date.year == selectedDate.year
+            ? theme.textTheme.labelLarge!
+            .copyWith(
+          color:
+          selectedMonthTextColor ?? theme.colorScheme.onSecondary,
+        )
+            .color
             : date.month == DateTime.now().month &&
-                    date.year == DateTime.now().year
-                ? _backgroundColor
-                : unselectedMonthTextColor ?? null, backgroundColor:
-            date.month == selectedDate.month && date.year == selectedDate.year
-                ? _backgroundColor
-                : null,
+            date.year == DateTime.now().year
+            ? _backgroundColor
+            : unselectedMonthTextColor ?? null,
+        backgroundColor: date.month == selectedDate.month &&
+            date.year == selectedDate.year
+            ? _backgroundColor
+            : null,
         shape: const CircleBorder(),
       ),
       child: Text(

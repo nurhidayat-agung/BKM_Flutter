@@ -1,49 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:newbkmmobile/core/library/month_picker_dialog/src/helpers/common.dart';
-import 'package:newbkmmobile/core/library/month_picker_dialog/src/helpers/locale_utils.dart';
-import 'package:newbkmmobile/core/library/month_picker_dialog/src/month_picker_widgets/button_bar.dart';
-import 'package:newbkmmobile/core/library/month_picker_dialog/src/month_picker_widgets/header.dart';
-import 'package:newbkmmobile/core/library/month_picker_dialog/src/month_picker_widgets/pager.dart';
 import 'package:rxdart/rxdart.dart';
+
+import 'src/helpers/common.dart';
+import 'src/helpers/locale_utils.dart';
+import 'src/month_picker_widgets/button_bar.dart';
+import 'src/month_picker_widgets/header.dart';
+import 'src/month_picker_widgets/pager.dart';
 import 'src/month_selector/month_selector.dart';
 import 'src/year_selector/year_selector.dart';
 
-/// Displays month picker dialog.
-///
-/// [initialDate] is the initially selected month.
-///
-/// [firstDate] is the optional lower bound for month selection.
-///
-/// [lastDate] is the optional upper bound for month selection.
-///
-/// [selectableMonthPredicate] lets you control enabled months just like the official selectableDayPredicate.
-///
-/// [capitalizeFirstLetter] lets you control if your months names are capitalized or not.
-///
-/// [headerColor] lets you control the calendar header color.
-///
-/// [headerTextColor] lets you control the calendar header text and arrows color.
-///
-/// [selectedMonthBackgroundColor] lets you control the current selected month/year background color.
-///
-/// [selectedMonthTextColor] lets you control the text color of the current selected month/year.
-///
-/// [unselectedMonthTextColor] lets you control the text color of the current unselected months/years.
-///
-/// [confirmText] lets you set a custom confirm text widget.
-///
-/// [cancelText] lets you set a custom cancel text widget.
-///
-/// [customHeight] lets you set a custom height for the calendar widget.
-///
-/// [customWidth] lets you set a custom width for the calendar widget.
-///
-/// [yearFirst] lets you define that the user must select first the year, then the month.
-///
-/// [dismissible] lets you define if the dialog will be dismissible by clicking outside it.
-///
-/// [roundedCornersRadius] lets you define the Radius of the rounded dialog (default is 0).
-///
+/// Show a Material 3–friendly month picker dialog.
 Future<DateTime?> showMonthPicker({
   required BuildContext context,
   required DateTime initialDate,
@@ -63,8 +29,7 @@ Future<DateTime?> showMonthPicker({
   double? customWidth,
   bool yearFirst = false,
   bool dismissible = false,
-  double roundedCornersRadius = 0,
-  //bool isCupertino = false,
+  double roundedCornersRadius = 16.0, // default Material 3 corner
 }) async {
   return await showDialog<DateTime>(
     context: context,
@@ -86,7 +51,6 @@ Future<DateTime?> showMonthPicker({
       customHeight: customHeight,
       customWidth: customWidth,
       yearFirst: yearFirst,
-      //isCupertino: isCupertino,
       roundedCornersRadius: roundedCornersRadius,
     ),
   );
@@ -106,10 +70,9 @@ class _MonthPickerDialog extends StatefulWidget {
   final Text? confirmText, cancelText;
   final double? customHeight, customWidth;
   final double roundedCornersRadius;
-  //final bool isCupertino;
 
   const _MonthPickerDialog({
-    Key? key,
+    super.key,
     required this.initialDate,
     this.firstDate,
     this.lastDate,
@@ -126,22 +89,23 @@ class _MonthPickerDialog extends StatefulWidget {
     this.customHeight,
     this.customWidth,
     required this.yearFirst,
-    //required this.isCupertino,
     required this.roundedCornersRadius,
-  }) : super(key: key);
+  });
 
   @override
-  _MonthPickerDialogState createState() => _MonthPickerDialogState();
+  State<_MonthPickerDialog> createState() => _MonthPickerDialogState();
 }
 
 class _MonthPickerDialogState extends State<_MonthPickerDialog> {
-  final GlobalKey<YearSelectorState> _yearSelectorState = GlobalKey();
-  final GlobalKey<MonthSelectorState> _monthSelectorState = GlobalKey();
+  final GlobalKey<YearSelectorState> _yearSelectorKey =
+  GlobalKey<YearSelectorState>();
+  final GlobalKey<MonthSelectorState> _monthSelectorKey =
+  GlobalKey<MonthSelectorState>();
 
-  final PublishSubject<UpDownPageLimit> _upDownPageLimitPublishSubject =
-      PublishSubject();
-  final PublishSubject<UpDownButtonEnableState>
-      _upDownButtonEnableStatePublishSubject = PublishSubject();
+  final PublishSubject<UpDownPageLimit> _upDownPageLimitSubject =
+  PublishSubject();
+  final PublishSubject<UpDownButtonEnableState> _upDownButtonStateSubject =
+  PublishSubject();
 
   late Widget _selector;
   late DateTime selectedDate;
@@ -151,62 +115,65 @@ class _MonthPickerDialogState extends State<_MonthPickerDialog> {
   void initState() {
     super.initState();
     selectedDate = DateTime(widget.initialDate.year, widget.initialDate.month);
-    if (widget.firstDate != null)
+
+    if (widget.firstDate != null) {
       _firstDate = DateTime(widget.firstDate!.year, widget.firstDate!.month);
-    if (widget.lastDate != null)
+    }
+    if (widget.lastDate != null) {
       _lastDate = DateTime(widget.lastDate!.year, widget.lastDate!.month);
+    }
 
     _selector = widget.yearFirst
         ? YearSelector(
-            key: _yearSelectorState,
-            initialDate: selectedDate,
-            firstDate: _firstDate,
-            lastDate: _lastDate,
-            onYearSelected: _onYearSelected,
-            upDownPageLimitPublishSubject: _upDownPageLimitPublishSubject,
-            upDownButtonEnableStatePublishSubject:
-                _upDownButtonEnableStatePublishSubject,
-            selectedMonthBackgroundColor: widget.selectedMonthBackgroundColor,
-            selectedMonthTextColor: widget.selectedMonthTextColor,
-            unselectedMonthTextColor: widget.unselectedMonthTextColor,
-          )
+      key: _yearSelectorKey,
+      initialDate: selectedDate,
+      firstDate: _firstDate,
+      lastDate: _lastDate,
+      onYearSelected: _onYearSelected,
+      upDownPageLimitPublishSubject: _upDownPageLimitSubject,
+      upDownButtonEnableStatePublishSubject: _upDownButtonStateSubject,
+      selectedMonthBackgroundColor: widget.selectedMonthBackgroundColor,
+      selectedMonthTextColor: widget.selectedMonthTextColor,
+      unselectedMonthTextColor: widget.unselectedMonthTextColor,
+    )
         : MonthSelector(
-            key: _monthSelectorState,
-            openDate: selectedDate,
-            selectedDate: selectedDate,
-            selectableMonthPredicate: widget.selectableMonthPredicate,
-            upDownPageLimitPublishSubject: _upDownPageLimitPublishSubject,
-            upDownButtonEnableStatePublishSubject:
-                _upDownButtonEnableStatePublishSubject,
-            firstDate: _firstDate,
-            lastDate: _lastDate,
-            onMonthSelected: _onMonthSelected,
-            locale: widget.locale,
-            capitalizeFirstLetter: widget.capitalizeFirstLetter,
-            selectedMonthBackgroundColor: widget.selectedMonthBackgroundColor,
-            selectedMonthTextColor: widget.selectedMonthTextColor,
-            unselectedMonthTextColor: widget.unselectedMonthTextColor,
-          );
+      key: _monthSelectorKey,
+      openDate: selectedDate,
+      selectedDate: selectedDate,
+      selectableMonthPredicate: widget.selectableMonthPredicate,
+      upDownPageLimitPublishSubject: _upDownPageLimitSubject,
+      upDownButtonEnableStatePublishSubject: _upDownButtonStateSubject,
+      firstDate: _firstDate,
+      lastDate: _lastDate,
+      onMonthSelected: _onMonthSelected,
+      locale: widget.locale,
+      capitalizeFirstLetter: widget.capitalizeFirstLetter,
+      selectedMonthBackgroundColor: widget.selectedMonthBackgroundColor,
+      selectedMonthTextColor: widget.selectedMonthTextColor,
+      unselectedMonthTextColor: widget.unselectedMonthTextColor,
+    );
   }
 
+  @override
   void dispose() {
-    _upDownPageLimitPublishSubject.close();
-    _upDownButtonEnableStatePublishSubject.close();
+    _upDownPageLimitSubject.close();
+    _upDownButtonStateSubject.close();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    final ThemeData theme = Theme.of(context);
+    final theme = Theme.of(context);
     final String locale = getLocale(context, selectedLocale: widget.locale);
 
     final Material content = Material(
-      shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.only(
-                bottomLeft: Radius.circular(widget.roundedCornersRadius),
-                bottomRight: Radius.circular(widget.roundedCornersRadius),
-              ),
-            ),
+      color: theme.colorScheme.surface,
+      surfaceTintColor: theme.colorScheme.surfaceTint,
+      elevation: 2,
+      borderRadius: BorderRadius.only(
+        bottomLeft: Radius.circular(widget.roundedCornersRadius),
+        bottomRight: Radius.circular(widget.roundedCornersRadius),
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [
@@ -219,39 +186,46 @@ class _MonthPickerDialogState extends State<_MonthPickerDialog> {
           PickerButtonBar(
             cancelText: widget.cancelText,
             confirmText: widget.confirmText,
-            defaultcancelButtonLabel: 'CANCEL',
-            defaultokButtonLabel: 'OK',
+            defaultCancelButtonLabel: 'Cancel',
+            defaultOkButtonLabel: 'OK',
             cancelFunction: () => Navigator.pop(context, null),
-            okFunction: () => Navigator.pop(context, selectedDate),
+            okFunction: () => Navigator.pop(context, selectedDate)
           ),
         ],
       ),
-      color: theme.dialogBackgroundColor,
     );
 
     final PickerHeader header = PickerHeader(
       theme: theme,
       locale: locale,
-      headerColor: widget.headerColor,
-      headerTextColor: widget.headerTextColor,
+      headerColor:
+      widget.headerColor ?? theme.colorScheme.primaryContainer,
+      headerTextColor:
+      widget.headerTextColor ?? theme.colorScheme.onPrimaryContainer,
       capitalizeFirstLetter: widget.capitalizeFirstLetter,
       selectedDate: selectedDate,
       isMonthSelector: _selector is MonthSelector,
       onDownButtonPressed: _onDownButtonPressed,
       onSelectYear: _onSelectYear,
       onUpButtonPressed: _onUpButtonPressed,
-      upDownButtonEnableStatePublishSubject:
-          _upDownButtonEnableStatePublishSubject,
-      upDownPageLimitPublishSubject: _upDownPageLimitPublishSubject,
+      upDownButtonEnableStatePublishSubject: _upDownButtonStateSubject,
+      upDownPageLimitPublishSubject: _upDownPageLimitSubject,
       roundedCornersRadius: widget.roundedCornersRadius,
     );
 
-    return Theme(
-      data: theme.copyWith(dialogBackgroundColor: Colors.transparent),
-      child: Dialog(
+    return Dialog(
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(widget.roundedCornersRadius),
+      ),
+      backgroundColor: Colors.transparent,
+      child: Theme(
+        data: theme.copyWith(
+          dialogBackgroundColor: Colors.transparent,
+          useMaterial3: true,
+        ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
-          children: <Widget>[
+          children: [
             Builder(
               builder: (BuildContext context) {
                 if (MediaQuery.of(context).orientation ==
@@ -277,73 +251,73 @@ class _MonthPickerDialogState extends State<_MonthPickerDialog> {
     );
   }
 
-  void _onSelectYear() => setState(() => _selector = YearSelector(
-        key: _yearSelectorState,
+  void _onSelectYear() {
+    setState(() {
+      _selector = YearSelector(
+        key: _yearSelectorKey,
         initialDate: selectedDate,
         firstDate: _firstDate,
         lastDate: _lastDate,
         onYearSelected: _onYearSelected,
-        upDownPageLimitPublishSubject: _upDownPageLimitPublishSubject,
-        upDownButtonEnableStatePublishSubject:
-            _upDownButtonEnableStatePublishSubject,
+        upDownPageLimitPublishSubject: _upDownPageLimitSubject,
+        upDownButtonEnableStatePublishSubject: _upDownButtonStateSubject,
         selectedMonthBackgroundColor: widget.selectedMonthBackgroundColor,
         selectedMonthTextColor: widget.selectedMonthTextColor,
         unselectedMonthTextColor: widget.unselectedMonthTextColor,
-      ));
+      );
+    });
+  }
 
-  void _onYearSelected(final int year) =>
-      setState(() => _selector = MonthSelector(
-            key: _monthSelectorState,
-            openDate: DateTime(year),
-            selectedDate: selectedDate,
-            selectableMonthPredicate: widget.selectableMonthPredicate,
-            upDownPageLimitPublishSubject: _upDownPageLimitPublishSubject,
-            upDownButtonEnableStatePublishSubject:
-                _upDownButtonEnableStatePublishSubject,
-            firstDate: _firstDate,
-            lastDate: _lastDate,
-            onMonthSelected: _onMonthSelected,
-            locale: widget.locale,
-            capitalizeFirstLetter: widget.capitalizeFirstLetter,
-            selectedMonthBackgroundColor: widget.selectedMonthBackgroundColor,
-            selectedMonthTextColor: widget.selectedMonthTextColor,
-            unselectedMonthTextColor: widget.unselectedMonthTextColor,
-          ));
+  void _onYearSelected(int year) {
+    setState(() {
+      _selector = MonthSelector(
+        key: _monthSelectorKey,
+        openDate: DateTime(year),
+        selectedDate: selectedDate,
+        selectableMonthPredicate: widget.selectableMonthPredicate,
+        upDownPageLimitPublishSubject: _upDownPageLimitSubject,
+        upDownButtonEnableStatePublishSubject: _upDownButtonStateSubject,
+        firstDate: _firstDate,
+        lastDate: _lastDate,
+        onMonthSelected: _onMonthSelected,
+        locale: widget.locale,
+        capitalizeFirstLetter: widget.capitalizeFirstLetter,
+        selectedMonthBackgroundColor: widget.selectedMonthBackgroundColor,
+        selectedMonthTextColor: widget.selectedMonthTextColor,
+        unselectedMonthTextColor: widget.unselectedMonthTextColor,
+      );
+    });
+  }
 
-  void _onMonthSelected(final DateTime date) => setState(() {
-        selectedDate = date;
-        _selector = MonthSelector(
-          key: _monthSelectorState,
-          openDate: selectedDate,
-          selectedDate: selectedDate,
-          selectableMonthPredicate: widget.selectableMonthPredicate,
-          upDownPageLimitPublishSubject: _upDownPageLimitPublishSubject,
-          upDownButtonEnableStatePublishSubject:
-              _upDownButtonEnableStatePublishSubject,
-          firstDate: _firstDate,
-          lastDate: _lastDate,
-          onMonthSelected: _onMonthSelected,
-          locale: widget.locale,
-          capitalizeFirstLetter: widget.capitalizeFirstLetter,
-          selectedMonthBackgroundColor: widget.selectedMonthBackgroundColor,
-          selectedMonthTextColor: widget.selectedMonthTextColor,
-          unselectedMonthTextColor: widget.unselectedMonthTextColor,
-        );
-      });
+  void _onMonthSelected(DateTime date) {
+    setState(() {
+      selectedDate = date;
+      _selector = MonthSelector(
+        key: _monthSelectorKey,
+        openDate: selectedDate,
+        selectedDate: selectedDate,
+        selectableMonthPredicate: widget.selectableMonthPredicate,
+        upDownPageLimitPublishSubject: _upDownPageLimitSubject,
+        upDownButtonEnableStatePublishSubject: _upDownButtonStateSubject,
+        firstDate: _firstDate,
+        lastDate: _lastDate,
+        onMonthSelected: _onMonthSelected,
+        locale: widget.locale,
+        capitalizeFirstLetter: widget.capitalizeFirstLetter,
+        selectedMonthBackgroundColor: widget.selectedMonthBackgroundColor,
+        selectedMonthTextColor: widget.selectedMonthTextColor,
+        unselectedMonthTextColor: widget.unselectedMonthTextColor,
+      );
+    });
+  }
 
   void _onUpButtonPressed() {
-    if (_yearSelectorState.currentState != null) {
-      _yearSelectorState.currentState!.goUp();
-    } else {
-      _monthSelectorState.currentState!.goUp();
-    }
+    _yearSelectorKey.currentState?.goUp();
+    _monthSelectorKey.currentState?.goUp();
   }
 
   void _onDownButtonPressed() {
-    if (_yearSelectorState.currentState != null) {
-      _yearSelectorState.currentState!.goDown();
-    } else {
-      _monthSelectorState.currentState!.goDown();
-    }
+    _yearSelectorKey.currentState?.goDown();
+    _monthSelectorKey.currentState?.goDown();
   }
 }

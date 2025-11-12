@@ -43,6 +43,7 @@ class UserDetailLocal {
   final List<AnnouncementLocal> announcement;
 
   @HiveField(12)
+
   final VehicleLocal vehicle;
 
   UserDetailLocal({

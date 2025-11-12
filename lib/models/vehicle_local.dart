@@ -26,4 +26,13 @@ class VehicleLocal {
     required this.repairStatus,
     required this.capacity,
   });
+  // factory VehicleLocal.empty() {
+  //   return VehicleLocal(
+  //     id: '',
+  //     vehicleNumber: '',
+  //     isAvailable: '0',
+  //     repairStatus: 'Normal Ya',
+  //     capacity: '0',
+  //   );
+  // }
 }

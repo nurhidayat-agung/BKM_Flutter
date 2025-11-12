@@ -1,12 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:newbkmmobile/blocs/user_detail_local/user_detail_local_bloc.dart';
 import 'package:newbkmmobile/core/drawer_item.dart';
 import 'package:newbkmmobile/core/r.dart';
-import 'package:newbkmmobile/repositories/user_detail_repository.dart';
+import 'package:newbkmmobile/models/login/UserSession.dart';
+import 'package:newbkmmobile/repositories/login_repository.dart';
 import 'package:newbkmmobile/ui/pages/change_password/change_password_page.dart';
 import 'package:newbkmmobile/ui/widgets/logout_dialog.dart';
-
 import 'home/home_page.dart';
 
 class DrawerMenuPage extends StatefulWidget {
@@ -17,39 +15,46 @@ class DrawerMenuPage extends StatefulWidget {
 }
 
 class _DrawerMenuPageState extends State<DrawerMenuPage> {
-  final _userDetailLocalBloc  = UserDetailLocalBloc(UserDetailRepository());
-  final listDrawer            = [
+  final LoginRepository _loginRepository = LoginRepository();
+  UserSession? _userSession;
+
+  final listDrawer = [
     DrawerItem(R.strings.mainMenu, Icons.home),
     DrawerItem(R.strings.changePassword, Icons.key),
     DrawerItem(R.strings.exit, Icons.logout),
   ];
-  int selectedDrawerIndex     = 0;
+
+  int selectedDrawerIndex = 0;
 
   @override
   void initState() {
     super.initState();
-    _userDetailLocalBloc.add(UserDetailLocalFromDB());
+    _loadUserSession();
   }
 
-  _getDrawerItemWidget(int pos) {
+  Future<void> _loadUserSession() async {
+    final session = await _loginRepository.getUserSession();
+    setState(() => _userSession = session);
+  }
+
+  Widget _getDrawerItemWidget(int pos) {
     switch (pos) {
       case 0:
-        return const HomePage();
+        return HomePage(loginRepository: _loginRepository);
       case 1:
         return const ChangePasswordPage();
-      case 2:
-        return const Center();
       default:
-        return Center(child: Text(R.strings.errorWidget));
+        return const Center();
     }
   }
 
-  _onSelectItem(int index) {
+  void _onSelectItem(int index) {
     if (index == 2) {
       Navigator.of(context).pop();
       showDialog(
-          context: context,
-          builder: (BuildContext context) => const LogoutDialog());
+        context: context,
+        builder: (BuildContext context) => const LogoutDialog(),
+      );
     } else {
       setState(() => selectedDrawerIndex = index);
       Navigator.of(context).pop();
@@ -61,158 +66,106 @@ class _DrawerMenuPageState extends State<DrawerMenuPage> {
     List<Widget> listDrawerOptions = [];
     for (var i = 0; i < listDrawer.length; i++) {
       var d = listDrawer[i];
-      listDrawerOptions.add(ListTile(
-        leading: Icon(
-          d.icon,
-          color: i == selectedDrawerIndex
-              ? R.colors.colorPrimary
-              : R.colors.colorTextLight,
-        ),
-        title: Text(
-          d.title,
-          style: TextStyle(
+      listDrawerOptions.add(
+        ListTile(
+          leading: Icon(
+            d.icon,
             color: i == selectedDrawerIndex
-                ? R.colors.colorPrimaryDark
+                ? R.colors.colorPrimary
                 : R.colors.colorTextLight,
           ),
+          title: Text(
+            d.title,
+            style: TextStyle(
+              color: i == selectedDrawerIndex
+                  ? R.colors.colorPrimaryDark
+                  : R.colors.colorTextLight,
+            ),
+          ),
+          selected: i == selectedDrawerIndex,
+          onTap: () => _onSelectItem(i),
         ),
-        selected: i == selectedDrawerIndex,
-        onTap: () => _onSelectItem(i),
-      ));
+      );
     }
 
+    final name = _userSession?.name ?? "User Offline";
+    final roleId = _userSession?.roleId ?? "-";
+
     return Scaffold(
-      appBar: AppBar(
+      appBar: selectedDrawerIndex == 0
+          ? null
+          : AppBar(
         title: Text(
           listDrawer[selectedDrawerIndex].title,
-          style: const TextStyle(
-            color: Colors.white,
-          ),
+          style: const TextStyle(color: Colors.white),
         ),
         iconTheme: const IconThemeData(color: Colors.white),
       ),
+
       drawer: Drawer(
-        child: BlocBuilder<UserDetailLocalBloc, UserDetailLocalState>(
-          bloc: _userDetailLocalBloc,
-          builder: (context, state) {
-            if (state is UserDetailLocalInitial) {
-              return const Center(child: CircularProgressIndicator());
-            } else if (state is UserDetailLocalLoading) {
-              return const Center(child: CircularProgressIndicator());
-            } else if (state is UserDetailLocalFromDBSuccess) {
-              return Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.stretch,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            DrawerHeader(
+              margin: EdgeInsets.zero,
+              padding: EdgeInsets.zero,
+              decoration: BoxDecoration(
+                color: R.colors.colorPrimary,
+              ),
+              child: Stack(
                 children: [
-                  DrawerHeader(
-                    margin: EdgeInsets.zero,
-                    padding: EdgeInsets.zero,
-                    decoration: BoxDecoration(
-                      color: R.colors.colorPrimary,
-                    ),
-                    child: Stack(
+                  Positioned(
+                    bottom: 15.0,
+                    left: 15.0,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Positioned(
-                          bottom: 15.0,
-                          left: 15.0,
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              SizedBox(
-                                child: Card(
-                                  color: Colors.white,
-                                  elevation: 0.0,
-                                  shape: RoundedRectangleBorder(
-                                      borderRadius:
-                                          BorderRadius.circular(100.0)),
-                                  child: Container(
-                                    height: 70.0,
-                                    width: 70.0,
-                                    decoration: BoxDecoration(
-                                      borderRadius:
-                                          BorderRadius.circular(100.0),
-                                      image: DecorationImage(
-                                        image: NetworkImage(state
-                                            .listUserDetailLocal[0].profilImg),
-                                        onError: (error, stackTrace) =>
-                                            const Text(""),
-                                        fit: BoxFit.cover,
-                                      ),
-                                    ),
-                                  ),
-                                ),
+                        Card(
+                          color: Colors.white,
+                          elevation: 0.0,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(100.0),
+                          ),
+                          child: Container(
+                            height: 70.0,
+                            width: 70.0,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(100.0),
+                              image: const DecorationImage(
+                                image: AssetImage(
+                                    'assets/images/default_user.png'),
+                                fit: BoxFit.cover,
                               ),
-                              const SizedBox(height: 5.0),
-                              Container(
-                                margin: const EdgeInsets.only(
-                                    left: 5.0, right: 10.0),
-                                child: Text(
-                                  state.listUserDetailLocal[0].fullName,
-                                  style: const TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 14.0,
-                                  ),
-                                ),
-                              ),
-                              const SizedBox(height: 5.0),
-                              Container(
-                                margin: const EdgeInsets.only(
-                                    left: 5.0, right: 10.0),
-                                child: Text(
-                                  state.listUserDetailLocal[0].mobileNumber,
-                                  style: TextStyle(
-                                    color: Colors.grey[350]!,
-                                    fontSize: 14.0,
-                                  ),
-                                ),
-                              ),
-                              const SizedBox(height: 5.0),
-                              Container(
-                                margin: const EdgeInsets.only(
-                                    left: 5.0, right: 10.0),
-                                child: Text(
-                                  "${R.strings.pengabdian} : ${state.listUserDetailLocal[0].dedication}",
-                                  style: TextStyle(
-                                    color: Colors.grey[350]!,
-                                    fontSize: 14.0,
-                                  ),
-                                ),
-                              ),
-                            ],
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 5.0),
+                        Text(
+                          name,
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 14.0,
+                          ),
+                        ),
+                        const SizedBox(height: 5.0),
+                        Text(
+                          "Role ID: $roleId",
+                          style: TextStyle(
+                            color: Colors.grey[350],
+                            fontSize: 14.0,
                           ),
                         ),
                       ],
                     ),
                   ),
-                  Column(children: listDrawerOptions),
                 ],
-              );
-            } else if (state is UserDetailLocalError) {
-              return Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const Icon(
-                      Icons.error,
-                      color: Colors.red,
-                      size: 50.0,
-                    ),
-                    Text(
-                      state.message,
-                      style: const TextStyle(
-                        fontSize: 14.0,
-                      ),
-                    ),
-                  ],
-                ),
-              );
-            }
-            throw ScaffoldMessenger.of(context)
-                .showSnackBar(SnackBar(content: Text(R.strings.errorWidget)));
-          },
+              ),
+            ),
+            Expanded(child: ListView(children: listDrawerOptions)),
+          ],
         ),
       ),
+
       body: _getDrawerItemWidget(selectedDrawerIndex),
     );
   }

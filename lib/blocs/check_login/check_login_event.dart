@@ -6,5 +6,5 @@ abstract class CheckLoginEvent extends Equatable {
 
 class CheckLogin extends CheckLoginEvent {
   @override
-  List<Object> get props => [];
+  List<Object?> get props => [];
 }
