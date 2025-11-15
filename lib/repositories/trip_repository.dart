@@ -2,10 +2,14 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:newbkmmobile/core/constants.dart';
+import 'package:newbkmmobile/models/new_trip/delivery_response.dart' show DeliveryResponse;
 import 'package:newbkmmobile/repositories/login_repository.dart';
 import 'package:http/http.dart' as http;
+import 'package:newbkmmobile/repositories/session_manager_repository.dart';
+import 'package:newbkmmobile/services/http_communicator.dart';
 
 class TripRepository {
+  final HttpCommunicator _http = HttpCommunicator();
 
   Future<http.Response> getTrip() async {
     final loginLocal = await LoginRepository().getLoginLocal();
@@ -77,5 +81,56 @@ class TripRepository {
 
     return responseString;
   }
+
+  /// Ambil data delivery order baru berdasarkan driver ID
+  /// Return tuple: (statusCode, DeliveryResponse?)
+  /// Return tuple: (statusCode, DeliveryResponse?)
+  /// Return tuple: (statusCode, DeliveryResponse?)
+  Future<(int, DeliveryResponse?)> getNewDeliveryOrder() async {
+    try {
+      final driver = await SessionManager.getUserSession();
+
+      if (driver == null) {
+        print("Session tidak ditemukan. Login ulang.");
+        return (401, null);
+      }
+
+      if (driver.driverId == null || driver.driverId!.isEmpty) {
+        print("driverId kosong di Hive");
+        return (400, null);
+      }
+
+      if (driver.token == null || driver.token!.isEmpty) {
+        print("Token kosong di Hive");
+        return (401, null);
+      }
+
+      final endpoint =
+          "delivery-order-details/new?driver_id=${driver.driverId}";
+
+      // Tambahkan header lengkap
+      final httpResponse = await _http.get(
+        endpoint,
+        headers: {
+          "X-Client-Type": "mobile",
+          "Content-Type": "application/json",
+          "Accept": "application/json",
+          "Authorization": "Bearer ${driver.token}",
+        },
+      );
+
+      if (httpResponse.status == 200) {
+        final resp = DeliveryResponse.fromJson(httpResponse.result);
+        return (200, resp);
+      }
+
+      return (httpResponse.status, null);
+    } catch (e) {
+      print("Error fetching delivery order: $e");
+      return (500, null);
+    }
+  }
+
+
 
 }

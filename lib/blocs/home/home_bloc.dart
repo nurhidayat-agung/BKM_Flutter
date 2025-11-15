@@ -1,5 +1,6 @@
 // home_bloc.dart
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:newbkmmobile/repositories/session_manager_repository.dart';
 import 'home_event.dart';
 import 'home_state.dart';
 import 'package:newbkmmobile/repositories/login_repository.dart';
@@ -11,7 +12,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     on<LoadUserData>((event, emit) async {
       emit(HomeLoading());
       try {
-        final userSession = await loginRepository.getUserSession();
+        final userSession = await SessionManager.getUserSession();
 
         if (userSession != null) {
           emit(HomeLoaded(

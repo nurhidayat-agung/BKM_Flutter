@@ -1,9 +1,9 @@
 import 'dart:convert';
 import 'package:hive/hive.dart';
-import 'package:newbkmmobile/core/R/HiveTypeId.dart';
 import 'package:newbkmmobile/core/constants.dart';
 import 'package:newbkmmobile/models/login_local.dart';
 import 'package:newbkmmobile/models/login/login_resp.dart';
+import 'package:newbkmmobile/repositories/session_manager_repository.dart';
 import 'package:newbkmmobile/services/http_communicator.dart';
 import '../core/R/hive/AuthBoxSchema.dart';
 import '../models/login/UserSession.dart';
@@ -68,44 +68,6 @@ class LoginRepository {
     }
   }
 
-
-  // -------------------------------------------------------
-  // REGISTER ADAPTER USERSESSION
-  // -------------------------------------------------------
-  Future<void> _registerUserSessionAdapter() async {
-    if (!Hive.isAdapterRegistered(HiveTypeId.userSession)) { // typeId dari UserSession
-      Hive.registerAdapter(UserSessionAdapter());
-    }
-  }
-
-  // -------------------------------------------------------
-  // GET USER SESSION
-  // -------------------------------------------------------
-  Future<UserSession?> getUserSession() async {
-    await _registerUserSessionAdapter();
-    final box = await Hive.openBox<UserSession>(AuthBoxSchema.authBox);
-    if (box.isEmpty) return null;
-    return box.values.first;
-  }
-
-  // -------------------------------------------------------
-  // SAVE USER SESSION
-  // -------------------------------------------------------
-  Future<void> saveUserSession(UserSession session) async {
-    await _registerUserSessionAdapter();
-    final box = await Hive.openBox<UserSession>(AuthBoxSchema.authBox);
-    await box.clear(); // hapus session lama
-    await box.add(session);
-  }
-
-  // -------------------------------------------------------
-  // DELETE USER SESSION
-  // -------------------------------------------------------
-  Future<void> deleteUserSession() async {
-
-    await Hive.deleteFromDisk();
-  }
-
   /// --------------------------------------------------------------------------
   /// LOGIN (via HttpCommunicator)
   /// --------------------------------------------------------------------------
@@ -139,7 +101,7 @@ class LoginRepository {
       session.status = response.status;
 
       // ✅ Simpan session ke Hive
-      await saveUserSession(session);
+      await SessionManager.saveUserSession(session);
 
       // 🟢 Return LoginResp sukses
       return LoginResp(
@@ -167,7 +129,7 @@ class LoginRepository {
   /// 🔹 Hit ke endpoint logout (misalnya: POST /logout)
   Future<bool> logoutRemote() async {
     try {
-      final userSession = await getUserSession();
+      final userSession = await SessionManager.getUserSession();
       if (userSession == null || userSession.token == null) {
         return false;
       }
@@ -182,7 +144,7 @@ class LoginRepository {
       );
 
       if (response.status == 200) {
-        await deleteUserSession();
+        await SessionManager.deleteUserSession();
         return true;
       } else {
         return false;

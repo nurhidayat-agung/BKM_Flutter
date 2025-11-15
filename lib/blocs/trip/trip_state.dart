@@ -16,7 +16,7 @@ class TripLoading extends TripState {
 }
 
 class TripSuccess extends TripState {
-  final List<TripResp> listTripResp;
+  final List<DeliveryData> listTripResp;
   const TripSuccess(this.listTripResp);
   @override
   List<Object> get props => [listTripResp];
