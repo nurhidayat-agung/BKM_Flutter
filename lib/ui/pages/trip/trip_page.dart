@@ -49,7 +49,7 @@ class TripView extends StatelessWidget {
 
             final trip = state.listTripResp.first;
 
-            return Padding(
+             return SingleChildScrollView(
               padding: const EdgeInsets.all(16.0),
               child: _TripCard(trip),
             );
