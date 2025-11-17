@@ -21,26 +21,27 @@ class HistoryDetailResp {
   String? qrcode;
   String? spb;
 
-  HistoryDetailResp(
-      {this.id,
-        this.doConnect,
-        this.subDo,
-        this.spbNumber,
-        this.doNumber,
-        this.loadDate,
-        this.unloadDate,
-        this.driverId,
-        this.driverName,
-        this.pksName,
-        this.destinationName,
-        this.amountSent,
-        this.amountReceived,
-        this.commodityName,
-        this.vehicleNumber,
-        this.bonus,
-        this.trvlExpenses,
-        this.qrcode,
-        this.spb});
+  HistoryDetailResp({
+    this.id,
+    this.doConnect,
+    this.subDo,
+    this.spbNumber,
+    this.doNumber,
+    this.loadDate,
+    this.unloadDate,
+    this.driverId,
+    this.driverName,
+    this.pksName,
+    this.destinationName,
+    this.amountSent,
+    this.amountReceived,
+    this.commodityName,
+    this.vehicleNumber,
+    this.bonus,
+    this.trvlExpenses,
+    this.qrcode,
+    this.spb,
+  });
 
   HistoryDetailResp.fromJson(Map<String, dynamic> json) {
     id = json['id'];
@@ -67,28 +68,30 @@ class HistoryDetailResp {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['id'] = this.id;
-    if (this.doConnect != null) {
-      data['do_connect'] = this.doConnect!.toJson();
+    final Map<String, dynamic> data = {};
+
+    data['id'] = id;
+    if (doConnect != null) {
+      data['do_connect'] = doConnect!.toJson();
     }
-    data['sub_do'] = this.subDo;
-    data['spb_number'] = this.spbNumber;
-    data['do_number'] = this.doNumber;
-    data['load_date'] = this.loadDate;
-    data['unload_date'] = this.unloadDate;
-    data['driver_id'] = this.driverId;
-    data['driver_name'] = this.driverName;
-    data['pks_name'] = this.pksName;
-    data['destination_name'] = this.destinationName;
-    data['amount_sent'] = this.amountSent;
-    data['amount_received'] = this.amountReceived;
-    data['commodity_name'] = this.commodityName;
-    data['vehicle_number'] = this.vehicleNumber;
-    data['bonus'] = this.bonus;
-    data['trvl_expenses'] = this.trvlExpenses;
-    data['qrcode'] = this.qrcode;
-    data['spb'] = this.spb;
+    data['sub_do'] = subDo;
+    data['spb_number'] = spbNumber;
+    data['do_number'] = doNumber;
+    data['load_date'] = loadDate;
+    data['unload_date'] = unloadDate;
+    data['driver_id'] = driverId;
+    data['driver_name'] = driverName;
+    data['pks_name'] = pksName;
+    data['destination_name'] = destinationName;
+    data['amount_sent'] = amountSent;
+    data['amount_received'] = amountReceived;
+    data['commodity_name'] = commodityName;
+    data['vehicle_number'] = vehicleNumber;
+    data['bonus'] = bonus;
+    data['trvl_expenses'] = trvlExpenses;
+    data['qrcode'] = qrcode;
+    data['spb'] = spb;
+
     return data;
   }
 }

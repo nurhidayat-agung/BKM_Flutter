@@ -22,13 +22,15 @@ class LoginLocalAdapter extends TypeAdapter<LoginLocal> {
       userId: fields[2] as String,
       token: fields[3] as String,
       firebaseToken: fields[4] as String,
+      siteId: fields[5] as String?,
+      driverId: fields[6] as String?,
     );
   }
 
   @override
   void write(BinaryWriter writer, LoginLocal obj) {
     writer
-      ..writeByte(5)
+      ..writeByte(7)
       ..writeByte(0)
       ..write(obj.status)
       ..writeByte(1)
@@ -38,16 +40,12 @@ class LoginLocalAdapter extends TypeAdapter<LoginLocal> {
       ..writeByte(3)
       ..write(obj.token)
       ..writeByte(4)
-      ..write(obj.firebaseToken);
+      ..write(obj.firebaseToken)
+      ..writeByte(5)
+      ..write(obj.siteId)
+      ..writeByte(6)
+      ..write(obj.driverId);
   }
-
-  @override
-  int get hashCode => typeId.hashCode;
-
-  @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      other is LoginLocalAdapter &&
-          runtimeType == other.runtimeType &&
-          typeId == other.typeId;
 }
+
+// GENERATED CODE - DO NOT MODIFY BY HAND

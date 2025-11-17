@@ -11,7 +11,7 @@ import '../models/login/login_response.dart';
 import '../services/api_service.dart';
 
 class LoginRepository {
-  final ApiService _apiService = ApiService(); // versi API manual
+  final ApiService _apiService = ApiService();
   final HttpCommunicator _httpCommunicator = HttpCommunicator();
 
   // ===============================================================
@@ -22,18 +22,17 @@ class LoginRepository {
     if (!Hive.isAdapterRegistered(0)) {
       Hive.registerAdapter(LoginLocalAdapter());
     }
-    var box = await Hive.openBox<LoginLocal>(Constants.boxLogin);
-    return box;
+    return await Hive.openBox<LoginLocal>(Constants.boxLogin);
   }
 
   Future<List<LoginLocal>> getLoginLocal() async {
     final box = await openBox();
-    List<LoginLocal> list = box.values.toList();
-    return list;
+    return box.values.toList();
   }
 
   Future<void> addLoginLocal(LoginLocal loginLocal) async {
     final box = await openBox();
+    await box.clear();
     await box.add(loginLocal);
   }
 
@@ -46,7 +45,6 @@ class LoginRepository {
   // ===============  MODE ONLINE LOGIN  ===========================
   // ===============================================================
 
-  /// 🔹 Mode Online Login (via API JSON)
   Future<LoginResp> loginTemp(String phone, String password) async {
     final result = await _apiService.login(phone, password);
     if (result != null) {
@@ -68,19 +66,16 @@ class LoginRepository {
     }
   }
 
+  // ===========================================================
+  // REGISTER / SAVE / LOAD USER SESSION
+  // ===========================================================
 
-  // -------------------------------------------------------
-  // REGISTER ADAPTER USERSESSION
-  // -------------------------------------------------------
   Future<void> _registerUserSessionAdapter() async {
-    if (!Hive.isAdapterRegistered(HiveTypeId.userSession)) { // typeId dari UserSession
+    if (!Hive.isAdapterRegistered(HiveTypeId.userSession)) {
       Hive.registerAdapter(UserSessionAdapter());
     }
   }
 
-  // -------------------------------------------------------
-  // GET USER SESSION
-  // -------------------------------------------------------
   Future<UserSession?> getUserSession() async {
     await _registerUserSessionAdapter();
     final box = await Hive.openBox<UserSession>(AuthBoxSchema.authBox);
@@ -88,27 +83,21 @@ class LoginRepository {
     return box.values.first;
   }
 
-  // -------------------------------------------------------
-  // SAVE USER SESSION
-  // -------------------------------------------------------
   Future<void> saveUserSession(UserSession session) async {
     await _registerUserSessionAdapter();
     final box = await Hive.openBox<UserSession>(AuthBoxSchema.authBox);
-    await box.clear(); // hapus session lama
+    await box.clear();
     await box.add(session);
   }
 
-  // -------------------------------------------------------
-  // DELETE USER SESSION
-  // -------------------------------------------------------
   Future<void> deleteUserSession() async {
-
     await Hive.deleteFromDisk();
   }
 
-  /// --------------------------------------------------------------------------
-  /// LOGIN (via HttpCommunicator)
-  /// --------------------------------------------------------------------------
+  // ===============================================================
+  // ======================  LOGIN BARU (QUBU API)  =================
+  // ===============================================================
+
   Future<LoginResp> login(String phone, String password) async {
     try {
       final response = await _httpCommunicator.postJson(
@@ -122,33 +111,53 @@ class LoginRepository {
         },
       );
 
-
-      // 🔒 Validasi hasil
+      // Gagal login
       if (response.status != 200) {
         return LoginResp(
           status: 401,
-          message: "login gagal",
+          message: "Login gagal",
           userId: "",
           token: "",
           firebaseToken: "",
         );
       }
 
+      // PARSING JSON
       var resp = LoginResponse.fromJson(response.result);
+
+      // SIMPAN USERSESSION
       var session = UserSession.fromLoginResponse(resp);
       session.status = response.status;
-
-      // ✅ Simpan session ke Hive
       await saveUserSession(session);
 
-      // 🟢 Return LoginResp sukses
+      // --------------------------------------------------------
+      //  SIMPAN LOGIN LOCAL
+      // --------------------------------------------------------
+
+      final user = resp.data.user;
+      final driver = user.driver;
+
+      await addLoginLocal(
+        LoginLocal(
+          status: 200,
+          message: "Login berhasil",
+          userId: user.id,
+          token: resp.data.token,
+          firebaseToken: "",
+          siteId: driver.siteId,
+          driverId: driver.id,
+        ),
+      );
+
+      // Berhasil
       return LoginResp(
         status: 200,
         message: "Login berhasil",
-        userId: session.userId,
-        token: session.token,
-        firebaseToken: ''
+        userId: user.id,
+        token: resp.data.token,
+        firebaseToken: '',
       );
+
     } catch (e) {
       return LoginResp(
         status: 500,
@@ -161,10 +170,9 @@ class LoginRepository {
   }
 
   // ===============================================================
-  // ===============  LOGOUT (REMOTE)  ==============================
+  // ===============  LOGOUT (REMOTE)  =============================
   // ===============================================================
 
-  /// 🔹 Hit ke endpoint logout (misalnya: POST /logout)
   Future<bool> logoutRemote() async {
     try {
       final userSession = await getUserSession();
@@ -187,11 +195,13 @@ class LoginRepository {
       } else {
         return false;
       }
+
     } catch (e) {
       print('Logout error: $e');
       return false;
     }
   }
+
   // ===============================================================
   // ===============  SESSION HELPERS  =============================
   // ===============================================================

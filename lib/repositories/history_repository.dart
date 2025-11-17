@@ -7,35 +7,34 @@ class HistoryRepository {
   Future<http.Response> getHistory() async {
     final loginLocal = await LoginRepository().getLoginLocal();
 
+    final driverId = loginLocal[0].driverId ?? "";
+    final siteId = loginLocal[0].siteId ?? "";
+
     final response = await http.get(
-      Uri.parse("${Constants.baseUrl}transaction/histories"),
+      Uri.parse("${Constants.baseUrl}api/delivery-order-details/completed?driver_id=$driverId"),
       headers: {
-        "Client-Service": "driver-client",
-        "Auth-Key": "bkmrestapi",
-        "Content-Type": "application/x-www-form-urlencoded",
-        "Authorization": loginLocal[0].token,
-        "User-ID": loginLocal[0].userId,
+        "Accept": "application/json",
+        "X-Site-ID": siteId,
+        "Authorization": "Bearer ${loginLocal[0].token}",
       },
     );
-
     return response;
   }
 
   Future<http.Response> getHistoryDetail(String id) async {
     final loginLocal = await LoginRepository().getLoginLocal();
 
+    final siteId = loginLocal[0].siteId ?? "";
+
     final response = await http.get(
-      Uri.parse("${Constants.baseUrl}transaction/history_detail/$id"),
+      Uri.parse("${Constants.baseUrl}api/delivery-order-details/$id"),
       headers: {
-        "Client-Service": "driver-client",
-        "Auth-Key": "bkmrestapi",
-        "Content-Type": "application/x-www-form-urlencoded",
-        "Authorization": loginLocal[0].token,
-        "User-ID": loginLocal[0].userId,
+        "Accept": "application/json",
+        "X-Site-ID": siteId,
+        "Authorization": "Bearer ${loginLocal[0].token}",
       },
     );
 
     return response;
   }
-
 }

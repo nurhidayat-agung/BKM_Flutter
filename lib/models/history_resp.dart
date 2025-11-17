@@ -9,24 +9,36 @@ class HistoryResp {
   String? loadDate;
   String? unloadDate;
   String? driverId;
+
+  // Tambahan untuk tampilan list & compatibility
+  String? driverName;
+  String? vehicleNumber;
+
+  // field untuk Langsir
+  String? type; // "LANGSIR" / "NORMAL"
+
   String? pksName;
   String? destinationName;
   String? commodityName;
   String? bonus;
 
-  HistoryResp(
-      {this.id,
-        this.doConnect,
-        this.doNumber,
-        this.subDo,
-        this.spbNumber,
-        this.loadDate,
-        this.unloadDate,
-        this.driverId,
-        this.pksName,
-        this.destinationName,
-        this.commodityName,
-        this.bonus});
+  HistoryResp({
+    this.id,
+    this.doConnect,
+    this.doNumber,
+    this.subDo,
+    this.spbNumber,
+    this.loadDate,
+    this.unloadDate,
+    this.driverId,
+    this.driverName,
+    this.vehicleNumber,
+    this.type,
+    this.pksName,
+    this.destinationName,
+    this.commodityName,
+    this.bonus,
+  });
 
   HistoryResp.fromJson(Map<String, dynamic> json) {
     id = json['id'];
@@ -39,6 +51,11 @@ class HistoryResp {
     loadDate = json['load_date'];
     unloadDate = json['unload_date'];
     driverId = json['driver_id'];
+
+    driverName = json['driver_name'];
+    vehicleNumber = json['vehicle_number'];
+    type = json['type'];
+
     pksName = json['pks_name'];
     destinationName = json['destination_name'];
     commodityName = json['commodity_name'];
@@ -46,21 +63,29 @@ class HistoryResp {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['id'] = this.id;
-    if (this.doConnect != null) {
-      data['do_connect'] = this.doConnect!.toJson();
+    final Map<String, dynamic> data = {};
+
+    data['id'] = id;
+    if (doConnect != null) {
+      data['do_connect'] = doConnect!.toJson();
     }
-    data['do_number'] = this.doNumber;
-    data['sub_do'] = this.subDo;
-    data['spb_number'] = this.spbNumber;
-    data['load_date'] = this.loadDate;
-    data['unload_date'] = this.unloadDate;
-    data['driver_id'] = this.driverId;
-    data['pks_name'] = this.pksName;
-    data['destination_name'] = this.destinationName;
-    data['commodity_name'] = this.commodityName;
-    data['bonus'] = this.bonus;
+    data['do_number'] = doNumber;
+    data['sub_do'] = subDo;
+    data['spb_number'] = spbNumber;
+    data['load_date'] = loadDate;
+    data['unload_date'] = unloadDate;
+    data['driver_id'] = driverId;
+
+    data['driver_name'] = driverName;
+    data['vehicle_number'] = vehicleNumber;
+    data['type'] = type;
+
+    data['pks_name'] = pksName;
+    data['destination_name'] = destinationName;
+    data['commodity_name'] = commodityName;
+    data['bonus'] = bonus;
+
     return data;
   }
 }
+
