@@ -2,6 +2,7 @@ import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:newbkmmobile/models/login/UserSession.dart';
 import 'package:newbkmmobile/repositories/login_repository.dart';
+import 'package:newbkmmobile/repositories/session_manager_repository.dart';
 
 part 'check_login_event.dart';
 part 'check_login_state.dart';
@@ -13,7 +14,7 @@ class CheckLoginBloc extends Bloc<CheckLoginEvent, CheckLoginState> {
     on<CheckLogin>((event, emit) async {
       emit(const CheckLoginLoading());
       try {
-        final session = await _loginRepository.getUserSession();
+        final session = await SessionManager.getUserSession();
 
         if (session != null && session.userId?.isNotEmpty == true) {
           // ✅ UserSession ditemukan → langsung login

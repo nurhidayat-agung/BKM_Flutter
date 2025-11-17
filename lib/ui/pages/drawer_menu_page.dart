@@ -3,6 +3,7 @@ import 'package:newbkmmobile/core/drawer_item.dart';
 import 'package:newbkmmobile/core/r.dart';
 import 'package:newbkmmobile/models/login/UserSession.dart';
 import 'package:newbkmmobile/repositories/login_repository.dart';
+import 'package:newbkmmobile/repositories/session_manager_repository.dart';
 import 'package:newbkmmobile/ui/pages/change_password/change_password_page.dart';
 import 'package:newbkmmobile/ui/widgets/logout_dialog.dart';
 import 'home/home_page.dart';
@@ -33,7 +34,7 @@ class _DrawerMenuPageState extends State<DrawerMenuPage> {
   }
 
   Future<void> _loadUserSession() async {
-    final session = await _loginRepository.getUserSession();
+    final session = await SessionManager.getUserSession();
     setState(() => _userSession = session);
   }
 
