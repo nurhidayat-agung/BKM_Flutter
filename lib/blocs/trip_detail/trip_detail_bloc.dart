@@ -13,7 +13,7 @@ class TripDetailBloc extends Bloc<TripDetailEvent, TripDetailState> {
 
   TripDetailBloc(this._tripRepository) : super(TripDetailInitial()) {
     on<TripDetailEvent>((event, emit) async {
-      if (event is TripDetail) {
+      if (event is TripDetailDataEvent) {
         try {
           emit(const TripDetailLoading());
           final response = await _tripRepository.getTripDetail(event.id);

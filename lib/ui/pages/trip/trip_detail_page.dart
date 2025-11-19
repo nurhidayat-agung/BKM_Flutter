@@ -31,7 +31,7 @@ class _TripDetailPageState extends State<TripDetailPage> {
   @override
   void initState() {
     super.initState();
-    _tripDetailBloc.add(TripDetail(id: widget.id));
+    _tripDetailBloc.add(TripDetailDataEvent(id: widget.id));
   }
 
   @override

@@ -189,7 +189,7 @@ class LoginRepository {
         body: {},
       );
 
-      if (response.status == 200) {
+      if (response.status == 200 || response.status == 401) {
         await deleteUserSession();
         return true;
       } else {

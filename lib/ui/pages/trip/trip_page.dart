@@ -1,4 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:newbkmmobile/blocs/trip/trip_bloc.dart';
+import 'package:newbkmmobile/models/new_trip/delivery_response.dart';
+import 'package:newbkmmobile/models/new_trip/trip_detail_response.dart';
+
+import '../../../repositories/trip_repository.dart';
 
 class TripPage extends StatefulWidget {
   const TripPage({Key? key}) : super(key: key);
@@ -8,12 +14,12 @@ class TripPage extends StatefulWidget {
 }
 
 class _TripPageState extends State<TripPage> {
-  int _step = 0;
+  String _step = "";
 
-  final String noDO = "051/KAL-EUP/IP-CPO/X/2025";
-  final String noDOSambung = "10002/TEST/VIII/2025";
-  final String namaSupir = "DEDI PURWANTO";
-  final String noKendaraan = "B 9501 UVX";
+  final String noDO = "";
+  final String noDOSambung = "";
+  final String namaSupir = "";
+  final String noKendaraan = "";
 
   // Controller MUAT
   final TextEditingController spbMuat = TextEditingController();
@@ -51,6 +57,176 @@ class _TripPageState extends State<TripPage> {
     nettoBongkarSambung.dispose();
     super.dispose();
   }
+
+  // ========== BUILD UI ==========
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.grey.shade100,
+      appBar: PreferredSize(
+        preferredSize: const Size.fromHeight(72),
+        child: AppBar(
+          backgroundColor: const Color(0xFF002B4C),
+          elevation: 0,
+          centerTitle: true,
+          title: const Text("Pengangkutan Baru",
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
+              )),
+          leading: Padding(
+            padding: const EdgeInsets.only(left: 10),
+            child: InkWell(
+              borderRadius: BorderRadius.circular(8),
+              onTap: () => Navigator.pop(context),
+              child: Container(
+                decoration: BoxDecoration(
+                  color: const Color(0xFF0B3B54),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                margin: const EdgeInsets.all(8),
+                child: const Icon(Icons.chevron_left, color: Colors.white),
+              ),
+            ),
+          ),
+        ),
+      ),
+      body: BlocProvider(
+        create: (_) => TripBloc(TripRepository())..add(GetTrip()),
+        child: BlocBuilder<TripBloc, TripState>(
+          builder: (context, state) {
+            if (state is TripLoading) {
+              return const Center(child: CircularProgressIndicator());
+            }
+
+            if (state is TripError) {
+              return Center(child: Text("Error: ${state.message}"));
+            }
+
+            if (state is TripSuccess) {
+              final trip = state.tripDetail;
+              final delivery = state.deliveryData;
+
+              return SingleChildScrollView(
+                child: Column(
+                  children: [
+                    generateContent(context, trip, delivery),
+                    const SizedBox(height: 30),
+                  ],
+                ),
+              );
+            }
+
+            return const SizedBox();
+          },
+        ),
+      ),
+    );
+  }
+
+  Widget generateContent(
+      BuildContext context,
+      TripDetail data,
+      DeliveryData deliveryData)
+  {
+    Widget content = Container();
+    _step = data.status?.fieldValue ?? "";
+
+    if (_step == "waiting") {
+      content = Column(
+        children: [
+          buildInfoCard(data, deliveryData),
+          buildFirstButtons(context, data.id ?? ""),
+        ],
+      );
+    } else if (_step == "accepted") {
+      content = Column(
+        children: [
+          buildInfoCard(data, deliveryData),
+          mainButton("Menuju Lokasi Muat", () async {
+            if (await showConfirmDialog(
+                "Menuju Lokasi Muat", "Apakah anda akan menuju pemuatan?")) {
+              context.read<TripBloc>().add(
+                LoadingLocationTrip(deliveryOrderDetailId: data.id ?? "", nextStatus: "1"),
+              );
+            }
+          }),
+        ],
+      );
+    } else if (_step == "process") {
+      content = Column(
+        children: [
+          buildInfoCard(data, deliveryData),
+          mainButton("Tiba Lokasi Muat", () async {
+            if (await showConfirmDialog(
+                "Sampai Lokasi Muat", "Apakah anda sampai di lokasi pemuatan?")) {
+              context.read<TripBloc>().add(
+                LoadingLocationTrip(deliveryOrderDetailId: data.id ?? "", nextStatus: "2"),
+              );
+            }
+          }),
+        ],
+      );
+    } else if (_step == "2") {
+      content = Column(
+        children: [
+          buildInfoCard(data, deliveryData),
+          buildFormMuat(),
+        ],
+      );
+    } else if (_step == "3") {
+      content = Column(
+        children: [
+          buildInfoCard(data, deliveryData),
+          statusCard("MUAT"),
+          mainButton("Menuju Lokasi Bongkar", () async {
+            if (await showConfirmDialog("Menuju Lokasi Bongkar",
+                "Apakah anda akan menuju bongkar?")) {
+              setState(() => _step = "4");
+            }
+          }),
+        ],
+      );
+    } else if (_step == "4") {
+      content = Column(
+        children: [
+          buildInfoCard(data, deliveryData),
+          statusCard("MUAT"),
+          mainButton("Tiba Lokasi Bongkar", () async {
+            if (await showConfirmDialog(
+                "Tiba Lokasi Bongkar", "Apakah anda sudah tiba di lokasi?")) {
+              setState(() => _step = "5");
+            }
+          }),
+        ],
+      );
+    } else if (_step == "5") {
+      content = Column(
+        children: [
+          buildInfoCard(data, deliveryData),
+          statusCard("MUAT"),
+          buildFormBongkar(),
+        ],
+      );
+    } else if (_step == "6") {
+      content = Column(
+        children: [
+          buildInfoCard(data, deliveryData),
+          statusCard("EDIT MUAT"),
+          statusCard("EDIT BONGKAR"),
+          mainButton("Selesai", () {
+            ScaffoldMessenger.of(context)
+                .showSnackBar(const SnackBar(content: Text("Selesai")));
+            setState(() => _step = "0");
+          }),
+        ],
+      );
+    }
+
+    return content;
+  }
+
 
   Future<bool> showConfirmDialog(String title, String msg) async {
     return await showDialog(
@@ -108,8 +284,17 @@ class _TripPageState extends State<TripPage> {
     );
   }
 
-  // CARD INFO TRIP
-  Widget buildInfoCard() {
+  //Perubahan detail Pengangkutan(Card Info)
+  Widget buildInfoCard(TripDetail detail, DeliveryData deliveryData) {
+    final origin = deliveryData.deliveryOrder?.pksId ?? "-";
+    final destination = deliveryData.deliveryOrder?.destinationId ?? "-";
+    final commodity = deliveryData.deliveryOrder?.commodityId ?? "-";
+    final doBesar = deliveryData.deliveryOrder?.doNumber ?? "-";
+    final doDate = deliveryData.deliveryOrder?.doDate ?? "-";
+    final doKecil = deliveryData.linkedDetail?.deliveryOrder?.doNumber ?? "-";
+    final supir = detail.driver?.name ?? "-";
+    final kendaraan = detail.vehicle?.policeNumber ?? "-";
+
     return Container(
       margin: const EdgeInsets.fromLTRB(16, 18, 16, 8),
       padding: const EdgeInsets.all(14),
@@ -125,67 +310,100 @@ class _TripPageState extends State<TripPage> {
           )
         ],
       ),
-      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        Text("SAM1 → ASK",
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          /// SAM1 → ASK
+          Text(
+            "$origin → $destination",
             style: const TextStyle(
-                color: Color(0xFFD35400),
-                fontSize: 16,
-                fontWeight: FontWeight.w800)),
-        const SizedBox(height: 4),
-        const Text(
-          "PT. Subur Arum Makmur 1 → PT. Adhitya Serayakorita",
-          style: TextStyle(fontSize: 12, color: Colors.black54),
-        ),
-        const SizedBox(height: 12),
+              color: Color(0xFFD35400),
+              fontSize: 16,
+              fontWeight: FontWeight.w800,
+            ),
+          ),
+          const SizedBox(height: 4),
 
-        const Text("Komoditi", style: TextStyle(fontSize: 13)),
-        const Text("CPO (Crud Palm Oil)",
-            style: TextStyle(
-                fontSize: 13,
-                fontWeight: FontWeight.bold,
-                color: Color(0xFF0B3B54))),
-        const SizedBox(height: 12),
+          /// Sub description
+          Text(
+            "$origin → $destination",
+            style: const TextStyle(fontSize: 12, color: Colors.black54),
+          ),
 
-        const Text("No DO Besar", style: TextStyle(fontSize: 13)),
-        const SizedBox(height: 4),
-        Text(noDO,
+          const SizedBox(height: 12),
+
+          /// KOMODITI
+          const Text("Kommodity", style: TextStyle(fontSize: 13)),
+          Text(
+            commodity,
             style: const TextStyle(
-                fontSize: 15, fontWeight: FontWeight.w800)),
-        Text(noDOSambung, style: const TextStyle(color: Colors.black54)),
-        const Divider(height: 20),
+              fontSize: 13,
+              fontWeight: FontWeight.bold,
+              color: Color(0xFF0B3B54),
+            ),
+          ),
 
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: const [
-            Text("No DO Kecil",
-                style: TextStyle(fontSize: 13, fontWeight: FontWeight.w500)),
-            Text("01/15",
-                style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),
-          ],
-        ),
-        const SizedBox(height: 10),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            const Text("Nama Supir",
-                style: TextStyle(fontSize: 13, fontWeight: FontWeight.w500)),
-            Text(namaSupir,
-                style: const TextStyle(
-                    fontSize: 14, fontWeight: FontWeight.bold)),
-          ],
-        ),
-        const SizedBox(height: 10),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            const Text("No Kendaraan",
-                style: TextStyle(fontSize: 13, fontWeight: FontWeight.w500)),
-            Text(noKendaraan,
-                style: const TextStyle(
-                    fontSize: 14, fontWeight: FontWeight.bold)),
-          ],
-        ),
-      ]),
+          const SizedBox(height: 12),
+
+          /// DO BESAR
+          const Text("No DO Besar", style: TextStyle(fontSize: 13)),
+          const SizedBox(height: 4),
+          Text(
+            doBesar,
+            style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w800),
+          ),
+          Text(
+            doDate,
+            style: const TextStyle(color: Colors.black54),
+          ),
+
+          const Divider(height: 20),
+
+          /// DO KECIL
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              const Text("No DO Kecil",
+                  style: TextStyle(fontSize: 13, fontWeight: FontWeight.w500)),
+              Text(
+                doKecil,
+                style:
+                    const TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+              ),
+            ],
+          ),
+          const SizedBox(height: 10),
+
+          /// Supir
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              const Text("Nama Supir",
+                  style: TextStyle(fontSize: 13, fontWeight: FontWeight.w500)),
+              Text(
+                supir,
+                style:
+                    const TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+              ),
+            ],
+          ),
+          const SizedBox(height: 10),
+
+          /// Kendaraan
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              const Text("No Kendaraan",
+                  style: TextStyle(fontSize: 13, fontWeight: FontWeight.w500)),
+              Text(
+                kendaraan,
+                style:
+                    const TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+              ),
+            ],
+          ),
+        ],
+      ),
     );
   }
 
@@ -203,7 +421,7 @@ class _TripPageState extends State<TripPage> {
           ),
           isDense: true,
           contentPadding:
-          const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+              const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
         ),
         keyboardType: TextInputType.number,
       ),
@@ -222,8 +440,8 @@ class _TripPageState extends State<TripPage> {
           onPressed: onTap,
           style: ElevatedButton.styleFrom(
             backgroundColor: bg,
-            shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12)),
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
             elevation: 0,
           ),
           child: Text(text,
@@ -237,7 +455,7 @@ class _TripPageState extends State<TripPage> {
   }
 
   // Halaman awal: tombol Terima & Tolak
-  Widget buildFirstButtons() {
+  Widget buildFirstButtons(BuildContext context, String deliveryOrderDetailId) {
     return Padding(
       padding: const EdgeInsets.fromLTRB(16, 12, 16, 20),
       child: Column(
@@ -246,7 +464,18 @@ class _TripPageState extends State<TripPage> {
             width: double.infinity,
             height: 55,
             child: ElevatedButton(
-              onPressed: () => setState(() => _step = 1),
+              onPressed: () async {
+                bool res = await showConfirmDialog(
+                    "Terima Trip", "Terima Pengantaran ?");
+
+                if (res) {
+                  // Panggil AcceptTrip event Bloc
+                  context.read<TripBloc>().add(
+                        AcceptTrip(
+                            deliveryOrderDetailId: deliveryOrderDetailId),
+                      );
+                }
+              },
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color(0xFFD35400),
                 shape: RoundedRectangleBorder(
@@ -268,7 +497,7 @@ class _TripPageState extends State<TripPage> {
                 final res = await showConfirmDialog(
                     "Tolak Pengangkutan", "Apakah Anda yakin menolak?");
                 if (res) {
-                  setState(() => _step = 0);
+                  setState(() => _step = "0");
                 }
               },
               style: ElevatedButton.styleFrom(
@@ -306,8 +535,8 @@ class _TripPageState extends State<TripPage> {
                   fontWeight: FontWeight.bold, color: Colors.black54)),
           const SizedBox(height: 10),
           Text("DO : $noDO",
-              style: const TextStyle(
-                  fontSize: 15, fontWeight: FontWeight.bold)),
+              style:
+                  const TextStyle(fontSize: 15, fontWeight: FontWeight.bold)),
           const SizedBox(height: 8),
           inputField(spbMuat, "No. SPB"),
           inputField(tarraMuat, "Jumlah Tarra Muat"),
@@ -320,8 +549,8 @@ class _TripPageState extends State<TripPage> {
             onPressed: () {},
             child: const Padding(
               padding: EdgeInsets.symmetric(vertical: 12),
-              child:
-              Text("Unggah Foto SPB", style: TextStyle(color: Colors.white)),
+              child: Text("Unggah Foto SPB",
+                  style: TextStyle(color: Colors.white)),
             ),
           ),
           const SizedBox(height: 20),
@@ -331,7 +560,7 @@ class _TripPageState extends State<TripPage> {
           inputField(tarraMuatSambung, "Jumlah Tarra Muat"),
           inputField(brutoMuatSambung, "Jumlah Bruto Muat"),
           inputField(nettoMuatSambung, "Netto Muat (Kg)"),
-          mainButton("Simpan", () => setState(() => _step = 3)),
+          mainButton("Simpan", () => setState(() => _step = "3")),
         ],
       ),
     );
@@ -355,8 +584,8 @@ class _TripPageState extends State<TripPage> {
                   fontWeight: FontWeight.bold, color: Colors.black54)),
           const SizedBox(height: 10),
           Text("DO : $noDO",
-              style: const TextStyle(
-                  fontSize: 15, fontWeight: FontWeight.bold)),
+              style:
+                  const TextStyle(fontSize: 15, fontWeight: FontWeight.bold)),
           const SizedBox(height: 8),
           inputField(tarraBongkar, "Jumlah Tarra Bongkar"),
           inputField(brutoBongkar, "Jumlah Bruto Bongkar"),
@@ -368,8 +597,8 @@ class _TripPageState extends State<TripPage> {
             onPressed: () {},
             child: const Padding(
               padding: EdgeInsets.symmetric(vertical: 12),
-              child:
-              Text("Unggah Foto SPB", style: TextStyle(color: Colors.white)),
+              child: Text("Unggah Foto SPB",
+                  style: TextStyle(color: Colors.white)),
             ),
           ),
           const SizedBox(height: 20),
@@ -378,7 +607,7 @@ class _TripPageState extends State<TripPage> {
           inputField(tarraBongkarSambung, "Jumlah Tarra Bongkar"),
           inputField(brutoBongkarSambung, "Jumlah Bruto Bongkar"),
           inputField(nettoBongkarSambung, "Netto Bongkar (Kg)"),
-          mainButton("Simpan", () => setState(() => _step = 6)),
+          mainButton("Simpan", () => setState(() => _step = "6")),
         ],
       ),
     );
@@ -395,147 +624,8 @@ class _TripPageState extends State<TripPage> {
       ),
       child: Center(
         child: Text(title,
-            style: const TextStyle(
-                fontSize: 15, fontWeight: FontWeight.bold)),
-      ),
-    );
-  }
-
-  // ========== BUILD UI ==========
-  @override
-  Widget build(BuildContext context) {
-    Widget content = Container();
-
-    switch (_step) {
-      case 0:
-        content = Column(
-          children: [
-            buildInfoCard(),
-            buildFirstButtons(),
-          ],
-        );
-        break;
-
-      case 1:
-        content = Column(
-          children: [
-            buildInfoCard(),
-            mainButton("Menuju Lokasi Muat", () async {
-              if (await showConfirmDialog("Menuju Lokasi Muat",
-                  "Apakah anda akan menuju pemuatan?")) {
-                setState(() => _step = 2);
-              }
-            }),
-          ],
-        );
-        break;
-
-      case 2:
-        content = Column(
-          children: [
-            buildInfoCard(),
-            buildFormMuat(),
-          ],
-        );
-        break;
-
-      case 3:
-        content = Column(
-          children: [
-            buildInfoCard(),
-            statusCard("MUAT"),
-            mainButton("Menuju Lokasi Bongkar", () async {
-              if (await showConfirmDialog("Menuju Lokasi Bongkar",
-                  "Apakah anda akan menuju bongkar?")) {
-                setState(() => _step = 4);
-              }
-            }),
-          ],
-        );
-        break;
-
-      case 4:
-        content = Column(
-          children: [
-            buildInfoCard(),
-            statusCard("MUAT"),
-            mainButton("Tiba Lokasi Bongkar", () async {
-              if (await showConfirmDialog("Tiba Lokasi Bongkar",
-                  "Apakah anda sudah tiba di lokasi?")) {
-                setState(() => _step = 5);
-              }
-            }),
-          ],
-        );
-        break;
-
-      case 5:
-        content = Column(
-          children: [
-            buildInfoCard(),
-            statusCard("MUAT"),
-            buildFormBongkar(),
-          ],
-        );
-        break;
-
-      case 6:
-        content = Column(
-          children: [
-            buildInfoCard(),
-            statusCard("EDIT MUAT"),
-            statusCard("EDIT BONGKAR"),
-            mainButton("Selesai", () {
-              ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text("Selesai")));
-              setState(() => _step = 0);
-            }),
-          ],
-        );
-        break;
-    }
-
-    return Scaffold(
-      backgroundColor: Colors.grey.shade100,
-      appBar: PreferredSize(
-        preferredSize: const Size.fromHeight(72),
-        child: AppBar(
-          backgroundColor: const Color(0xFF002B4C),
-          elevation: 0,
-          centerTitle: true,
-          title: const Text("Pengangkutan Baru",
-              style: TextStyle(
-                  fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white,)),
-          leading: Padding(
-            padding: const EdgeInsets.only(left: 10),
-            child: InkWell(
-              borderRadius: BorderRadius.circular(8),
-              onTap: () => Navigator.pop(context),
-              child: Container(
-                decoration: BoxDecoration(
-                  color: const Color(0xFF0B3B54),
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                margin: const EdgeInsets.all(8),
-                child: const Icon(Icons.chevron_left, color: Colors.white),
-              ),
-            ),
-          ),
-        ),
-      ),
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            content,
-            const SizedBox(height: 30),
-          ],
-        ),
+            style: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold)),
       ),
     );
   }
 }
-
-
-
-
-

@@ -14,8 +14,7 @@ List<Widget> buildTimeline(List<AppLog> logs) {
       title: log.status?.code ?? 'Unknown',
       description: log.status?.name ?? '',
       time: log.createdAt != null 
-          ? DateFormat('dd MMM yyyy - HH:mm').format(log.createdAt!)
-          : '',
+          ? log.createdAt.toString() : '',
       icon: map.icon,
       color: map.color,
       isLast: isLast,

@@ -4,10 +4,10 @@ abstract class TripDetailEvent extends Equatable {
   const TripDetailEvent();
 }
 
-class TripDetail extends TripDetailEvent {
+class TripDetailDataEvent extends TripDetailEvent {
   final String id;
 
-  const TripDetail({
+  const TripDetailDataEvent({
     required this.id
   });
 

@@ -16,6 +16,11 @@ class TripTimeline extends StatelessWidget {
       );
     }
 
+    DateTime parseDate(String? dateStr) {
+      if (dateStr == null) return DateTime.fromMillisecondsSinceEpoch(0);
+      return DateTime.tryParse(dateStr) ?? DateTime.fromMillisecondsSinceEpoch(0);
+    }
+
     // Sort berdasarkan status.sort lalu created_at
     final sorted = [...logs]
       ..sort((a, b) {
@@ -23,10 +28,13 @@ class TripTimeline extends StatelessWidget {
         final s2 = b.status?.sort ?? 0;
 
         if (s1 != s2) return s1.compareTo(s2);
-        return (b.createdAt ?? DateTime.fromMillisecondsSinceEpoch(0))
-          .compareTo(a.createdAt ?? DateTime.fromMillisecondsSinceEpoch(0));
 
+        final d1 = parseDate(a.createdAt);
+        final d2 = parseDate(b.createdAt);
+
+        return d2.compareTo(d1); // descending
       });
+
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -84,7 +92,7 @@ class _TimelineItem extends StatelessWidget {
               const SizedBox(height: 2),
               Text(
                 log.createdAt != null
-                    ? DateFormat('dd MMM yyyy HH:mm').format(log.createdAt!)
+                    ? log.createdAt.toString()
                     : '',
                 style: const TextStyle(
                   fontSize: 12,
