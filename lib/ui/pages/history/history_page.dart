@@ -25,13 +25,34 @@ class _HistoryPageState extends State<HistoryPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(R.strings.titleHistoryPage),
-        backgroundColor: Colors.white,
-        foregroundColor: Colors.black87,
-        elevation: 0,
-      ),
       backgroundColor: const Color(0xFFF6F7F9),
+      appBar:
+      AppBar(
+        backgroundColor: const Color(0xFF002B4C),
+        elevation: 0,
+        centerTitle: true,
+        title: const Text("Riwayat Pengankutan",
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+              color: Colors.white,
+            )),
+        leading: Padding(
+          padding: const EdgeInsets.only(left: 10),
+          child: InkWell(
+            borderRadius: BorderRadius.circular(8),
+            onTap: () => Navigator.pop(context),
+            child: Container(
+              decoration: BoxDecoration(
+                color: const Color(0xFF0B3B54),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              margin: const EdgeInsets.all(8),
+              child: const Icon(Icons.chevron_left, color: Colors.white),
+            ),
+          ),
+        ),
+      ),
       body: SafeArea(
         child: BlocBuilder<HistoryBloc, HistoryState>(
           bloc: _historyBloc,

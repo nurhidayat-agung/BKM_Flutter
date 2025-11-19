@@ -1,6 +1,9 @@
 import 'package:newbkmmobile/core/constants.dart';
 import 'package:newbkmmobile/repositories/login_repository.dart';
 import 'package:http/http.dart' as http;
+import 'package:newbkmmobile/repositories/session_manager_repository.dart';
+
+import '../services/http_communicator.dart';
 
 class HistoryRepository {
 
@@ -37,4 +40,19 @@ class HistoryRepository {
 
     return response;
   }
+
+  Future<(int, dynamic)> getCompletedDeliveryOrders() async {
+    final driver = await SessionManager.getUserSession();
+
+    final endpoint = 'delivery-order-details/completed?driver_id=${driver?.driverId}';
+    final headers = {
+      'X-Site-ID': driver?.siteId ?? "",
+      'Authorization': 'Bearer ${driver?.token ?? ""}',
+    };
+
+    final response = await HttpCommunicator().get(endpoint, headers: headers);
+
+    return (response.status, response);
+  }
+
 }
