@@ -47,6 +47,12 @@ class UserSession extends HiveObject {
   @HiveField(12)
   int status = 0;
 
+  @HiveField(13)
+  String? userLogin;
+
+  @HiveField(14)
+  String? password;
+
   UserSession({
     this.userId,
     this.roleId,
@@ -61,6 +67,8 @@ class UserSession extends HiveObject {
     this.balance,
     this.savings,
     this.status = 0,
+    this.userLogin,
+    this.password,
   });
 
   /// Factory untuk buat UserSession dari LoginResponse

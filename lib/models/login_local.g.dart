@@ -46,6 +46,14 @@ class LoginLocalAdapter extends TypeAdapter<LoginLocal> {
       ..writeByte(6)
       ..write(obj.driverId);
   }
-}
 
-// GENERATED CODE - DO NOT MODIFY BY HAND
+  @override
+  int get hashCode => typeId.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is LoginLocalAdapter &&
+          runtimeType == other.runtimeType &&
+          typeId == other.typeId;
+}

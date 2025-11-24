@@ -128,32 +128,35 @@ class LoginRepository {
       // SIMPAN USERSESSION
       var session = UserSession.fromLoginResponse(resp);
       session.status = response.status;
+      session.userLogin = phone;
+      session.password = password;
+
       await saveUserSession(session);
 
       // --------------------------------------------------------
       //  SIMPAN LOGIN LOCAL
       // --------------------------------------------------------
 
-      final user = resp.data.user;
-      final driver = user.driver;
-
-      await addLoginLocal(
-        LoginLocal(
-          status: 200,
-          message: "Login berhasil",
-          userId: user.id,
-          token: resp.data.token,
-          firebaseToken: "",
-          siteId: driver.siteId,
-          driverId: driver.id,
-        ),
-      );
+      // final user = resp.data.user;
+      // final driver = user.driver;
+      //
+      // await addLoginLocal(
+      //   LoginLocal(
+      //     status: 200,
+      //     message: "Login berhasil",
+      //     userId: user.id,
+      //     token: resp.data.token,
+      //     firebaseToken: "",
+      //     siteId: driver.siteId,
+      //     driverId: driver.id,
+      //   ),
+      // );
 
       // Berhasil
       return LoginResp(
         status: 200,
         message: "Login berhasil",
-        userId: user.id,
+        userId: session.userId,
         token: resp.data.token,
         firebaseToken: '',
       );

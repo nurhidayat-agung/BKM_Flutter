@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:http/http.dart' as http;
+import 'package:newbkmmobile/repositories/session_manager_repository.dart';
 
 /// Helper HTTP Client menggunakan package http
 /// Support:
@@ -10,6 +11,43 @@ import 'package:http/http.dart' as http;
 class HttpCommunicator {
   final String baseUrl = 'https://api-dev.berkatkarimar.co.id/api';
 
+
+  /// Refresh token
+  Future<String?> refreshToken() async {
+    final url = Uri.parse('$baseUrl/login');
+
+    final driver = await SessionManager.getUserSession();
+
+    try {
+      final response = await http.post(
+        url,
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+          'X-Client-Type': 'mobile',
+        },
+        body: jsonEncode({
+          "phone": driver?.userLogin ?? "",
+          "password": driver?.password,
+        }),
+      );
+
+      if (response.statusCode == 200) {
+        final json = jsonDecode(response.body);
+        var refreshedToken = json["data"]["token"];
+        driver?.token = refreshedToken;
+
+        await SessionManager.saveUserSession(driver!);
+
+        return refreshedToken;
+      }
+
+      return null;
+    } catch (_) {
+      return null;
+    }
+  }
+
   /// --------------------------------------------------------------------------
   /// GET REQUEST
   Future<HttpResponse> get(
@@ -17,13 +55,31 @@ class HttpCommunicator {
         Map<String, String>? headers,
       }) async {
     final url = Uri.parse('$baseUrl/$endpoint');
+
+    // Merge header awal
     final mergedHeaders = {
       'Accept': 'application/json',
       if (headers != null) ...headers,
     };
 
     try {
-      final response = await http.get(url, headers: mergedHeaders);
+      // Request pertama
+      var response = await http.get(url, headers: mergedHeaders);
+
+      // Jika token kadaluarsa
+      if (response.statusCode == 401) {
+        // Ambil token baru
+        final newToken = await refreshToken();
+
+        if (newToken != null) {
+          // HANYA replace Authorization
+          mergedHeaders['Authorization'] = 'Bearer $newToken';
+
+          // Retry request pakai token baru
+          response = await http.get(url, headers: mergedHeaders);
+        }
+      }
+
       return _handleResponse(response);
     } on SocketException {
       throw Exception('Tidak ada koneksi internet');
@@ -31,6 +87,7 @@ class HttpCommunicator {
       throw Exception('Gagal GET: $e');
     }
   }
+
 
   /// --------------------------------------------------------------------------
   /// POST JSON REQUEST
@@ -40,6 +97,8 @@ class HttpCommunicator {
         Map<String, String>? headers,
       }) async {
     final url = Uri.parse('$baseUrl/$endpoint');
+
+    // Gabungkan header
     final mergedHeaders = {
       'Accept': 'application/json',
       'Content-Type': 'application/json',
@@ -47,11 +106,29 @@ class HttpCommunicator {
     };
 
     try {
-      final response = await http.post(
+      // Request pertama
+      var response = await http.post(
         url,
         headers: mergedHeaders,
         body: jsonEncode(body),
       );
+
+      // Jika token kadaluarsa → refresh → retry
+      if (response.statusCode == 401) {
+        final newToken = await refreshToken();
+
+        if (newToken != null) {
+          // HANYA timpa Authorization
+          mergedHeaders['Authorization'] = 'Bearer $newToken';
+
+          response = await http.post(
+            url,
+            headers: mergedHeaders,
+            body: jsonEncode(body),
+          );
+        }
+      }
+
       return _handleResponse(response);
     } on SocketException {
       throw Exception('Tidak ada koneksi internet');
@@ -59,6 +136,7 @@ class HttpCommunicator {
       throw Exception('Gagal POST JSON: $e');
     }
   }
+
 
   /// --------------------------------------------------------------------------
   /// POST FORM DATA REQUEST (MULTIPART)
@@ -69,31 +147,70 @@ class HttpCommunicator {
         Map<String, String>? headers,
       }) async {
     final url = Uri.parse('$baseUrl/$endpoint');
-    final request = http.MultipartRequest('POST', url);
 
-    // Tambahkan header
-    request.headers.addAll({
-      'Accept': 'application/json',
-      if (headers != null) ...headers,
-    });
+    // -------------------------------
+    // Buat function untuk membangun ulang MultipartRequest
+    // (dipakai saat retry)
+    // -------------------------------
+    Future<http.MultipartRequest> buildRequest(String? newToken) async {
+      final req = http.MultipartRequest('POST', url);
 
-    // Tambahkan field form biasa
-    request.fields.addAll(fields);
+      // Copy headers (TIDAK diubah kecuali Authorization)
+      final mergedHeaders = {
+        'Accept': 'application/json',
+        'Content-Type': 'multipart/form-data',
+        if (headers != null) ...headers,
+      };
 
-    // Tambahkan file jika ada
-    if (files != null) {
-      for (final entry in files.entries) {
-        final file = entry.value;
-        final fileName = file.path.split(Platform.pathSeparator).last;
-        request.files.add(
-          await http.MultipartFile.fromPath(entry.key, file.path, filename: fileName),
-        );
+      if (newToken != null) {
+        mergedHeaders['Authorization'] = 'Bearer $newToken';
       }
+
+      req.headers.addAll(mergedHeaders);
+
+      // Add fields
+      req.fields.addAll(fields);
+
+      // Add files
+      if (files != null) {
+        for (final entry in files.entries) {
+          final file = entry.value;
+          final fileName = file.path.split(Platform.pathSeparator).last;
+          req.files.add(
+            await http.MultipartFile.fromPath(
+              entry.key,
+              file.path,
+              filename: fileName,
+            ),
+          );
+        }
+      }
+
+      return req;
     }
 
     try {
-      final streamedResponse = await request.send();
-      final response = await http.Response.fromStream(streamedResponse);
+      // -------------------------------
+      // Request pertama
+      // -------------------------------
+      var request = await buildRequest(null);
+      var streamedResponse = await request.send();
+      var response = await http.Response.fromStream(streamedResponse);
+
+      // -------------------------------
+      // Jika 401 → refresh token → retry sekali
+      // -------------------------------
+      if (response.statusCode == 401) {
+        final newToken = await refreshToken();
+
+        if (newToken != null) {
+          // Build ulang request dengan token baru
+          final retryRequest = await buildRequest(newToken);
+          final retryStream = await retryRequest.send();
+          response = await http.Response.fromStream(retryStream);
+        }
+      }
+
       return _handleResponse(response);
     } on SocketException {
       throw Exception('Tidak ada koneksi internet');
@@ -101,6 +218,7 @@ class HttpCommunicator {
       throw Exception('Gagal POST FormData: $e');
     }
   }
+
 
   /// --------------------------------------------------------------------------
   /// HANDLER UNTUK RESPONSE SERVER

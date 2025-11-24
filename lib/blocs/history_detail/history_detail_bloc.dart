@@ -26,3 +26,4 @@ class HistoryDetailBloc extends Bloc<HistoryDetailEvent, HistoryDetailState> {
   }
 
 }
+

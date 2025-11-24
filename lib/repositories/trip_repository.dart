@@ -3,8 +3,8 @@ import 'dart:io';
 
 import 'package:newbkmmobile/core/constants.dart';
 import 'package:newbkmmobile/models/loading_location/loading_location_response.dart';
-import 'package:newbkmmobile/models/new_trip/delivery_response.dart' show DeliveryResponse;
-import 'package:newbkmmobile/models/new_trip/trip_detail_response.dart';
+import 'package:newbkmmobile/models/trip/delivery_response.dart' show DeliveryResponse;
+import 'package:newbkmmobile/models/trip/trip_detail_response.dart';
 import 'package:newbkmmobile/repositories/login_repository.dart';
 import 'package:http/http.dart' as http;
 import 'package:newbkmmobile/repositories/session_manager_repository.dart';
@@ -189,11 +189,82 @@ class TripRepository {
   }
 
 
+  Future<(int, dynamic)> submitMuat({
+    required String doDetailId,
 
-  Future<(int, dynamic)> loadingLocation({
+    // DO utama
+    required String spbNumber,
+    required String loadTare,
+    required String loadBruto,
+    required String loadQuantity,
+    File? imgSpbLoad,                   // FILE SPB
+
+    // Common fields
+    required String nextStatus,
+    required String note,
+    required bool isEdit,
+
+    // DO sambung (opsional)
+    String? spbNumberLink,
+    String? loadTareLink,
+    String? loadBrutoLink,
+    String? loadQuantityLink,
+  }) async {
+
+    final driver = await SessionManager.getUserSession();
+
+    // ============================
+    //  FIELDS (tanpa file)
+    // ============================
+    final fields = <String, String>{
+      "spb_number": spbNumber,
+      "load_tare": loadTare,
+      "load_bruto": loadBruto,
+      "load_quantity": loadQuantity,
+      "action_button": "load_save",
+      "next_status": nextStatus,
+      "note": note,
+      "is_edit": isEdit.toString(),
+    };
+
+    // DO Sambung (optional)
+    if (spbNumberLink != null) fields["spb_number_link"] = spbNumberLink;
+    if (loadTareLink != null) fields["load_tare_link"] = loadTareLink;
+    if (loadBrutoLink != null) fields["load_bruto_link"] = loadBrutoLink;
+    if (loadQuantityLink != null) fields["load_quantity_link"] = loadQuantityLink;
+
+    // ============================
+    //  FILES (optional)
+    // ============================
+    final files = <String, File>{};
+    if (imgSpbLoad != null) {
+      files["img_spb_load"] = imgSpbLoad;
+    }
+
+    // ============================
+    //  HEADERS
+    // ============================
+    final headers = {
+      "Authorization": "Bearer ${driver?.token ?? ""}",
+      "X-Site-ID": driver?.siteId ?? "",
+    };
+
+    var result = await _http.postFormData(
+      "delivery-order-details/app/$doDetailId",
+      fields: fields,
+      files: files.isNotEmpty ? files : null,
+      headers: headers,
+    );
+
+    return (result.status, result.result);
+  }
+
+
+
+  Future<(int, dynamic)> changeStatusTrip({
     required String id,
     required String nextStatus,
-    required String note
+    required String note,
   }) async {
     try {
       final driver = await SessionManager.getUserSession();
@@ -203,10 +274,16 @@ class TripRepository {
         'Authorization': 'Bearer ${driver?.token ?? ""}',
       };
 
+      // base fields
       final fields = {
         'next_status': nextStatus,
         'note': note,
       };
+
+      // tambahan khusus nextStatus 7
+      if (nextStatus == "7") {
+        fields['action_button'] = "final_save";
+      }
 
       final response = await _http.postFormData(
         'delivery-order-details/app/$id',
@@ -217,14 +294,82 @@ class TripRepository {
       LoadingLocationResponse? parsedData;
       if (response.result != null) {
         parsedData = LoadingLocationResponse.fromJson(
-            response.result as Map<String, dynamic>);
+          response.result as Map<String, dynamic>,
+        );
       }
 
       return (response.status, parsedData);
     } catch (e) {
-      // Bisa lempar Exception atau return status error 0
-      return (0,null);
+      return (0, null);
     }
+  }
+
+
+
+  Future<(int, dynamic)> submitBongkar({
+    required String doDetailId,
+
+    // DO utama
+    required String unloadTare,
+    required String unloadBruto,
+    required String unloadQuantity,
+    File? imgSpbLoad,                   // FILE SPB
+
+    // Common fields
+    required String nextStatus,
+    required String note,
+    required bool isEdit,
+
+    // DO sambung (opsional)
+    String? unloadTareLink,
+    String? unloadBrutoLink,
+    String? unloadQuantityLink,
+  }) async {
+
+    final driver = await SessionManager.getUserSession();
+
+    // ============================
+    //  FIELDS (tanpa file)
+    // ============================
+    final fields = <String, String>{
+      "unload_tare": unloadTare,
+      "unload_bruto": unloadBruto,
+      "unload_quantity": unloadQuantity,
+      "action_button": "unload_save",
+      "next_status": nextStatus,
+      "note": note,
+      "is_edit": isEdit.toString(),
+    };
+
+    // DO Sambung (optional)
+    if (unloadTareLink != null) fields["unload_tare_link"] = unloadTareLink;
+    if (unloadBrutoLink != null) fields["unload_bruto_link"] = unloadBrutoLink;
+    if (unloadQuantityLink != null) fields["unload_quantity_link"] = unloadQuantityLink;
+
+    // ============================
+    //  FILES (optional)
+    // ============================
+    final files = <String, File>{};
+    if (imgSpbLoad != null) {
+      files["img_spb_unload"] = imgSpbLoad;
+    }
+
+    // ============================
+    //  HEADERS
+    // ============================
+    final headers = {
+      "Authorization": "Bearer ${driver?.token ?? ""}",
+      "X-Site-ID": driver?.siteId ?? "",
+    };
+
+    var result = await _http.postFormData(
+      "delivery-order-details/app/$doDetailId",
+      fields: fields,
+      files: files.isNotEmpty ? files : null,
+      headers: headers,
+    );
+
+    return (result.status, result.result);
   }
 
 }

@@ -3,8 +3,9 @@ import 'dart:convert';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:newbkmmobile/blocs/trip_detail/trip_detail_bloc.dart';
-import 'package:newbkmmobile/models/new_trip/delivery_response.dart' show DeliveryData;
-import 'package:newbkmmobile/models/new_trip/trip_detail_response.dart';
+import 'package:newbkmmobile/models/trip/delivery_response.dart' show DeliveryData;
+import 'package:newbkmmobile/models/trip/muat_request.dart';
+import 'package:newbkmmobile/models/trip/trip_detail_response.dart';
 import 'package:newbkmmobile/models/trip_resp.dart';
 import 'package:newbkmmobile/repositories/trip_repository.dart';
 
@@ -69,15 +70,144 @@ class TripBloc extends Bloc<TripEvent, TripState> {
     });
 
 
+    on<PushMuat>((event, emit) async {
+      emit(const TripLoading());
+
+      try {
+
+        // --- Cek apakah ada DO sambungan ---
+        final hasLinked =
+            event.deliveryData.linkedDetail != null &&
+                (event.deliveryData.linkedDetailId?.isNotEmpty ?? false);
+
+
+        // --- Siapkan data sambungan ---
+        final spbSambung    = hasLinked ? event.muatRequest.spbSambung : null;
+        final tarraSambung  = hasLinked ? event.muatRequest.tarraSambung : null;
+        final brutoSambung  = hasLinked ? event.muatRequest.brutoSambung : null;
+        final nettoSambung  = hasLinked ? event.muatRequest.nettoSambung : null;
+
+        final (status, response) = await _tripRepository.submitMuat(
+          nextStatus: "4",
+          note: "muat selesai",
+          doDetailId: event.deliveryData.id ?? "",
+          isEdit: false,
+          loadBruto: event.muatRequest.bruto,
+          loadQuantity: event.muatRequest.netto,
+          loadTare: event.muatRequest.tarra,
+          spbNumber: event.muatRequest.spb,
+          imgSpbLoad: event.muatRequest.fotoSpb,
+          spbNumberLink: spbSambung,
+          loadBrutoLink: brutoSambung,
+          loadQuantityLink: nettoSambung,
+          loadTareLink: tarraSambung,
+        );
+
+        if (status == 200) {
+          // Jika berhasil, langsung fetch trip terbaru
+          await fetchLatestTrip(emit);
+        } else {
+          emit(TripError("Gagal menerima trip"));
+        }
+      } catch (e) {
+        emit(TripError(e.toString()));
+      }
+    });
+
+
+    on<PushBongkar>((event, emit) async {
+      emit(const TripLoading());
+
+      try {
+
+        // --- Cek apakah ada DO sambungan ---
+        final hasLinked =
+            event.deliveryData.linkedDetail != null &&
+                (event.deliveryData.linkedDetailId?.isNotEmpty ?? false);
+
+
+        // --- Siapkan data sambungan ---
+        final tarraSambung  = hasLinked ? event.bongkarRequest.tarraSambung : null;
+        final brutoSambung  = hasLinked ? event.bongkarRequest.brutoSambung : null;
+        final nettoSambung  = hasLinked ? event.bongkarRequest.nettoSambung : null;
+
+        final (status, response) = await _tripRepository.submitBongkar(
+          nextStatus: "6",
+          note: "bongkar selesai",
+          doDetailId: event.deliveryData.id ?? "",
+          isEdit: false,
+          unloadBruto: event.bongkarRequest.bruto,
+          unloadQuantity: event.bongkarRequest.netto,
+          unloadTare: event.bongkarRequest.tarra,
+          imgSpbLoad: event.bongkarRequest.fotoSpb,
+          unloadBrutoLink: brutoSambung,
+          unloadQuantityLink: nettoSambung,
+          unloadTareLink: tarraSambung
+        );
+
+        if (status == 200) {
+          // Jika berhasil, langsung fetch trip terbaru
+          await fetchLatestTrip(emit);
+        } else {
+          emit(TripError("Gagal menerima trip"));
+        }
+      } catch (e) {
+        emit(TripError(e.toString()));
+      }
+    });
+
+
     // Event AcceptTrip
     on<LoadingLocationTrip>((event, emit) async {
       emit(const TripLoading());
 
       try {
-        final (status, response) = await _tripRepository.loadingLocation(
+        final (status, response) = await _tripRepository.changeStatusTrip(
           id: event.deliveryOrderDetailId,
           nextStatus: event.nextStatus,
           note: ""
+        );
+
+        if (status == 200) {
+          // Jika berhasil, langsung fetch trip terbaru
+          await fetchLatestTrip(emit);
+        } else {
+          emit(TripError("Gagal menerima trip"));
+        }
+      } catch (e) {
+        emit(TripError(e.toString()));
+      }
+    });
+
+    on<PushTripUnload>((event, emit) async {
+      emit(const TripLoading());
+
+      try {
+        final (status, response) = await _tripRepository.changeStatusTrip(
+            id: event.deliveryData.id ?? "",
+            nextStatus: "4",
+            note: ""
+        );
+
+        if (status == 200) {
+          // Jika berhasil, langsung fetch trip terbaru
+          await fetchLatestTrip(emit);
+        } else {
+          emit(TripError("Gagal menerima trip"));
+        }
+      } catch (e) {
+        emit(TripError(e.toString()));
+      }
+    });
+
+    on<PushTillUnload>((event, emit) async {
+      emit(const TripLoading());
+
+      try {
+        final (status, response) = await _tripRepository.changeStatusTrip(
+            id: event.deliveryData.id ?? "",
+            nextStatus: "5",
+            note: ""
         );
 
         if (status == 200) {
