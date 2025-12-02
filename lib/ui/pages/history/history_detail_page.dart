@@ -23,7 +23,7 @@ class _HistoryDetailPageState extends State<HistoryDetailPage> {
   }
 
   /// =====================================================
-  /// SAFE DATE PARSER — TANPA ERROR
+  /// SAFE DATE PARSER
   /// =====================================================
   String safeDate(String? raw) {
     if (raw == null || raw.isEmpty) return "-";
@@ -35,317 +35,372 @@ class _HistoryDetailPageState extends State<HistoryDetailPage> {
       ];
       return "${dt.day} ${months[dt.month - 1]} ${dt.year}";
     } catch (e) {
-      return raw; // fallback, tidak boleh crash
+      return raw;
     }
   }
 
   /// =====================================================
-  /// DUMMY DETAIL (Fallback jika API kosong)
+  /// DUMMY DETAIL (Fallback)
   /// =====================================================
   final dummyDetail = {
     "doNumber": "051/KAL-EUP/IP-CPO/X/2025",
-    "subDo": "Sub DO – 12345",
-    "spbNumber": "SPB-998877",
-    "driverName": "Budi Santoso",
-    "vehicleNumber": "KT 9090 XX",
+    "subDo": "10002/TEST/VIII/2025",
+    "spbNumber": "123456",
+    "driverName": "DEDI PURWANTO",
+    "vehicleNumber": "B 9501 UVX",
     "pksName": "SAM1",
     "destinationName": "ASK",
-    "commodityName": "CPO",
+    "commodityName": "CPO (Crud Palm Oil)",
     "bonus": "120.000",
     "loadDate": "2025-11-11",
     "unloadDate": "2025-11-12",
-    "amountSent": "15000",
-    "amountReceived": "14800",
+    "amountSent": "27000",
+    "amountReceived": "27000",
     "spb": "",
     "qrcode": ""
   };
 
-  // ======= STYLE ELEMENTS (mengikuti mockup) =========
+  // ======= WIDGET BUILDER HELPERS (Sesuai Mockup) =========
 
-  Widget _divider() => Container(
-    height: 1,
-    color: const Color(0xFFE5E5E5),
-    margin: const EdgeInsets.symmetric(vertical: 12),
-  );
-
-  Widget _label(String text) => Text(
-    text,
-    style: const TextStyle(
-      fontSize: 12,
-      color: Color(0xFF8A8A8A),
-      fontWeight: FontWeight.w600,
-    ),
-  );
-
-  Widget _value(String text, {Color c = const Color(0xFF002B4C)}) => Text(
-    text,
-    style: TextStyle(
-      fontSize: 14,
-      fontWeight: FontWeight.bold,
-      color: c,
-    ),
-  );
-
-  Widget _section(String title) {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-      decoration: const BoxDecoration(
-        color: Color(0xFF002B4C),
+  Widget _buildInfoRow(String label, String value, {bool isRightAlign = true}) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 6),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(
+            label,
+            style: const TextStyle(
+              fontSize: 13,
+              color: Color(0xFF002B4C),
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+          Text(
+            value,
+            style: const TextStyle(
+              fontSize: 13,
+              color: Color(0xFF002B4C),
+              fontWeight: FontWeight.w800,
+            ),
+          ),
+        ],
       ),
-      child: Text(
-        title,
-        style: const TextStyle(
-          color: Colors.white,
-          fontWeight: FontWeight.w700,
-          fontSize: 15,
-        ),
+    );
+  }
+
+  Widget _buildCardDivider() {
+    return Divider(height: 16, thickness: 1, color: Colors.grey.shade200);
+  }
+
+  Widget _buildActivityCard(String titleDO, Map<String, dynamic> data, bool isMuat, BuildContext context) {
+    // Mapping data to mockup fields
+    final noSPB = data["spbNumber"] ?? "-";
+    // Mockup logic: Tara/Bruto simulasi karena data dummy asli terbatas,
+    // tapi tetap menampilkan Netto dari data asli.
+    const tara = "2000";
+    const bruto = "2000";
+    final netto = isMuat ? (data["amountSent"] ?? "0") : (data["amountReceived"] ?? "0");
+    final fotoUrl = data["spb"];
+
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: const Color(0xFFE0E0E0)),
+      ),
+      padding: const EdgeInsets.all(16),
+      margin: const EdgeInsets.only(bottom: 16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            "DO : $titleDO",
+            style: const TextStyle(
+              fontWeight: FontWeight.w800,
+              color: Color(0xFF002B4C),
+              fontSize: 13,
+            ),
+          ),
+          const SizedBox(height: 12),
+          _buildInfoRow("No. SPB", noSPB),
+          _buildCardDivider(),
+          _buildInfoRow("Jumlah Tara Muat", tara),
+          _buildCardDivider(),
+          _buildInfoRow("Jumlah Bruto Muat", bruto),
+          _buildCardDivider(),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              const Text(
+                "Netto Muat (Kg)",
+                style: TextStyle(
+                  fontSize: 13,
+                  color: Color(0xFF002B4C),
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+              Text(
+                netto,
+                style: const TextStyle(
+                  fontSize: 13,
+                  color: Color(0xFF002B4C),
+                  fontWeight: FontWeight.w900,
+                ),
+              ),
+            ],
+          ),
+          _buildCardDivider(),
+          const SizedBox(height: 4),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              const Text(
+                "Foto SPB",
+                style: TextStyle(
+                  fontSize: 13,
+                  color: Color(0xFF002B4C),
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              GestureDetector(
+                onTap: () {
+                  if ((fotoUrl ?? "").isNotEmpty) {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (_) => FullImageView(image: fotoUrl)),
+                    );
+                  }
+                },
+                child: (fotoUrl != null && fotoUrl.isNotEmpty)
+                    ? Container(
+                  width: 50,
+                  height: 50,
+                  decoration: BoxDecoration(
+                      color: Colors.grey.shade300,
+                      borderRadius: BorderRadius.circular(4),
+                      image: DecorationImage(image: NetworkImage(fotoUrl), fit: BoxFit.cover)
+                  ),
+                )
+                    : Container(
+                  width: 50,
+                  height: 50,
+                  decoration: BoxDecoration(
+                    color: Colors.grey.shade300,
+                    borderRadius: BorderRadius.circular(4),
+                  ),
+                  child: const Center(
+                    child: Text("Foto", style: TextStyle(fontSize: 10, color: Colors.grey)),
+                  ),
+                ),
+              )
+            ],
+          )
+        ],
       ),
     );
   }
 
   @override
   Widget build(BuildContext context) {
+    // Definisi Warna sesuai Mockup
+    const darkBlue = Color(0xFF002B4C);
+    const orange = Color(0xFFE55300);
+
     return Scaffold(
       backgroundColor: Colors.white,
-
       appBar: AppBar(
-        backgroundColor: const Color(0xFF002B4C),
+        backgroundColor: darkBlue,
         elevation: 0,
         centerTitle: true,
         title: const Text(
-          "Detail Riwayat",
+          "Pengangutan Baru",
           style: TextStyle(
             color: Colors.white,
-            fontSize: 17,
-            fontWeight: FontWeight.bold,
+            fontSize: 16,
+            fontWeight: FontWeight.w700,
           ),
         ),
         leading: Padding(
-          padding: const EdgeInsets.only(left: 12),
+          padding: const EdgeInsets.all(12.0),
           child: InkWell(
             onTap: () => Navigator.pop(context),
-            borderRadius: BorderRadius.circular(8),
             child: Container(
-              margin: const EdgeInsets.all(6),
               decoration: BoxDecoration(
-                color: const Color(0xFF0B3B54),
-                borderRadius: BorderRadius.circular(8),
+                color: const Color(0xFF2B4D66),
+                borderRadius: BorderRadius.circular(4),
               ),
-              child: const Icon(Icons.chevron_left, color: Colors.white),
+              child: const Icon(Icons.chevron_left, color: Colors.white, size: 20),
             ),
           ),
         ),
       ),
+      body: BlocBuilder<HistoryDetailBloc, HistoryDetailState>(
+        bloc: _historyBloc,
+        builder: (context, state) {
+          Map<String, dynamic> d = Map.from(dummyDetail);
 
-      body: SafeArea(
-        child: BlocBuilder<HistoryDetailBloc, HistoryDetailState>(
-          bloc: _historyBloc,
-          builder: (context, state) {
-            Map<String, dynamic> d = Map.from(dummyDetail);
-
-            // HYBRID MODE: API → fallback dummy
-            if (state is HistoryDetailSuccess) {
-              final api = state.historyDetailResp;
-
-              if ((api.doNumber ?? "").isNotEmpty) {
-                d = {
-                  "doNumber": api.doNumber,
-                  "subDo": api.subDo,
-                  "spbNumber": api.spbNumber,
-                  "driverName": api.driverName,
-                  "vehicleNumber": api.vehicleNumber,
-                  "pksName": api.pksName,
-                  "destinationName": api.destinationName,
-                  "commodityName": api.commodityName,
-                  "bonus": api.bonus,
-                  "loadDate": api.loadDate,
-                  "unloadDate": api.unloadDate,
-                  "amountSent": api.amountSent,
-                  "amountReceived": api.amountReceived,
-                  "spb": api.spb,
-                  "qrcode": api.qrcode,
-                };
-              }
+          if (state is HistoryDetailSuccess) {
+            final api = state.historyDetailResp;
+            if ((api.doNumber ?? "").isNotEmpty) {
+              d = {
+                "doNumber": api.doNumber,
+                "subDo": api.subDo,
+                "spbNumber": api.spbNumber,
+                "driverName": api.driverName,
+                "vehicleNumber": api.vehicleNumber,
+                "pksName": api.pksName,
+                "destinationName": api.destinationName,
+                "commodityName": api.commodityName,
+                "bonus": api.bonus,
+                "loadDate": api.loadDate,
+                "unloadDate": api.unloadDate,
+                "amountSent": api.amountSent,
+                "amountReceived": api.amountReceived,
+                "spb": api.spb,
+                "qrcode": api.qrcode,
+              };
             }
+          }
 
-            if (state is HistoryDetailLoading || state is HistoryDetailInitial) {
-              return const Center(child: CircularProgressIndicator());
-            }
+          if (state is HistoryDetailLoading) {
+            return const Center(child: CircularProgressIndicator());
+          }
 
-            return ListView(
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+          // Variabel Data untuk UI
+          final routeText = "${d['pksName']} \u2192 ${d['destinationName']}";
+          final routeSubtext = "PT. Subur Arum Makmur 1 \u2192 PT. Adhitya Serayakorita"; // Statis sesuai mockup atau ambil dari logic jika ada
+          final commodity = d['commodityName'] ?? "CPO";
+          final doNumber = d['doNumber'] ?? "-";
+          final subDo = d['subDo'] ?? "-";
+
+          final noDoKecil = "01/15"; // Placeholder sesuai mockup (logic asli bisa ditambahkan)
+          final driver = d['driverName'] ?? "-";
+          final vehicle = d['vehicleNumber'] ?? "-";
+
+          return SingleChildScrollView(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                /// =======================
-                /// HEADER
-                /// =======================
-                Text(
-                  d["doNumber"] ?? "-",
-                  style: const TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w900,
-                    color: Color(0xFF002B4C),
+                // === MAIN INFO CARD ===
+                Container(
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFF8F9FA), // Very light grey bg
+                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(color: const Color(0xFFE0E0E0)),
                   ),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  "${safeDate(d["loadDate"])} - ${safeDate(d["unloadDate"])}",
-                  style: const TextStyle(
-                    fontSize: 12,
-                    color: Color(0xFF8D8D8D),
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-
-                _divider(),
-
-                /// QR CODE
-                if ((d["qrcode"] ?? "").toString().isNotEmpty)
-                  GestureDetector(
-                    onTap: () => Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (_) => FullImageView(image: d["qrcode"])),
-                    ),
-                    child: Container(
-                      height: 120,
-                      width: 120,
-                      decoration: BoxDecoration(
-                        color: Colors.grey[50],
-                        borderRadius: BorderRadius.circular(10),
-                        border: Border.all(color: const Color(0xFFE5E5E5)),
-                      ),
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(10),
-                        child: Image.network(
-                          d["qrcode"],
-                          fit: BoxFit.cover,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // Route
+                      Text(
+                        routeText,
+                        style: const TextStyle(
+                          color: orange,
+                          fontWeight: FontWeight.w800,
+                          fontSize: 16,
                         ),
                       ),
-                    ),
-                  ),
+                      const SizedBox(height: 4),
+                      Text(
+                        routeSubtext,
+                        style: const TextStyle(
+                          color: Colors.grey,
+                          fontSize: 11,
+                        ),
+                      ),
+                      const SizedBox(height: 12),
 
-                if ((d["qrcode"] ?? "").toString().isNotEmpty)
-                  const SizedBox(height: 20),
+                      // Commodity
+                      const Text(
+                        "Komoditi",
+                        style: TextStyle(
+                          fontSize: 11,
+                          color: darkBlue,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      Text(
+                        commodity,
+                        style: const TextStyle(
+                          fontSize: 14,
+                          color: darkBlue,
+                          fontWeight: FontWeight.w800,
+                        ),
+                      ),
+                      const SizedBox(height: 12),
 
-                /// =====================
-                /// DETAIL FIELDS
-                /// =====================
-                _label("Sub DO"),
-                const SizedBox(height: 4),
-                _value(d["subDo"] ?? "-"),
-                _divider(),
+                      // DO Number Big
+                      const Text(
+                        "No DO Besar",
+                        style: TextStyle(
+                          fontSize: 11,
+                          color: darkBlue,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      Text(
+                        doNumber,
+                        style: const TextStyle(
+                          fontSize: 18,
+                          color: darkBlue,
+                          fontWeight: FontWeight.w900,
+                        ),
+                      ),
+                      Text(
+                        subDo,
+                        style: const TextStyle(
+                          fontSize: 13,
+                          color: darkBlue,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
 
-                _label("Nomor SPB"),
-                const SizedBox(height: 4),
-                _value(d["spbNumber"] ?? "-"),
-                _divider(),
+                      const SizedBox(height: 16),
+                      const Divider(height: 1, color: Color(0xFFE0E0E0)),
+                      const SizedBox(height: 12),
 
-                _label("Pengemudi"),
-                const SizedBox(height: 4),
-                _value(d["driverName"] ?? "-"),
-                _divider(),
-
-                _label("No Kendaraan"),
-                const SizedBox(height: 4),
-                _value(d["vehicleNumber"] ?? "-"),
-                _divider(),
-
-                _label("PKS"),
-                const SizedBox(height: 4),
-                _value(d["pksName"] ?? "-"),
-                _divider(),
-
-                _label("Tujuan Bongkar"),
-                const SizedBox(height: 4),
-                _value(d["destinationName"] ?? "-"),
-                _divider(),
-
-                _label("Produk"),
-                const SizedBox(height: 4),
-                _value(d["commodityName"] ?? "-"),
-                _divider(),
-
-                _label("Bonus"),
-                const SizedBox(height: 4),
-                _value(
-                  d["bonus"] != null && d["bonus"] != ""
-                      ? "Rp ${d["bonus"]}"
-                      : "-",
-                  c:
-                  d["bonus"] != null && d["bonus"] != "" ? Colors.green : Colors.black,
-                ),
-
-                const SizedBox(height: 20),
-
-                _section("Data Timbang"),
-                const SizedBox(height: 20),
-
-                _label("Jumlah Muat"),
-                const SizedBox(height: 4),
-                _value("${d["amountSent"] ?? '-'} KG"),
-                _divider(),
-
-                _label("Jumlah Bongkar"),
-                const SizedBox(height: 4),
-                _value("${d["amountReceived"] ?? '-'} KG"),
-                _divider(),
-
-                _label("Tanggal Muat"),
-                const SizedBox(height: 4),
-                _value(safeDate(d["loadDate"])),
-                _divider(),
-
-                _label("Tanggal Bongkar"),
-                const SizedBox(height: 4),
-                _value(safeDate(d["unloadDate"])),
-                _divider(),
-
-                const SizedBox(height: 20),
-
-                /// ============================
-                /// FOTO SPB
-                /// ============================
-                GestureDetector(
-                  onTap: () {
-                    if ((d["spb"] ?? "").isNotEmpty) {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (_) => FullImageView(image: d["spb"])),
-                      );
-                    }
-                  },
-                  child: (d["spb"] ?? "").toString().isNotEmpty
-                      ? ClipRRect(
-                    borderRadius: BorderRadius.circular(10),
-                    child: Image.network(
-                      d["spb"],
-                      height: 260,
-                      width: double.infinity,
-                      fit: BoxFit.cover,
-                    ),
-                  )
-                      : Container(
-                    height: 260,
-                    decoration: BoxDecoration(
-                      color: Colors.grey[100],
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    child: const Center(child: Text("Tidak ada foto SPB")),
+                      // Driver Details
+                      _buildInfoRow("No DO Kecil", noDoKecil),
+                      _buildInfoRow("Nama Supir", driver),
+                      _buildInfoRow("No Kendaraan", vehicle),
+                    ],
                   ),
                 ),
 
-                const SizedBox(height: 30),
+                const SizedBox(height: 24),
+
+                // === SECTION MUAT ===
+                const Text(
+                  "MUAT",
+                  style: TextStyle(
+                    color: darkBlue,
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                _buildActivityCard(doNumber, d, true, context),
+
+                // === SECTION BONGKAR ===
+                const Text(
+                  "BONGKAR",
+                  style: TextStyle(
+                    color: darkBlue,
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                _buildActivityCard(doNumber, d, false, context),
               ],
-            );
-          },
-        ),
+            ),
+          );
+        },
       ),
     );
   }
 }
-
-
-
-

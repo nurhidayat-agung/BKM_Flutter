@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:newbkmmobile/models/history_resp.dart';
+import 'package:newbkmmobile/models/trip_history/delivery_detail_history.dart';
 import 'package:newbkmmobile/ui/pages/history/history_detail_page.dart';
 
 class HistoryRow extends StatelessWidget {
   final int index;
-  final HistoryResp historyResp;
-  final HistoryResp historyRespBefore;
+  final DeliveryDetailHistory historyResp;
+  final DeliveryDetailHistory historyRespBefore;
 
   const HistoryRow({
     super.key,
@@ -26,7 +26,8 @@ class HistoryRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final date = _formatDate(historyResp.loadDate ?? "");
+    /// sementara hardcode karena struktur detail belum final
+    final date = _formatDate("2025-11-11");
 
     return InkWell(
       onTap: () {
@@ -44,18 +45,18 @@ class HistoryRow extends StatelessWidget {
             /// DO NUMBER + DATE
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
+              children: const [
                 Text(
-                  historyResp.doNumber ?? "-",
-                  style: const TextStyle(
+                  "051/KAL-EUP/IP-CPO/X/2025",  // dummy
+                  style: TextStyle(
                     fontSize: 14.5,
                     fontWeight: FontWeight.w800,
                     color: Color(0xFF002B4C),
                   ),
                 ),
                 Text(
-                  date,
-                  style: const TextStyle(
+                  "11 Nov 2025", // dummy formatted
+                  style: TextStyle(
                     fontSize: 11.5,
                     color: Color(0xFF8D8D8D),
                   ),
@@ -66,9 +67,9 @@ class HistoryRow extends StatelessWidget {
             const SizedBox(height: 2),
 
             /// ROUTE + COMMODITY
-            Text(
-              "${historyResp.pksName ?? '-'} → ${historyResp.destinationName ?? '-'} | ${historyResp.commodityName ?? '-'}",
-              style: const TextStyle(
+            const Text(
+              "SAM1 → ASK | CPO", // dummy
+              style: TextStyle(
                 fontSize: 11.5,
                 fontWeight: FontWeight.w700,
                 color: Color(0xFFD4552F),
@@ -77,7 +78,7 @@ class HistoryRow extends StatelessWidget {
 
             const SizedBox(height: 10),
 
-            /// Divider Mockup
+            /// Divider
             Container(
               height: 1,
               width: double.infinity,

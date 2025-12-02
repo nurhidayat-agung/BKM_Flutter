@@ -300,13 +300,41 @@ class _TripPageState extends State<TripPage> {
             }
           }),
           statusCard(
-            "EDIT MUAT",
             expanded: showMuatEdit,
+            "MUAT",
+            onTap: () {
+              setState(() {
+                showMuatEdit = !showMuatEdit;
+              });
+            },
           ),
+          // FORM EXPANDED (tanpa tombol simpan)
+          if (showMuatEdit)
+            buildFormMuat(
+              context,
+              tripDetail,
+              deliveryData,
+              isAction: true,
+              isEdit: true// ⬅ tidak ada tombol save
+            ),
           statusCard(
-            "EDIT BONGKAR",
             expanded: showMuatEdit,
+            "Edit Bongkar",
+            onTap: () {
+              setState(() {
+                showBongkarEdit = !showBongkarEdit;
+              });
+            },
           ),
+          // FORM EXPANDED (tanpa tombol simpan)
+          if (showBongkarEdit)
+            buildFormBongkar(
+                context,
+                deliveryData,
+                tripDetail,
+                isAction: true,
+                isEdit: true// ⬅ tidak ada tombol save
+            ),
         ],
       );
     }
@@ -626,7 +654,7 @@ class _TripPageState extends State<TripPage> {
   // FORM MUAT
   Widget buildFormMuat(
       BuildContext context, TripDetail data, DeliveryData deliveryData,
-      {bool isAction = true}) {
+      {bool isAction = true, bool isEdit = false}) {
     spbMuat.text = deliveryData.spbNumber ?? "";
     tarraMuat.text = deliveryData.loadTare.toString() ?? "0";
     brutoMuat.text = deliveryData.loadBruto.toString();
@@ -756,6 +784,7 @@ class _TripPageState extends State<TripPage> {
                         deliveryData: deliveryData,
                         tripDetail: data,
                         muatRequest: req,
+                        isEdit: isEdit
                       ),
                     );
               }
@@ -770,7 +799,7 @@ class _TripPageState extends State<TripPage> {
     BuildContext context,
     DeliveryData deliveryData,
     TripDetail tripDetail, {
-    bool isAction = true, // PARAMETER TAMBAHAN
+    bool isAction = true, bool isEdit = false // PARAMETER TAMBAHAN
   }) {
     tarraBongkar.text = deliveryData.unloadTare.toString();
     brutoBongkar.text = deliveryData.unloadBruto.toString();
@@ -868,7 +897,9 @@ class _TripPageState extends State<TripPage> {
                 context.read<TripBloc>().add(PushBongkar(
                     deliveryData: deliveryData,
                     tripDetail: tripDetail,
-                    bongkarRequest: req));
+                    bongkarRequest: req,
+                    isEdit: isEdit
+                ));
               }
             }),
         ],

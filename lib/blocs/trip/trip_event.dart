@@ -34,8 +34,9 @@ class PushMuat extends TripEvent {
   final DeliveryData deliveryData;
   final TripDetail tripDetail;
   final LoadUnloadRequest muatRequest;
+  final bool isEdit;
 
-  const PushMuat({required this.deliveryData, required this.tripDetail, required this.muatRequest});
+  const PushMuat({required this.deliveryData, required this.tripDetail, required this.muatRequest, required this.isEdit});
 
   @override
   List<Object> get props => [deliveryData, tripDetail, muatRequest];
@@ -45,8 +46,9 @@ class PushBongkar extends TripEvent {
   final DeliveryData deliveryData;
   final TripDetail tripDetail;
   final LoadUnloadRequest bongkarRequest;
+  final bool isEdit;
 
-  const PushBongkar({required this.deliveryData, required this.tripDetail, required this.bongkarRequest});
+  const PushBongkar({required this.deliveryData, required this.tripDetail, required this.bongkarRequest, required this.isEdit});
 
   @override
   List<Object> get props => [deliveryData, tripDetail, bongkarRequest];

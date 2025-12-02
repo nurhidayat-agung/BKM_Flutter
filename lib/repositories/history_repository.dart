@@ -52,7 +52,7 @@ class HistoryRepository {
 
     final response = await HttpCommunicator().get(endpoint, headers: headers);
 
-    return (response.status, response);
+    return (response.status, response.result);
   }
 
 }

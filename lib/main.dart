@@ -41,24 +41,32 @@ import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:intl/date_symbol_data_local.dart'; // ✅ Tambahkan ini untuk inisialisasi locale tanggal
 import 'package:newbkmmobile/core/r.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:newbkmmobile/ui/pages/login/splash_page.dart';
+import 'package:newbkmmobile/blocs/langsir/langsir_bloc.dart';
+import 'package:newbkmmobile/repositories/langsir_repository.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Hive.initFlutter();
 
-  // ✅ Inisialisasi format tanggal lokal Indonesia
   await initializeDateFormatting('id_ID', null);
 
   runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key}); // ✅ tambahkan const agar konsisten
+  const MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return MultiBlocProvider(
+        providers: [
+          BlocProvider<LangsirBloc>(
+            create: (_) => LangsirBloc(LangsirRepository()),
+          ),
+        ],
+    child: MaterialApp(
       title: R.strings.appName,
       theme: ThemeData(
         primaryColor: R.colors.colorPrimary,
@@ -80,6 +88,6 @@ class MyApp extends StatelessWidget {
       ),
       debugShowCheckedModeBanner: false,
       home: const SplashPage(),
-    );
+    ));
   }
 }

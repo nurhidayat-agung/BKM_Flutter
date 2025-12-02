@@ -224,7 +224,7 @@ class TripRepository {
       "action_button": "load_save",
       "next_status": nextStatus,
       "note": note,
-      "is_edit": isEdit.toString(),
+      "is_edit": isEdit ? "1" : "0",
     };
 
     // DO Sambung (optional)
@@ -338,7 +338,7 @@ class TripRepository {
       "action_button": "unload_save",
       "next_status": nextStatus,
       "note": note,
-      "is_edit": isEdit.toString(),
+      "is_edit": isEdit ? "1" : "0",
     };
 
     // DO Sambung (optional)

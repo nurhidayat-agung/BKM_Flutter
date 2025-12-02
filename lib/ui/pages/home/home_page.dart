@@ -12,6 +12,9 @@ import 'package:newbkmmobile/ui/pages/service_book/service_book_page.dart';
 import 'package:newbkmmobile/ui/pages/service_part/service_part_page.dart';
 import 'package:newbkmmobile/ui/pages/payslip/payslip_page.dart';
 import 'package:newbkmmobile/ui/pages/profile/profile_page.dart';
+import 'package:newbkmmobile/ui/pages/leave/leave_page.dart';
+import 'package:newbkmmobile/ui/pages/langsir/langsir_list_page.dart';
+
 
 class HomePage extends StatefulWidget {
   final LoginRepository loginRepository;
@@ -275,10 +278,10 @@ class _HomePageState extends State<HomePage> {
                               childAspectRatio: 0.70,
                               children: [
                                 _menuItem("Pengangkutan Baru", "assets/Pengangkutan_Baru.png", const TripPage(), context),
-                                _menuItem("Langsir", "assets/Langsir.png", const WorkshopPage(), context),
+                                _menuItem("Langsir", "assets/Langsir.png", const LangsirListPage(), context),
                                 _menuItem("Riwayat Pengangkutan", "assets/Riwayat_Pengangkutan.png", const HistoryPage(), context),
                                 _menuItem("Bengkel", "assets/Bengkel.png", const ServiceBookPage(), context),
-                                _menuItem("Pengajuan Cuti", "assets/Pengajuan_Cuti.png", const ServicePartPage(), context),
+                                _menuItem("Pengajuan Cuti", "assets/Pengajuan_Cuti.png", const LeaveApplicationPage(), context),
                                 _menuItem("Slip Gaji", "assets/slip_gaji.png", const PaySlipPage(), context),
                               ],
                             ),

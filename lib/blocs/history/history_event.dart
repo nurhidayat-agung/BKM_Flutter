@@ -4,7 +4,7 @@ abstract class HistoryEvent extends Equatable {
   const HistoryEvent();
 }
 
-class History extends HistoryEvent {
+class GetHistory extends HistoryEvent {
   @override
   List<Object> get props => [];
 }
