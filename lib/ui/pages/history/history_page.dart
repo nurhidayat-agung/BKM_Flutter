@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:newbkmmobile/blocs/history/history_bloc.dart';
 import 'package:newbkmmobile/models/trip_history/delivery_detail_history.dart';
+import 'package:newbkmmobile/models/trip_history/v2/do_detail_history.dart';
 import 'package:newbkmmobile/repositories/history_repository.dart';
 import 'package:newbkmmobile/ui/pages/history/history_row.dart';
 
@@ -61,7 +62,7 @@ class _HistoryPageState extends State<HistoryPage> {
                 );
               }
 
-              List<DeliveryDetailHistory> listAll = [];
+              List<DoDetailHistory> listAll = [];
               if (state is HistorySuccess && state.listHistoryResp.isNotEmpty) {
                 listAll = state.listHistoryResp;
               }

@@ -16,7 +16,7 @@ class HistoryLoading extends HistoryState {
 }
 
 class HistorySuccess extends HistoryState {
-  final List<DeliveryDetailHistory> listHistoryResp;
+  final List<DoDetailHistory> listHistoryResp;
   const HistorySuccess(this.listHistoryResp);
   @override
   List<Object> get props => [listHistoryResp];

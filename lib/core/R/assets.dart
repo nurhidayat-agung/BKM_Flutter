@@ -1,7 +1,7 @@
 class Assets {
   //core
-  String icBKM            = "assets/icon_bkm.png";
-  String logoBKM          = "assets/logo_bkm.png";
+  String icBKM            = "assets/BKM_Logo_BG_White.png";
+  String logoBKM          = "assets/BKM_Logo_BG_White.png";
 
   //menu
   String menuTrip         = "assets/menu_trip.png";

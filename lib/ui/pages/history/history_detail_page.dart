@@ -5,9 +5,13 @@ import 'package:newbkmmobile/core/r.dart';
 import 'package:newbkmmobile/repositories/history_repository.dart';
 import 'package:newbkmmobile/ui/widgets/full_image_view.dart';
 
+import '../../../models/trip_history/v2/do_detail_history.dart';
+
 class HistoryDetailPage extends StatefulWidget {
   final String id;
-  const HistoryDetailPage({super.key, required this.id});
+  final DoDetailHistory detailHistory;
+  const HistoryDetailPage({super.key, required this.id, required this.detailHistory}
+);
 
   @override
   State<HistoryDetailPage> createState() => _HistoryDetailPageState();
@@ -60,6 +64,7 @@ class _HistoryDetailPageState extends State<HistoryDetailPage> {
     "qrcode": ""
   };
 
+
   // ======= WIDGET BUILDER HELPERS (Sesuai Mockup) =========
 
   Widget _buildInfoRow(String label, String value, {bool isRightAlign = true}) {
@@ -95,12 +100,17 @@ class _HistoryDetailPageState extends State<HistoryDetailPage> {
 
   Widget _buildActivityCard(String titleDO, Map<String, dynamic> data, bool isMuat, BuildContext context) {
     // Mapping data to mockup fields
-    final noSPB = data["spbNumber"] ?? "-";
+    final noSPB = widget.detailHistory.spbNumber ?? "-";
     // Mockup logic: Tara/Bruto simulasi karena data dummy asli terbatas,
     // tapi tetap menampilkan Netto dari data asli.
-    const tara = "2000";
-    const bruto = "2000";
-    final netto = isMuat ? (data["amountSent"] ?? "0") : (data["amountReceived"] ?? "0");
+    String tara = isMuat ? (widget.detailHistory.loadTare?.toString() ?? "0")
+        : (widget.detailHistory.unloadTare?.toString() ?? "0");
+
+    final bruto = isMuat ? (widget.detailHistory.loadBruto?.toString() ?? "0")
+        : (widget.detailHistory.unloadBruto?.toString() ?? "0");
+
+    final netto = isMuat ? (widget.detailHistory.loadQuantity?.toString() ?? "0")
+        : (widget.detailHistory.unloadQuantity?.toString() ?? "0");
     final fotoUrl = data["spb"];
 
     return Container(
@@ -269,15 +279,15 @@ class _HistoryDetailPageState extends State<HistoryDetailPage> {
           }
 
           // Variabel Data untuk UI
-          final routeText = "${d['pksName']} \u2192 ${d['destinationName']}";
-          final routeSubtext = "PT. Subur Arum Makmur 1 \u2192 PT. Adhitya Serayakorita"; // Statis sesuai mockup atau ambil dari logic jika ada
-          final commodity = d['commodityName'] ?? "CPO";
-          final doNumber = d['doNumber'] ?? "-";
+          final routeText = "${widget.detailHistory.deliveryOrder?.pks?.code ?? ""} \u2192 ${widget.detailHistory.deliveryOrder?.destination?.code ?? ""}";
+          final routeSubtext = "${widget.detailHistory.deliveryOrder?.pks?.name ?? ""} \u2192 ${widget.detailHistory.deliveryOrder?.destination?.name ?? ""}";; // Statis sesuai mockup atau ambil dari logic jika ada
+          final commodity = widget.detailHistory.deliveryOrder?.commodity?.name ?? "";
+          final doNumber = widget.detailHistory.deliveryOrder?.doNumber ?? "";
           final subDo = d['subDo'] ?? "-";
 
           final noDoKecil = "01/15"; // Placeholder sesuai mockup (logic asli bisa ditambahkan)
-          final driver = d['driverName'] ?? "-";
-          final vehicle = d['vehicleNumber'] ?? "-";
+          final driver = widget.detailHistory.driver?.name ?? "-";
+          final vehicle = widget.detailHistory.vehicle?.policeNumber ?? "-";
 
           return SingleChildScrollView(
             padding: const EdgeInsets.all(16),

@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:newbkmmobile/models/trip_history/delivery_detail_history.dart';
+import 'package:newbkmmobile/models/trip_history/v2/do_detail_history.dart';
 import 'package:newbkmmobile/ui/pages/history/history_detail_page.dart';
 
 class HistoryRow extends StatelessWidget {
   final int index;
-  final DeliveryDetailHistory historyResp;
-  final DeliveryDetailHistory historyRespBefore;
+  final DoDetailHistory historyResp;
+  final DoDetailHistory historyRespBefore;
 
   const HistoryRow({
     super.key,
@@ -23,6 +24,7 @@ class HistoryRow extends StatelessWidget {
       return "-";
     }
   }
+  
 
   @override
   Widget build(BuildContext context) {
@@ -33,7 +35,7 @@ class HistoryRow extends StatelessWidget {
       onTap: () {
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (_) => HistoryDetailPage(id: historyResp.id ?? "")),
+          MaterialPageRoute(builder: (_) => HistoryDetailPage(id: historyResp.id ?? "", detailHistory: historyResp,)),
         );
       },
       child: Padding(
@@ -45,9 +47,9 @@ class HistoryRow extends StatelessWidget {
             /// DO NUMBER + DATE
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: const [
+              children: [
                 Text(
-                  "051/KAL-EUP/IP-CPO/X/2025",  // dummy
+                  historyResp.deliveryOrder?.doNumber ?? "",  // dummy
                   style: TextStyle(
                     fontSize: 14.5,
                     fontWeight: FontWeight.w800,
@@ -55,7 +57,7 @@ class HistoryRow extends StatelessWidget {
                   ),
                 ),
                 Text(
-                  "11 Nov 2025", // dummy formatted
+                  _formatDate(historyResp.createdAt ?? ""), // dummy formatted
                   style: TextStyle(
                     fontSize: 11.5,
                     color: Color(0xFF8D8D8D),
@@ -67,8 +69,8 @@ class HistoryRow extends StatelessWidget {
             const SizedBox(height: 2),
 
             /// ROUTE + COMMODITY
-            const Text(
-              "SAM1 → ASK | CPO", // dummy
+            Text(
+              "${historyResp.deliveryOrder?.pks?.code} → ${historyResp.deliveryOrder?.destination?.code} | ${historyResp.deliveryOrder?.commodity?.name}", // dummy
               style: TextStyle(
                 fontSize: 11.5,
                 fontWeight: FontWeight.w700,

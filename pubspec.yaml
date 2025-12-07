@@ -50,9 +50,9 @@ dev_dependencies:
 flutter_icons:
   android: "launcher_icon"
   ios: true
-  image_path: "assets/ic_bkm_512.png"
-  adaptive_icon_background: "assets/ic_launcher_adaptive_back.png"
-  adaptive_icon_foreground: "assets/ic_launcher_adaptive_fore.png"
+  image_path: "assets/BKM_Logo_BG_White.png"
+  adaptive_icon_background: "assets/BKM_Logo_BG_White.png"
+  adaptive_icon_foreground: "assets/BKM_Logo_BG_White.png"
   min_sdk_android: 21
 
 flutter:

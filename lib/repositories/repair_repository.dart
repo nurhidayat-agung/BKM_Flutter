@@ -1,0 +1,103 @@
+import 'package:flutter/material.dart';
+import 'package:newbkmmobile/models/repair/repair_model.dart';
+
+class RepairRepository {
+  // Data Dummy Static .
+  static final List<RepairModel> _dummyData = [
+    RepairModel(
+      id: '1',
+      urgencyTitle: 'Medium',
+      date: '10 Nov 2025',
+      repairType: 'Mesin',
+      lastKm: '3.000 Km',
+      status: 'Disetujui',
+      statusColor: const Color(0xFF4CAF50),
+      description: 'Perbaikan rutin pada bagian mesin utama.',
+    ),
+    RepairModel(
+      id: '2',
+      urgencyTitle: 'Medium',
+      date: '10 Nov 2025',
+      repairType: 'Mesin',
+      lastKm: '3.000 Km',
+      status: 'Ditunda',
+      statusColor: const Color(0xFFFDD835),
+      description: 'Menunggu ketersediaan sparepart.',
+    ),
+    RepairModel(
+      id: '3',
+      urgencyTitle: 'Medium',
+      date: '10 Nov 2025',
+      repairType: 'Mesin',
+      lastKm: '3.000 Km',
+      status: 'Ditolak',
+      statusColor: const Color(0xFFE53935),
+      description: 'Kerusakan dianggap kelalaian pengemudi.',
+    ),
+    RepairModel(
+      id: '4',
+      urgencyTitle: 'Medium',
+      date: '10 Nov 2025',
+      repairType: 'Mesin',
+      lastKm: '3.000 Km',
+      status: 'Proses',
+      statusColor: const Color(0xFF1976D2),
+      description: 'Sedang dalam pengerjaan di bengkel rekanan.',
+    ),
+    RepairModel(
+      id: '5',
+      urgencyTitle: 'Medium',
+      date: '10 Nov 2025',
+      repairType: 'Mesin',
+      lastKm: '3.000 Km',
+      status: 'Selesai',
+      statusColor: const Color(0xFFFF9800),
+      description: 'Perbaikan selesai, unit siap jalan.',
+    ),
+  ];
+
+  // Mengambil data (Get)
+  Future<List<RepairModel>> getRepairs() async {
+    // Simulasi Delay API
+    await Future.delayed(const Duration(seconds: 1));
+
+    // Mengembalikan list yang ada di memori
+    return _dummyData;
+  }
+
+  // Menyimpan data baru (Post/Store)
+  Future<void> submitRepair({
+    required String type,
+    required String urgency,
+    required String lastKm,
+    required String description,
+  }) async {
+    // Simulasi Delay API
+    await Future.delayed(const Duration(seconds: 1));
+
+    // Membuat object model baru dari inputan user(form)
+    final newItem = RepairModel(
+      id: DateTime.now().millisecondsSinceEpoch.toString(),
+      urgencyTitle: urgency, // Judul diambil dari urgensi (Low/Medium/High)
+      date: _getTodayDate(), // Tanggal
+      repairType: type,
+      lastKm: '$lastKm Km', // Format KM
+      status: 'Proses', // Status default untuk pengajuan baru
+      statusColor: const Color(0xFF1976D2), // Warna Biru (Proses)
+      description: description,
+    );
+
+    // Masukkan data baru ke urutan paling atas
+    _dummyData.insert(0, newItem);
+  }
+
+  // Helper function untuk format tanggal
+  String _getTodayDate() {
+    final now = DateTime.now();
+    const months = [
+      'Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun',
+      'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'
+    ];
+    return "${now.day} ${months[now.month - 1]} ${now.year}";
+  }
+}

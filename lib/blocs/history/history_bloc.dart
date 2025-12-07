@@ -5,6 +5,7 @@ import 'package:equatable/equatable.dart';
 import 'package:newbkmmobile/models/history_resp.dart';
 import 'package:newbkmmobile/models/trip_history/delivery_detail_history.dart';
 import 'package:newbkmmobile/models/trip_history/history_response.dart';
+import 'package:newbkmmobile/models/trip_history/v2/do_detail_history.dart';
 import 'package:newbkmmobile/repositories/history_repository.dart';
 
 part 'history_event.dart';
