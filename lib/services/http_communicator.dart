@@ -9,7 +9,7 @@ import 'package:newbkmmobile/repositories/session_manager_repository.dart';
 /// - POST JSON
 /// - POST FormData (multipart)
 class HttpCommunicator {
-  final String baseUrl = 'https://api-dev.berkatkarimar.co.id/api';
+  final String baseUrl = 'https://api.berkatkarimar.co.id/api';
 
 
   /// Refresh token

@@ -8,16 +8,18 @@ abstract class LeaveEvent extends Equatable {
 }
 
 class SubmitLeave extends LeaveEvent {
+  final String leaveType;
   final String startDate;
   final String endDate;
   final String reason;
 
   const SubmitLeave({
+    required this.leaveType,
     required this.startDate,
     required this.endDate,
     required this.reason,
   });
 
   @override
-  List<Object?> get props => [startDate, endDate, reason];
+  List<Object?> get props => [leaveType, startDate, endDate, reason];
 }

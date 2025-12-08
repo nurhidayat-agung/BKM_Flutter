@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 import 'package:newbkmmobile/blocs/leave/leave_bloc.dart';
 import 'package:newbkmmobile/blocs/leave/leave_event.dart';
 import 'package:newbkmmobile/blocs/leave/leave_state.dart';
+import 'package:newbkmmobile/core/constants.dart';
 import 'package:newbkmmobile/repositories/leave_repository.dart';
 
 class LeaveFormPage extends StatefulWidget {
@@ -21,7 +22,7 @@ class _LeaveFormPageState extends State<LeaveFormPage> {
 
   // Variabel untuk Dropdown Tipe Cuti
   String? _selectedLeaveType;
-  final List<String> _leaveTypes = ['Cuti Tahunan', 'Sakit', 'Izin'];
+  final List<String> _leaveTypes = Constants.leaveTypeMap.keys.toList();
 
   // Variabel untuk menyimpan tanggal asli (DateTime)
   DateTime? _rawStartDate;
@@ -90,6 +91,7 @@ class _LeaveFormPageState extends State<LeaveFormPage> {
 
     _leaveBloc.add(
       SubmitLeave(
+        leaveType: _selectedLeaveType ?? "",
         startDate: apiStartDate,
         endDate: apiEndDate,
         reason: _reasonController.text,

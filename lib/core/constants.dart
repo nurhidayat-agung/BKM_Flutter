@@ -13,4 +13,10 @@ class Constants {
   static String userDetail        = "user_detail";
 
   static List<String> listMonthIndonesia = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
+
+  static Map<String, int> leaveTypeMap = {
+    "Cuti Tahunan": 1,
+    "Sakit": 2,
+    "Izin": 3,
+  };
 }

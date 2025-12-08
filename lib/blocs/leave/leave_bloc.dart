@@ -1,20 +1,10 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:newbkmmobile/blocs/leave/leave_event.dart';
 import 'package:newbkmmobile/blocs/leave/leave_state.dart';
+import 'package:newbkmmobile/core/constants.dart';
+import 'package:newbkmmobile/repositories/leave_repository.dart';
 
-/// Repository
-class LeaveRepository {
-  Future<void> submitLeave(String start, String end, String reason) async {
-    // panggilan API
-    await Future.delayed(const Duration(seconds: 2));
 
-    if (reason.toLowerCase().contains("sakit")) {
-      throw Exception(
-        "Gagal mengajukan cuti: Alasan 'Sakit' harus dilengkapi surat dokter.",
-      );
-    }
-  }
-}
 
 class LeaveBloc extends Bloc<LeaveEvent, LeaveState> {
   final LeaveRepository repository;
@@ -30,11 +20,15 @@ class LeaveBloc extends Bloc<LeaveEvent, LeaveState> {
     emit(LeaveLoading());
 
     try {
-      await repository.submitLeave(
+      int leaveType = Constants.leaveTypeMap[event.leaveType] ?? 0;
+
+      var (status, response) =  await repository.submitLeave(
+        leaveType,
         event.startDate,
         event.endDate,
         event.reason,
       );
+
 
       emit(
         const LeaveSuccess(

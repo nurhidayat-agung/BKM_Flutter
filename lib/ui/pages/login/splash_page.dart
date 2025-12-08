@@ -77,7 +77,8 @@ class _SplashPageState extends State<SplashPage> {
       child: Center(
         child: Image.asset(
           R.assets.logoBKM,
-          scale: 5.0,
+          width: 120,
+          fit: BoxFit.contain,
         ),
       ),
     );
