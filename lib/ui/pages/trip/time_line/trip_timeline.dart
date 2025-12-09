@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:newbkmmobile/models/trip/delivery_response.dart';
+import 'package:newbkmmobile/models/trip/list_new_do_response.dart';
 
 class TripTimeline extends StatelessWidget {
   final List<AppLog> logs;

@@ -1,12 +1,14 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:newbkmmobile/blocs/trip/trip_bloc.dart';
 import 'package:newbkmmobile/core/image_picker.dart';
-import 'package:newbkmmobile/models/trip/delivery_response.dart';
+import 'package:newbkmmobile/models/trip/list_new_do_response.dart';
 import 'package:newbkmmobile/models/trip/muat_request.dart';
-import 'package:newbkmmobile/models/trip/trip_detail_response.dart';
+import 'package:newbkmmobile/models/trip/show_do_response.dart';
+import 'package:newbkmmobile/models/trip/v2/do_detail_response.dart';
 
 import '../../../repositories/trip_repository.dart';
 
@@ -27,6 +29,8 @@ class _TripPageState extends State<TripPage> {
 
   bool showMuatEdit = false;
   bool showBongkarEdit = false;
+  bool isFormInitialized = false;
+
 
   // Controller MUAT
   final TextEditingController spbMuat = TextEditingController();
@@ -106,6 +110,7 @@ class _TripPageState extends State<TripPage> {
         child: BlocBuilder<TripBloc, TripState>(
           builder: (context, state) {
             if (state is TripLoading) {
+              isFormInitialized = false;
               return const Center(child: CircularProgressIndicator());
             }
 
@@ -114,8 +119,40 @@ class _TripPageState extends State<TripPage> {
             }
 
             if (state is TripSuccess) {
-              final trip = state.tripDetail;
-              final delivery = state.deliveryData;
+              final trip = state.doDetailResponseData;
+              final delivery = state.listNewDoData;
+
+              if (!isFormInitialized) {
+                isFormInitialized = true;
+
+                spbMuat.text = delivery.spbNumber ?? "";
+                tarraMuat.text = delivery.loadTare?.toString() ?? "";
+                brutoMuat.text = delivery.loadBruto?.toString() ?? "";
+                nettoMuat.text = delivery.loadQuantity?.toString() ?? "";
+
+                if (delivery.linkedDetail != null) {
+                  spbMuatSambung.text = delivery.linkedDetail?.spbNumber ?? "";
+                  tarraMuatSambung.text =
+                      delivery.linkedDetail?.loadTare?.toString() ?? "";
+                  brutoMuatSambung.text =
+                      delivery.linkedDetail?.loadBruto?.toString() ?? "";
+                  nettoMuatSambung.text =
+                      delivery.linkedDetail?.loadQuantity?.toString() ?? "";
+                }
+
+                tarraBongkar.text = delivery.unloadTare?.toString() ?? "";
+                brutoBongkar.text = delivery.unloadBruto?.toString() ?? "";
+                nettoBongkar.text = delivery.unloadQuantity?.toString() ?? "";
+
+                if (delivery.linkedDetail != null) {
+                  tarraBongkarSambung.text =
+                      delivery.linkedDetail?.unloadTare?.toString() ?? "";
+                  brutoBongkarSambung.text =
+                      delivery.linkedDetail?.unloadBruto?.toString() ?? "";
+                  nettoBongkarSambung.text =
+                      delivery.linkedDetail?.unloadQuantity?.toString() ?? "";
+                }
+              }
 
               return SingleChildScrollView(
                 child: Column(
@@ -135,7 +172,7 @@ class _TripPageState extends State<TripPage> {
   }
 
   Widget generateContent(
-      BuildContext context, TripDetail tripDetail, DeliveryData deliveryData) {
+      BuildContext context, DoDetailResponseData tripDetail, ListNewDoData deliveryData) {
     Widget content = Container();
     _step = deliveryData.status ?? "";
 
@@ -155,8 +192,7 @@ class _TripPageState extends State<TripPage> {
           buildFirstButtons(context, tripDetail.id ?? ""),
         ],
       );
-    } else if (deliveryData.status == "accepted" &&
-        deliveryData.latestStatusLog == "0") {
+    } else if (deliveryData.status == "accepted") {
       content = Column(
         children: [
           buildInfoCard(tripDetail, deliveryData),
@@ -399,10 +435,10 @@ class _TripPageState extends State<TripPage> {
   }
 
   //Perubahan detail Pengangkutan(Card Info)
-  Widget buildInfoCard(TripDetail detail, DeliveryData deliveryData) {
-    final origin = deliveryData.deliveryOrder?.pksId ?? "-";
-    final destination = deliveryData.deliveryOrder?.destinationId ?? "-";
-    final commodity = deliveryData.deliveryOrder?.commodityId ?? "-";
+  Widget buildInfoCard(DoDetailResponseData detail, ListNewDoData deliveryData) {
+    final origin = detail.deliveryOrder?.pks?.code ?? "-";
+    final destination = detail.deliveryOrder?.destination?.code ?? "-";
+    final commodity = detail.deliveryOrder?.commodity?.name ?? "-";
     final doBesar = deliveryData.deliveryOrder?.doNumber ?? "-";
     final doDate = deliveryData.deliveryOrder?.doDate ?? "-";
     final doKecil = deliveryData.linkedDetail?.deliveryOrder?.doNumber ?? "-";
@@ -522,7 +558,11 @@ class _TripPageState extends State<TripPage> {
   }
 
   // TEXTFIELD basic
-  Widget inputField(TextEditingController c, String label) {
+  Widget inputField(
+      TextEditingController c,
+      String label, {
+        bool numericOnly = false, // default false
+      }) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 6),
       child: TextField(
@@ -532,35 +572,35 @@ class _TripPageState extends State<TripPage> {
           labelStyle: const TextStyle(fontSize: 13),
           isDense: true,
           contentPadding:
-              const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
-
-          // Border default
+          const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(10),
           ),
-
-          // Border ketika tidak fokus
           enabledBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(10),
-            borderSide: const BorderSide(
-              color: Colors.grey, // warna border
-              width: 1,
-            ),
+            borderSide: const BorderSide(color: Colors.grey, width: 1),
           ),
-
-          // Border ketika fokus
           focusedBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(10),
-            borderSide: const BorderSide(
-              color: Colors.blue,
-              width: 1.5,
-            ),
+            borderSide: const BorderSide(color: Colors.blue, width: 1.5),
           ),
         ),
-        keyboardType: TextInputType.number,
+
+        keyboardType:
+        numericOnly ? const TextInputType.numberWithOptions(decimal: true) : TextInputType.text,
+
+        inputFormatters: numericOnly
+            ? [
+          FilteringTextInputFormatter.allow(
+            RegExp(r'^\d*\.?\d*$',), // angka + titik
+          ),
+        ]
+            : [],
       ),
     );
   }
+
+
 
   // Button utama
   Widget mainButton(String text, VoidCallback onTap,
@@ -653,23 +693,11 @@ class _TripPageState extends State<TripPage> {
 
   // FORM MUAT
   Widget buildFormMuat(
-      BuildContext context, TripDetail data, DeliveryData deliveryData,
-      {bool isAction = true, bool isEdit = false}) {
-    spbMuat.text = deliveryData.spbNumber ?? "";
-    tarraMuat.text = deliveryData.loadTare.toString() ?? "0";
-    brutoMuat.text = deliveryData.loadBruto.toString();
-    nettoMuat.text = deliveryData.loadQuantity.toString();
-
-    if (deliveryData.linkedDetail != null) {
-      spbMuatSambung.text = deliveryData.linkedDetail?.spbNumber ?? "";
-      tarraMuatSambung.text =
-          deliveryData.linkedDetail?.loadTare.toString() ?? "";
-      brutoMuatSambung.text =
-          deliveryData.linkedDetail?.loadBruto.toString() ?? "";
-      nettoMuatSambung.text =
-          deliveryData.linkedDetail?.loadQuantity.toString() ?? "";
-    }
-
+      BuildContext context,
+      DoDetailResponseData data,
+      ListNewDoData deliveryData,
+      {bool isAction = true, bool isEdit = false})
+  {
     return Container(
       margin: const EdgeInsets.fromLTRB(16, 12, 16, 16),
       padding: const EdgeInsets.all(14),
@@ -696,9 +724,9 @@ class _TripPageState extends State<TripPage> {
 
           // ------ INPUT DO UTAMA ------
           inputField(spbMuat, "No. SPB"),
-          inputField(tarraMuat, "Jumlah Tarra Muat"),
-          inputField(brutoMuat, "Jumlah Bruto Muat"),
-          inputField(nettoMuat, "Netto Muat (Kg)"),
+          inputField(tarraMuat, "Jumlah Tarra Muat",numericOnly: true),
+          inputField(brutoMuat, "Jumlah Bruto Muat", numericOnly: true),
+          inputField(nettoMuat, "Netto Muat (Kg)", numericOnly: true),
 
           const SizedBox(height: 10),
 
@@ -752,9 +780,9 @@ class _TripPageState extends State<TripPage> {
             ),
             const SizedBox(height: 8),
             inputField(spbMuatSambung, "No. SPB"),
-            inputField(tarraMuatSambung, "Jumlah Tarra Muat"),
-            inputField(brutoMuatSambung, "Jumlah Bruto Muat"),
-            inputField(nettoMuatSambung, "Netto Muat (Kg)"),
+            inputField(tarraMuatSambung, "Jumlah Tarra Muat", numericOnly: true),
+            inputField(brutoMuatSambung, "Jumlah Bruto Muat", numericOnly: true),
+            inputField(nettoMuatSambung, "Netto Muat (Kg)", numericOnly: true),
           ],
 
           const SizedBox(height: 20),
@@ -797,23 +825,10 @@ class _TripPageState extends State<TripPage> {
   // FORM BONGKAR
   Widget buildFormBongkar(
     BuildContext context,
-    DeliveryData deliveryData,
-    TripDetail tripDetail, {
+    ListNewDoData deliveryData,
+    DoDetailResponseData tripDetail, {
     bool isAction = true, bool isEdit = false // PARAMETER TAMBAHAN
   }) {
-    tarraBongkar.text = deliveryData.unloadTare.toString();
-    brutoBongkar.text = deliveryData.unloadBruto.toString();
-    nettoBongkar.text = deliveryData.unloadQuantity.toString();
-
-    if (deliveryData.linkedDetail != null) {
-      tarraBongkarSambung.text =
-          deliveryData.linkedDetail?.unloadTare.toString() ?? "";
-      brutoBongkarSambung.text =
-          deliveryData.linkedDetail?.unloadBruto.toString() ?? "";
-      nettoBongkarSambung.text =
-          deliveryData.linkedDetail?.unloadQuantity.toString() ?? "";
-    }
-
     return Container(
       margin: const EdgeInsets.fromLTRB(16, 12, 16, 16),
       padding: const EdgeInsets.all(14),
@@ -833,9 +848,9 @@ class _TripPageState extends State<TripPage> {
               style:
                   const TextStyle(fontSize: 15, fontWeight: FontWeight.bold)),
           const SizedBox(height: 8),
-          inputField(tarraBongkar, "Jumlah Tarra Bongkar"),
-          inputField(brutoBongkar, "Jumlah Bruto Bongkar"),
-          inputField(nettoBongkar, "Netto Bongkar (Kg)"),
+          inputField(tarraBongkar, "Jumlah Tarra Bongkar", numericOnly: true),
+          inputField(brutoBongkar, "Jumlah Bruto Bongkar", numericOnly: true),
+          inputField(nettoBongkar, "Netto Bongkar (Kg)", numericOnly: true),
           const SizedBox(height: 10),
 
           // ==========================
@@ -883,9 +898,9 @@ class _TripPageState extends State<TripPage> {
           if (deliveryData.linkedDetail != null) ...[
             Text("DO Sambung : $noDOSambung",
                 style: const TextStyle(fontWeight: FontWeight.bold)),
-            inputField(tarraBongkarSambung, "Jumlah Tarra Bongkar"),
-            inputField(brutoBongkarSambung, "Jumlah Bruto Bongkar"),
-            inputField(nettoBongkarSambung, "Netto Bongkar (Kg)"),
+            inputField(tarraBongkarSambung, "Jumlah Tarra Bongkar", numericOnly: true),
+            inputField(brutoBongkarSambung, "Jumlah Bruto Bongkar", numericOnly: true),
+            inputField(nettoBongkarSambung, "Netto Bongkar (Kg)", numericOnly: true),
           ],
 
           if (isAction)
@@ -933,7 +948,7 @@ class _TripPageState extends State<TripPage> {
     );
   }
 
-  LoadUnloadRequest collectMuatData(DeliveryData deliveryData) {
+  LoadUnloadRequest collectMuatData(ListNewDoData deliveryData) {
     return LoadUnloadRequest(
       noDo: noDO,
       spb: spbMuat.text,
@@ -955,7 +970,7 @@ class _TripPageState extends State<TripPage> {
     );
   }
 
-  LoadUnloadRequest collectBongkarData(DeliveryData deliveryData) {
+  LoadUnloadRequest collectBongkarData(ListNewDoData deliveryData) {
     return LoadUnloadRequest(
       noDo: noDO,
       spb: "",

@@ -31,8 +31,8 @@ class LoadingLocationTrip extends TripEvent {
 
 
 class PushMuat extends TripEvent {
-  final DeliveryData deliveryData;
-  final TripDetail tripDetail;
+  final ListNewDoData deliveryData;
+  final DoDetailResponseData tripDetail;
   final LoadUnloadRequest muatRequest;
   final bool isEdit;
 
@@ -43,8 +43,8 @@ class PushMuat extends TripEvent {
 }
 
 class PushBongkar extends TripEvent {
-  final DeliveryData deliveryData;
-  final TripDetail tripDetail;
+  final ListNewDoData deliveryData;
+  final DoDetailResponseData tripDetail;
   final LoadUnloadRequest bongkarRequest;
   final bool isEdit;
 
@@ -55,8 +55,8 @@ class PushBongkar extends TripEvent {
 }
 
 class PushTripUnload extends TripEvent {
-  final DeliveryData deliveryData;
-  final TripDetail tripDetail;
+  final ListNewDoData deliveryData;
+  final DoDetailResponseData tripDetail;
 
   const PushTripUnload({required this.deliveryData, required this.tripDetail});
 
@@ -65,8 +65,8 @@ class PushTripUnload extends TripEvent {
 }
 
 class PushTillUnload extends TripEvent {
-  final DeliveryData deliveryData;
-  final TripDetail tripDetail;
+  final ListNewDoData deliveryData;
+  final DoDetailResponseData tripDetail;
 
   const PushTillUnload({required this.deliveryData, required this.tripDetail});
 

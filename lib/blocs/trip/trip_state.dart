@@ -16,13 +16,13 @@ class TripLoading extends TripState {
 }
 
 class TripSuccess extends TripState with EquatableMixin {
-  final TripDetail tripDetail;
-  final DeliveryData deliveryData;
+  final DoDetailResponseData doDetailResponseData;
+  final ListNewDoData listNewDoData;
 
-  TripSuccess({required this.tripDetail, required this.deliveryData});
+  TripSuccess({required this.doDetailResponseData, required this.listNewDoData});
 
   @override
-  List<Object> get props => [tripDetail, deliveryData];
+  List<Object> get props => [doDetailResponseData, listNewDoData];
 }
 
 

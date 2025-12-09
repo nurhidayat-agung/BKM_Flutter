@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:newbkmmobile/models/trip/delivery_response.dart';
-import 'package:newbkmmobile/models/trip/trip_detail_response.dart';
+import 'package:newbkmmobile/models/trip/list_new_do_response.dart';
+import 'package:newbkmmobile/models/trip/show_do_response.dart';
 
 class InfoCard extends StatelessWidget {
-  final TripDetail detail;
-  final DeliveryData deliveryData;
+  final ShowDoData detail;
+  final ListNewDoData deliveryData;
 
   const InfoCard({
     super.key,

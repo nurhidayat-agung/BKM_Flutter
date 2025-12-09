@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:newbkmmobile/models/trip/delivery_response.dart';
+import 'package:newbkmmobile/models/trip/list_new_do_response.dart';
 import 'package:newbkmmobile/ui/pages/trip/time_line/time_line_item.dart';
 
 List<Widget> buildTimeline(List<AppLog> logs) {

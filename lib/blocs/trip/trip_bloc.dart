@@ -3,9 +3,10 @@ import 'dart:convert';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:newbkmmobile/blocs/trip_detail/trip_detail_bloc.dart';
-import 'package:newbkmmobile/models/trip/delivery_response.dart' show DeliveryData;
+import 'package:newbkmmobile/models/trip/list_new_do_response.dart' show ListNewDoData;
 import 'package:newbkmmobile/models/trip/muat_request.dart';
-import 'package:newbkmmobile/models/trip/trip_detail_response.dart';
+import 'package:newbkmmobile/models/trip/show_do_response.dart';
+import 'package:newbkmmobile/models/trip/v2/do_detail_response.dart';
 import 'package:newbkmmobile/models/trip_resp.dart';
 import 'package:newbkmmobile/repositories/trip_repository.dart';
 
@@ -30,8 +31,8 @@ class TripBloc extends Bloc<TripEvent, TripState> {
 
           if (detailStatus == 200 && tripDetail != null) {
             emit(TripSuccess(
-              tripDetail: tripDetail,
-              deliveryData: delivery,
+              doDetailResponseData: tripDetail,
+              listNewDoData: delivery,
             ));
           } else {
             emit(const TripError("Data Tidak Ditemukan"));
@@ -103,12 +104,7 @@ class TripBloc extends Bloc<TripEvent, TripState> {
           loadTareLink: tarraSambung,
         );
 
-        if (status == 200) {
-          // Jika berhasil, langsung fetch trip terbaru
-          await fetchLatestTrip(emit);
-        } else {
-          emit(TripError("Gagal menerima trip"));
-        }
+        await fetchLatestTrip(emit);
       } catch (e) {
         emit(TripError(e.toString()));
       }
@@ -145,12 +141,7 @@ class TripBloc extends Bloc<TripEvent, TripState> {
           unloadTareLink: tarraSambung
         );
 
-        if (status == 200) {
-          // Jika berhasil, langsung fetch trip terbaru
-          await fetchLatestTrip(emit);
-        } else {
-          emit(TripError("Gagal menerima trip"));
-        }
+        await fetchLatestTrip(emit);
       } catch (e) {
         emit(TripError(e.toString()));
       }

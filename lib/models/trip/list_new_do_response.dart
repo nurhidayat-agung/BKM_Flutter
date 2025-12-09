@@ -1,20 +1,20 @@
 import 'dart:convert';
 
-class DeliveryResponse {
+class ListNewDoResponse {
   final String? status;
-  final List<DeliveryData>? data;
+  final List<ListNewDoData>? data;
 
-  DeliveryResponse({
+  ListNewDoResponse({
     this.status,
     this.data,
   });
 
-  factory DeliveryResponse.fromJson(Map<String, dynamic> json) {
-    return DeliveryResponse(
+  factory ListNewDoResponse.fromJson(Map<String, dynamic> json) {
+    return ListNewDoResponse(
       status: json['status'],
       data: json['data'] != null
-          ? List<DeliveryData>.from(
-          (json['data'] as List).map((x) => DeliveryData.fromJson(x)))
+          ? List<ListNewDoData>.from(
+          (json['data'] as List).map((x) => ListNewDoData.fromJson(x)))
           : null,
     );
   }
@@ -30,7 +30,7 @@ class DeliveryResponse {
 
 
 
-class DeliveryData {
+class ListNewDoData {
   final String? id;
   final String? doId;
   final String? vehicleId;
@@ -67,7 +67,7 @@ class DeliveryData {
   final LinkedDetail? linkedDetail;
   final List<AppLog>? appLogs;
 
-  DeliveryData({
+  ListNewDoData({
     this.id,
     this.doId,
     this.vehicleId,
@@ -104,8 +104,8 @@ class DeliveryData {
     this.appLogs = const [],
   });
 
-  factory DeliveryData.fromJson(Map<String, dynamic> json) {
-    return DeliveryData(
+  factory ListNewDoData.fromJson(Map<String, dynamic> json) {
+    return ListNewDoData(
       id: json['id'],
       doId: json['do_id'],
       vehicleId: json['vehicle_id'],

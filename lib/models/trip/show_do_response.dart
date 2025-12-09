@@ -1,19 +1,21 @@
 import 'dart:convert';
 
-class TripDetailResponse {
-  final String? status;
-  final TripDetail? data;
+import 'package:newbkmmobile/models/trip_history/v2/delivery_order_history.dart';
 
-  TripDetailResponse({
+class ShowDoResponse {
+  final String? status;
+  final ShowDoData? data;
+
+  ShowDoResponse({
     this.status,
     this.data,
   });
 
-  factory TripDetailResponse.fromJson(Map<String, dynamic> json) {
-    return TripDetailResponse(
+  factory ShowDoResponse.fromJson(Map<String, dynamic> json) {
+    return ShowDoResponse(
       status: json['status'] as String?,
       data: json['data'] != null
-          ? TripDetail.fromJson(json['data'] as Map<String, dynamic>)
+          ? ShowDoData.fromJson(json['data'] as Map<String, dynamic>)
           : null,
     );
   }
@@ -152,6 +154,9 @@ class DeliveryOrder {
   final String? deletedAt;
   final String? createdAt;
   final String? updatedAt;
+  final PksDestinationHistory? pks;
+  final PksDestinationHistory? destination;
+
 
   DeliveryOrder({
     this.id,
@@ -181,6 +186,8 @@ class DeliveryOrder {
     this.deletedAt,
     this.createdAt,
     this.updatedAt,
+    this.pks,
+    this.destination
   });
 
   factory DeliveryOrder.fromJson(Map<String, dynamic>? json) {
@@ -213,6 +220,8 @@ class DeliveryOrder {
       deletedAt: json['deleted_at'] as String?,
       createdAt: json['created_at'] as String?,
       updatedAt: json['updated_at'] as String?,
+      pks: json['pks'] != null ? PksDestinationHistory.fromJson(json['pks']) : null,
+      destination: json['destination'] != null ? PksDestinationHistory.fromJson(json['destination']) : null,
     );
   }
 
@@ -248,7 +257,7 @@ class DeliveryOrder {
   }
 }
 
-class TripDetail {
+class ShowDoData {
   final String? id;
   final String? doId;
   final String? vehicleId;
@@ -294,7 +303,7 @@ class TripDetail {
   final Commodity? commodity;
 
 
-  TripDetail({
+  ShowDoData({
     this.id,
     this.doId,
     this.vehicleId,
@@ -340,7 +349,7 @@ class TripDetail {
     this.commodity,
   });
 
-  factory TripDetail.fromJson(Map<String, dynamic> json) => TripDetail(
+  factory ShowDoData.fromJson(Map<String, dynamic> json) => ShowDoData(
     id: json['id'] as String?,
     doId: json['do_id'] as String?,
     vehicleId: json['vehicle_id'] as String?,

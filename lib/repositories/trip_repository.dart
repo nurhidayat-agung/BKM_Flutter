@@ -3,8 +3,9 @@ import 'dart:io';
 
 import 'package:newbkmmobile/core/constants.dart';
 import 'package:newbkmmobile/models/loading_location/loading_location_response.dart';
-import 'package:newbkmmobile/models/trip/delivery_response.dart' show DeliveryResponse;
-import 'package:newbkmmobile/models/trip/trip_detail_response.dart';
+import 'package:newbkmmobile/models/trip/list_new_do_response.dart' show ListNewDoResponse;
+import 'package:newbkmmobile/models/trip/show_do_response.dart';
+import 'package:newbkmmobile/models/trip/v2/do_detail_response.dart';
 import 'package:newbkmmobile/repositories/login_repository.dart';
 import 'package:http/http.dart' as http;
 import 'package:newbkmmobile/repositories/session_manager_repository.dart';
@@ -88,7 +89,7 @@ class TripRepository {
   /// Return tuple: (statusCode, DeliveryResponse?)
   /// Return tuple: (statusCode, DeliveryResponse?)
   /// Return tuple: (statusCode, DeliveryResponse?)
-  Future<(int, DeliveryResponse?)> getNewDeliveryOrder() async {
+  Future<(int, ListNewDoResponse?)> getNewDeliveryOrder() async {
     try {
       final driver = await SessionManager.getUserSession();
 
@@ -122,7 +123,7 @@ class TripRepository {
       );
 
       if (httpResponse.status == 200) {
-        final resp = DeliveryResponse.fromJson(httpResponse.result);
+        final resp = ListNewDoResponse.fromJson(httpResponse.result);
         return (200, resp);
       }
 
@@ -135,7 +136,7 @@ class TripRepository {
 
   /// --------------------------------------------------------------------------
   /// GET delivery order detail by ID
-  Future<(int, TripDetail?)> getDeliveryOrderDetail({
+  Future<(int, DoDetailResponseData?)> getDeliveryOrderDetail({
     required String id,
   }) async {
     try {
@@ -146,10 +147,10 @@ class TripRepository {
         'Authorization': 'Bearer ${driver?.token ?? ''}',
       };
 
-      final response = await _http.get('delivery-order-details/$id', headers: headers);
+      final response = await _http.get('delivery-order-details/app/$id', headers: headers);
 
       if (response.result != null) {
-        final tripDetail = TripDetailResponse.fromJson(response.result);
+        final tripDetail = DoDetailResponse.fromJson(response.result);
         return (response.status, tripDetail.data);
       } else {
         // Return status code tetap tapi data null
