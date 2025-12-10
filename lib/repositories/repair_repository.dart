@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:newbkmmobile/models/repair/repair_model.dart';
+import 'package:newbkmmobile/repositories/session_manager_repository.dart';
+import 'package:newbkmmobile/services/http_communicator.dart';
 
 class RepairRepository {
   // Data Dummy Static .
@@ -100,4 +102,22 @@ class RepairRepository {
     ];
     return "${now.day} ${months[now.month - 1]} ${now.year}";
   }
+
+
+  Future<(int, dynamic)> getVehicleRepairsByUser() async {
+    final driver = await SessionManager.getUserSession();
+
+    final userId = driver?.userId ?? ""; // sesuai sub: di token userID
+    final endpoint = 'vehicle-repairs/user/$userId';
+
+    final headers = {
+      'X-Site-ID': driver?.siteId ?? "",
+      'Authorization': 'Bearer ${driver?.token ?? ""}',
+    };
+
+    final response = await HttpCommunicator().get(endpoint, headers: headers);
+
+    return (response.status, response.result);
+  }
+
 }

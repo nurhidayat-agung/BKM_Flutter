@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:newbkmmobile/models/repair/repair_model.dart';
+import 'package:newbkmmobile/models/repair/vehicle_repair_data.dart';
 
 class RepairDetailPage extends StatelessWidget {
-  final RepairModel item;
+  final VehicleRepairData item;
   const RepairDetailPage({super.key, required this.item});
 
   @override
@@ -52,7 +53,7 @@ class RepairDetailPage extends StatelessWidget {
             children: [
               // Tanggal
               Text(
-                "Tgl Pengajuan : ${item.date}",
+                "Tgl Pengajuan : ${item.requestDate ?? ""}",
                 style: const TextStyle(fontSize: 12, color: Colors.black87, fontWeight: FontWeight.w600),
               ),
               const SizedBox(height: 12),
@@ -62,17 +63,17 @@ class RepairDetailPage extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    item.urgencyTitle, // "Medium"
+                    item.urgencyLevel?.name ?? "", // "Medium"
                     style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: darkBlue),
                   ),
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
                     decoration: BoxDecoration(
-                      color: item.statusColor,
+                      color: Colors.blueAccent,
                       borderRadius: BorderRadius.circular(20),
                     ),
                     child: Text(
-                      item.status,
+                      item.status ?? "",
                       style: const TextStyle(color: Colors.white, fontSize: 13, fontWeight: FontWeight.bold),
                     ),
                   ),
@@ -90,7 +91,7 @@ class RepairDetailPage extends StatelessWidget {
                         const Text("Jenis Perbaikan", style: TextStyle(fontSize: 12, color: Colors.black54)),
                         const SizedBox(height: 4),
                         Text(
-                          item.repairType,
+                          item.repairType?.name ?? "",
                           style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w800, color: darkBlue),
                         ),
                       ],
@@ -103,7 +104,7 @@ class RepairDetailPage extends StatelessWidget {
                         const Text("Kilometer Terakhir", style: TextStyle(fontSize: 12, color: Colors.black54)),
                         const SizedBox(height: 4),
                         Text(
-                          item.lastKm,
+                          item.currentKm.toString(),
                           style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w800, color: darkBlue),
                         ),
                       ],
@@ -117,7 +118,7 @@ class RepairDetailPage extends StatelessWidget {
               const Text("Keterangan", style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: darkBlue)),
               const SizedBox(height: 8),
               Text(
-                item.description,
+                item.damageDescription ?? "",
                 style: const TextStyle(fontSize: 14, color: Colors.black54, height: 1.5),
               ),
             ],

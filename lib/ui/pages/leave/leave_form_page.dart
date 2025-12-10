@@ -63,38 +63,98 @@ class _LeaveFormPageState extends State<LeaveFormPage> {
     }
   }
 
-  void _submitLeave() {
-    // Validasi sederhana
-    if (_selectedLeaveType == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Pilih jenis cuti terlebih dahulu!"), backgroundColor: Colors.orange),
+  Future<void> _submitLeave() async {
+    final res = await showConfirmDialog(
+        "Ajukan Cuti", "Apakah Anda yakin akan mengajukan cuti ?");
+    if (res) {
+      // Validasi sederhana
+      if (_selectedLeaveType == null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Pilih jenis cuti terlebih dahulu!"), backgroundColor: Colors.orange),
+        );
+        return;
+      }
+      if (_startDateController.text.isEmpty ||
+          _endDateController.text.isEmpty ||
+          _reasonController.text.isEmpty) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Semua field harus diisi!"), backgroundColor: Colors.orange),
+        );
+        return;
+      }
+
+      // Format tanggal untuk API (YYYY-MM-DD)
+      String apiStartDate = _rawStartDate != null
+          ? DateFormat('yyyy-MM-dd').format(_rawStartDate!)
+          : _startDateController.text;
+
+      String apiEndDate = _rawEndDate != null
+          ? DateFormat('yyyy-MM-dd').format(_rawEndDate!)
+          : _endDateController.text;
+
+      _leaveBloc.add(
+        SubmitLeave(
+          leaveType: _selectedLeaveType ?? "",
+          startDate: apiStartDate,
+          endDate: apiEndDate,
+          reason: _reasonController.text,
+        ),
       );
-      return;
     }
-    if (_startDateController.text.isEmpty ||
-        _endDateController.text.isEmpty ||
-        _reasonController.text.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Semua field harus diisi!"), backgroundColor: Colors.orange),
-      );
-      return;
-    }
+  }
 
-    // Format tanggal untuk API (YYYY-MM-DD)
-    String apiStartDate = _rawStartDate != null
-        ? DateFormat('yyyy-MM-dd').format(_rawStartDate!)
-        : _startDateController.text;
-
-    String apiEndDate = _rawEndDate != null
-        ? DateFormat('yyyy-MM-dd').format(_rawEndDate!)
-        : _endDateController.text;
-
-    _leaveBloc.add(
-      SubmitLeave(
-        leaveType: _selectedLeaveType ?? "",
-        startDate: apiStartDate,
-        endDate: apiEndDate,
-        reason: _reasonController.text,
+  Future<bool> showConfirmDialog(String title, String msg) async {
+    return await showDialog(
+      context: context,
+      builder: (_) => Dialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+        child: Padding(
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(title,
+                  style: const TextStyle(
+                      fontSize: 20, fontWeight: FontWeight.bold)),
+              const SizedBox(height: 10),
+              Text(msg, textAlign: TextAlign.center),
+              const SizedBox(height: 20),
+              Row(
+                children: [
+                  Expanded(
+                    child: OutlinedButton(
+                      onPressed: () => Navigator.pop(context, false),
+                      style: OutlinedButton.styleFrom(
+                        minimumSize: const Size(0, 45),
+                        side: BorderSide(color: Colors.grey.shade400),
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10)),
+                      ),
+                      child: const Text("Batal",
+                          style: TextStyle(color: Colors.black54)),
+                    ),
+                  ),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: ElevatedButton(
+                      onPressed: () => Navigator.pop(context, true),
+                      style: ElevatedButton.styleFrom(
+                        minimumSize: const Size(0, 45),
+                        backgroundColor: const Color(0xFF002B4C),
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10)),
+                      ),
+                      child: const Text("Ya",
+                          style: TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold)),
+                    ),
+                  ),
+                ],
+              )
+            ],
+          ),
+        ),
       ),
     );
   }
@@ -138,23 +198,12 @@ class _LeaveFormPageState extends State<LeaveFormPage> {
         create: (context) => _leaveBloc,
         child: BlocConsumer<LeaveBloc, LeaveState>(
           listener: (context, state) {
-            if (state is LeaveSuccess) {
+            if (state is SubmitLeaveSuccess) {
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(content: Text(state.message), backgroundColor: Colors.green),
               );
 
-              // Kirim data dummy balik ke list agar terupdate realtime
-              final newItem = {
-                "title": _selectedLeaveType,
-                "dateApplied": DateFormat('dd MMM yyyy').format(DateTime.now()),
-                "startDate": _startDateController.text,
-                "endDate": _endDateController.text,
-                "status": "Menunggu",
-                "statusColor": Colors.blue,
-                "textColor": Colors.white,
-                "reason": _reasonController.text,
-              };
-              Navigator.pop(context, newItem);
+              Navigator.pop(context, true);
 
             } else if (state is LeaveFailure) {
               ScaffoldMessenger.of(context).showSnackBar(

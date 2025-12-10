@@ -32,4 +32,13 @@ class ConvertDate {
     return outputDate.toString();
   }
 
+  isoFormatToReadable(String dateString) {
+    try {
+      DateTime dt = DateTime.parse(dateString);
+      return DateFormat("dd MMM yyyy").format(dt);
+    } catch (e) {
+      return dateString; // fallback kalau parsing gagal
+    }
+  }
+
 }

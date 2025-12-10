@@ -50,7 +50,8 @@ class _TripPageState extends State<TripPage> {
   final TextEditingController brutoBongkarSambung = TextEditingController();
   final TextEditingController nettoBongkarSambung = TextEditingController();
 
-  File? fotoSPB;
+  File? fotoSPBMuat;
+  File? fotoSPBBongkar;
 
   @override
   void dispose() {
@@ -172,7 +173,8 @@ class _TripPageState extends State<TripPage> {
   }
 
   Widget generateContent(
-      BuildContext context, DoDetailResponseData tripDetail, ListNewDoData deliveryData) {
+      BuildContext context, DoDetailResponseData tripDetail, ListNewDoData deliveryData)
+  {
     Widget content = Container();
     _step = deliveryData.status ?? "";
 
@@ -742,7 +744,7 @@ class _TripPageState extends State<TripPage> {
                 pickImage(
                   context: context,
                   onImagePicked: (file) {
-                    setState(() => fotoSPB = file);
+                    setState(() => fotoSPBMuat = file);
                   },
                 );
               },
@@ -754,13 +756,13 @@ class _TripPageState extends State<TripPage> {
             ),
 
           // Preview gambar DO Utama
-          if (fotoSPB != null)
+          if (fotoSPBMuat != null)
             Padding(
               padding: const EdgeInsets.only(top: 10),
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(10),
                 child: Image.file(
-                  fotoSPB!,
+                  fotoSPBMuat!,
                   height: 160,
                   width: double.infinity,
                   fit: BoxFit.cover,
@@ -865,7 +867,7 @@ class _TripPageState extends State<TripPage> {
                 pickImage(
                   context: context,
                   onImagePicked: (file) {
-                    setState(() => fotoSPB = file);
+                    setState(() => fotoSPBBongkar = file);
                   },
                 );
               },
@@ -877,13 +879,13 @@ class _TripPageState extends State<TripPage> {
             ),
 
           // Preview gambar DO Utama
-          if (fotoSPB != null)
+          if (fotoSPBBongkar != null)
             Padding(
               padding: const EdgeInsets.only(top: 10),
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(10),
                 child: Image.file(
-                  fotoSPB!,
+                  fotoSPBBongkar!,
                   height: 160,
                   width: double.infinity,
                   fit: BoxFit.cover,
@@ -955,7 +957,7 @@ class _TripPageState extends State<TripPage> {
       tarra: tarraMuat.text,
       bruto: brutoMuat.text,
       netto: nettoMuat.text,
-      fotoSpb: fotoSPB,
+      fotoSpb: fotoSPBMuat,
 
       // hanya diisi jika DO sambung ada
       noDoSambung: deliveryData.linkedDetail != null ? noDOSambung : null,
@@ -977,7 +979,7 @@ class _TripPageState extends State<TripPage> {
       tarra: tarraBongkar.text,
       bruto: brutoBongkar.text,
       netto: nettoBongkar.text,
-      fotoSpb: fotoSPB,
+      fotoSpb: fotoSPBBongkar,
 
       // hanya diisi jika DO sambung ada
       tarraSambung:

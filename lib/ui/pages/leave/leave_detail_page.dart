@@ -154,15 +154,18 @@
 // }
 
 import 'package:flutter/material.dart';
+import 'package:newbkmmobile/core/convert_date.dart';
+import 'package:newbkmmobile/models/leave/leave_list_response.dart';
+
 
 class LeaveDetailPage extends StatelessWidget {
-  final Map<String, dynamic> data;
+  final LeaveData data;
   const LeaveDetailPage({super.key, required this.data});
 
   @override
   Widget build(BuildContext context) {
     const darkBlue = Color(0xFF002B4C);
-
+    final ConvertDate _convertDate = ConvertDate();
     return Scaffold(
       backgroundColor: const Color(0xFFF5F6F8), // Background Abu
       appBar: AppBar(
@@ -214,7 +217,7 @@ class LeaveDetailPage extends StatelessWidget {
             children: [
               // Tgl Pengajuan
               Text(
-                "Tgl Pengajuan : ${data['dateApplied']}",
+                "Tgl Pengajuan : ${_convertDate.isoFormatToReadable(data.createdAt ?? "")}",
                 style: const TextStyle(
                   fontSize: 12,
                   color: Colors.black87,
@@ -228,7 +231,7 @@ class LeaveDetailPage extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    data['title'],
+                    data.leaveType?.name ?? "",
                     style: const TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
@@ -238,13 +241,13 @@ class LeaveDetailPage extends StatelessWidget {
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
                     decoration: BoxDecoration(
-                      color: data['statusColor'],
+                      color: Colors.yellow,
                       borderRadius: BorderRadius.circular(20),
                     ),
                     child: Text(
-                      data['status'],
+                      data.status?.name ?? "",
                       style: TextStyle(
-                        color: data['textColor'] ?? Colors.white,
+                        color: Colors.white,
                         fontSize: 12,
                         fontWeight: FontWeight.bold,
                       ),
@@ -267,7 +270,7 @@ class LeaveDetailPage extends StatelessWidget {
                         ),
                         const SizedBox(height: 4),
                         Text(
-                          data['startDate'],
+                          data.startDate ?? "",
                           style: const TextStyle(
                             fontSize: 14,
                             fontWeight: FontWeight.bold,
@@ -287,7 +290,7 @@ class LeaveDetailPage extends StatelessWidget {
                         ),
                         const SizedBox(height: 4),
                         Text(
-                          data['endDate'],
+                          data.endDate ?? "",
                           style: const TextStyle(
                             fontSize: 14,
                             fontWeight: FontWeight.bold,
@@ -312,7 +315,7 @@ class LeaveDetailPage extends StatelessWidget {
               ),
               const SizedBox(height: 8),
               Text(
-                data['reason'] ?? "Tidak ada deskripsi alasan.",
+                data.reason ?? "",
                 style: const TextStyle(
                   fontSize: 13,
                   color: Colors.black54,

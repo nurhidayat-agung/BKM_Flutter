@@ -7,6 +7,12 @@ abstract class LeaveEvent extends Equatable {
   List<Object?> get props => [];
 }
 
+class GetListLeave extends LeaveEvent {
+  const GetListLeave();
+  @override
+  List<Object?> get props => [];
+}
+
 class SubmitLeave extends LeaveEvent {
   final String leaveType;
   final String startDate;

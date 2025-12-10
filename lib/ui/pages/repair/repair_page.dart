@@ -4,6 +4,7 @@ import 'package:newbkmmobile/blocs/repair/repair_bloc.dart';
 import 'package:newbkmmobile/blocs/repair/repair_event.dart';
 import 'package:newbkmmobile/blocs/repair/repair_state.dart';
 import 'package:newbkmmobile/models/repair/repair_model.dart';
+import 'package:newbkmmobile/models/repair/vehicle_repair_data.dart';
 import 'package:newbkmmobile/repositories/repair_repository.dart';
 import 'repair_form_page.dart';
 import 'repair_detail_page.dart';
@@ -129,7 +130,7 @@ class _RepairPageState extends State<RepairPage> {
     );
   }
 
-  Widget _buildRepairCard(BuildContext context, RepairModel item) {
+  Widget _buildRepairCard(BuildContext context, VehicleRepairData item) {
     const darkBlue = Color(0xFF002B4C);
 
     return GestureDetector(
@@ -153,7 +154,7 @@ class _RepairPageState extends State<RepairPage> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              "Tgl Pengajuan : ${item.date}",
+              "Tgl Pengajuan : ${item.requestDate}",
               style: const TextStyle(fontSize: 11, color: Colors.grey, fontWeight: FontWeight.w600),
             ),
             const SizedBox(height: 8),
@@ -161,17 +162,17 @@ class _RepairPageState extends State<RepairPage> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  item.urgencyTitle,
+                  item.urgencyLevel?.name ?? "",
                   style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: darkBlue),
                 ),
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
                   decoration: BoxDecoration(
-                    color: item.statusColor,
+                    color: Colors.blueAccent,
                     borderRadius: BorderRadius.circular(20),
                   ),
                   child: Text(
-                    item.status,
+                    item.status ?? "",
                     style: const TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold),
                   ),
                 ),
@@ -187,7 +188,7 @@ class _RepairPageState extends State<RepairPage> {
                       const Text("Jenis Perbaikan", style: TextStyle(fontSize: 11, color: Colors.grey)),
                       const SizedBox(height: 4),
                       Text(
-                        item.repairType,
+                        item.repairType?.name ?? "",
                         style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: darkBlue),
                       ),
                     ],
@@ -200,7 +201,7 @@ class _RepairPageState extends State<RepairPage> {
                       const Text("Kilometer Terakhir", style: TextStyle(fontSize: 11, color: Colors.grey)),
                       const SizedBox(height: 4),
                       Text(
-                        item.lastKm,
+                        item.currentKm.toString(),
                         style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: darkBlue),
                       ),
                     ],

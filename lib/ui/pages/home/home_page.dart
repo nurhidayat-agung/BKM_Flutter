@@ -282,7 +282,7 @@ class _HomePageState extends State<HomePage> {
                                 _menuItem("Langsir", "assets/Langsir.png", const LangsirListPage(), context),
                                 _menuItem("Riwayat Pengangkutan", "assets/Riwayat_Pengangkutan.png", const HistoryPage(), context),
                                 _menuItem("Bengkel", "assets/Bengkel.png", const RepairPage(), context),
-                                _menuItem("Pengajuan Cuti", "assets/Pengajuan_Cuti.png", const LeaveApplicationPage(), context),
+                                _menuItem("Pengajuan Cuti", "assets/Pengajuan_Cuti.png", const LeaveApplicationPageWrapper(), context),
                                 _menuItem("Slip Gaji", "assets/slip_gaji.png", const PaySlipPage(), context),
                               ],
                             ),

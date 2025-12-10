@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import 'package:newbkmmobile/models/leave/leave_list_response.dart';
 
 abstract class LeaveState extends Equatable {
   const LeaveState();
@@ -9,10 +10,10 @@ abstract class LeaveState extends Equatable {
 
 class LeaveInitial extends LeaveState {}
 class LeaveLoading extends LeaveState {}
-class LeaveSuccess extends LeaveState {
+class SubmitLeaveSuccess extends LeaveState {
 
   final String message;
-  const LeaveSuccess({required this.message});
+  const SubmitLeaveSuccess({required this.message});
 
   @override
   List<Object?> get props => [message];
@@ -25,4 +26,13 @@ class LeaveFailure extends LeaveState {
 
   @override
   List<Object?> get props => [error];
+}
+
+class GetListLeaveSuccess extends LeaveState{
+  final LeaveListResponse response;
+
+  const GetListLeaveSuccess({required this.response});
+
+  @override
+  List<Object?> get props => [response];
 }
