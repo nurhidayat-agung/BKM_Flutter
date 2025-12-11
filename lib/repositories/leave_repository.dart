@@ -4,7 +4,7 @@ import 'package:newbkmmobile/services/http_communicator.dart';
 /// Repository
 class LeaveRepository {
 
-  Future<(int, dynamic)> submitLeave(int leaveType, String start, String end, String reason) async {
+  Future<(int, dynamic)> submitLeave(String leaveType, String start, String end, String reason) async {
     final driver = await SessionManager.getUserSession();
 
     final endpoint = 'leaves';
@@ -18,10 +18,36 @@ class LeaveRepository {
         .postJson(endpoint,
         body: {
           "user_id": driver?.userId ?? "",
-          "leave_type_id": leaveType.toString(),
+          "leave_type_id": leaveType,
           "start_date": start,
           "end_date": end,
           "reason": reason,
+        },
+        headers: headers
+    );
+
+    return (response.status, response.result);
+  }
+
+  Future<(int, dynamic)> editSubmitLeave(String leaveId, String leaveType, String start, String end, String reason) async {
+    final driver = await SessionManager.getUserSession();
+
+    final endpoint = "leaves/$leaveId";
+    final headers = {
+      'X-Site-ID': driver?.siteId ?? "",
+      'Authorization': 'Bearer ${driver?.token ?? ""}',
+      'X-Client-Type': 'mobile'
+    };
+
+    final response = await HttpCommunicator()
+        .putJson(endpoint,
+        body: {
+          "user_id": driver?.userId ?? "",
+          "leave_type_id": leaveType,
+          "start_date": start,
+          "end_date": end,
+          "reason": reason,
+          "id": leaveId
         },
         headers: headers
     );

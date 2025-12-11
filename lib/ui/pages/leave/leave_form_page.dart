@@ -5,10 +5,15 @@ import 'package:newbkmmobile/blocs/leave/leave_bloc.dart';
 import 'package:newbkmmobile/blocs/leave/leave_event.dart';
 import 'package:newbkmmobile/blocs/leave/leave_state.dart';
 import 'package:newbkmmobile/core/constants.dart';
+import 'package:newbkmmobile/models/common/hive/hive_simple_master.dart';
+import 'package:newbkmmobile/models/leave/leave_list_response.dart';
 import 'package:newbkmmobile/repositories/leave_repository.dart';
+import 'package:newbkmmobile/repositories/master_data_repository.dart';
 
 class LeaveFormPage extends StatefulWidget {
-  const LeaveFormPage({super.key});
+  const LeaveFormPage({super.key, this.existingData});
+
+  final LeaveData? existingData; // <-- PARAMETER BARU!
 
   @override
   State<LeaveFormPage> createState() => _LeaveFormPageState();
@@ -19,16 +24,53 @@ class _LeaveFormPageState extends State<LeaveFormPage> {
   final _startDateController = TextEditingController();
   final _endDateController = TextEditingController();
   final _reasonController = TextEditingController();
+  final MasterDataRepository masterDataRepo = MasterDataRepository();
 
   // Variabel untuk Dropdown Tipe Cuti
   String? _selectedLeaveType;
-  final List<String> _leaveTypes = Constants.leaveTypeMap.keys.toList();
+  List<String> _leaveTypes = [];
+  bool _isLoading = true;
+  List<HiveSimpleMaster> leaveCategory = [];
 
   // Variabel untuk menyimpan tanggal asli (DateTime)
   DateTime? _rawStartDate;
   DateTime? _rawEndDate;
 
   final _leaveBloc = LeaveBloc(LeaveRepository());
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+
+    if (widget.existingData != null) {
+      _startDateController.text = widget.existingData!.startDate ?? "";
+      _endDateController.text = widget.existingData!.endDate ?? "";
+      _reasonController.text = widget.existingData!.reason ?? ""; // optional
+    }
+
+    Future.microtask(() => _initAsync());
+  }
+
+  Future<void> _initAsync() async {
+    var masterData = await masterDataRepo.getFromHive();
+    leaveCategory = masterData?.leaveTypes ?? [];
+
+    _leaveTypes = leaveCategory
+        .map((e) => e.name ?? "")
+        .where((e) => e.isNotEmpty)
+        .toList();
+
+    if (widget.existingData != null) {
+      var selectedleave = leaveCategory.firstWhere(
+          (element) => element.fieldValue == widget.existingData!.leaveTypeId);
+      _selectedLeaveType = selectedleave.name; // optional
+    }
+
+    setState(() {
+      _isLoading = false;
+    });
+  }
 
   @override
   void dispose() {
@@ -38,7 +80,8 @@ class _LeaveFormPageState extends State<LeaveFormPage> {
     super.dispose();
   }
 
-  Future<void> _selectDate(TextEditingController controller, bool isStart) async {
+  Future<void> _selectDate(
+      TextEditingController controller, bool isStart) async {
     final picked = await showDatePicker(
       context: context,
       initialDate: DateTime.now(),
@@ -49,10 +92,21 @@ class _LeaveFormPageState extends State<LeaveFormPage> {
     if (picked != null) {
       // Format Tampilan: 24 Nov 2025
       const List<String> months = [
-        'Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun',
-        'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'
+        'Jan',
+        'Feb',
+        'Mar',
+        'Apr',
+        'Mei',
+        'Jun',
+        'Jul',
+        'Agu',
+        'Sep',
+        'Okt',
+        'Nov',
+        'Des'
       ];
-      controller.text = "${picked.day} ${months[picked.month - 1]} ${picked.year}";
+      controller.text =
+          "${picked.day} ${months[picked.month - 1]} ${picked.year}";
 
       // Simpan data mentah
       if (isStart) {
@@ -64,13 +118,19 @@ class _LeaveFormPageState extends State<LeaveFormPage> {
   }
 
   Future<void> _submitLeave() async {
-    final res = await showConfirmDialog(
-        "Ajukan Cuti", "Apakah Anda yakin akan mengajukan cuti ?");
+    var title = widget.existingData == null ? "Ajukan Cuti" : "Ubah Cuti";
+    var msg = widget.existingData == null
+        ? "Apakah yakin mengajukan cuti ?"
+        : "Apakah yakin mengubah cuti ?";
+
+    final res = await showConfirmDialog(title, msg);
     if (res) {
       // Validasi sederhana
       if (_selectedLeaveType == null) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text("Pilih jenis cuti terlebih dahulu!"), backgroundColor: Colors.orange),
+          const SnackBar(
+              content: Text("Pilih jenis cuti terlebih dahulu!"),
+              backgroundColor: Colors.orange),
         );
         return;
       }
@@ -78,7 +138,9 @@ class _LeaveFormPageState extends State<LeaveFormPage> {
           _endDateController.text.isEmpty ||
           _reasonController.text.isEmpty) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text("Semua field harus diisi!"), backgroundColor: Colors.orange),
+          const SnackBar(
+              content: Text("Semua field harus diisi!"),
+              backgroundColor: Colors.orange),
         );
         return;
       }
@@ -94,10 +156,12 @@ class _LeaveFormPageState extends State<LeaveFormPage> {
 
       _leaveBloc.add(
         SubmitLeave(
+          leaveId: widget.existingData?.id,
           leaveType: _selectedLeaveType ?? "",
           startDate: apiStartDate,
           endDate: apiEndDate,
           reason: _reasonController.text,
+          leaveTypes: leaveCategory
         ),
       );
     }
@@ -189,7 +253,8 @@ class _LeaveFormPageState extends State<LeaveFormPage> {
                 color: Colors.white.withOpacity(0.2),
                 borderRadius: BorderRadius.circular(4),
               ),
-              child: const Icon(Icons.arrow_back_ios_new, color: Colors.white, size: 18),
+              child: const Icon(Icons.arrow_back_ios_new,
+                  color: Colors.white, size: 18),
             ),
           ),
         ),
@@ -200,11 +265,12 @@ class _LeaveFormPageState extends State<LeaveFormPage> {
           listener: (context, state) {
             if (state is SubmitLeaveSuccess) {
               ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text(state.message), backgroundColor: Colors.green),
+                SnackBar(
+                    content: Text(state.message),
+                    backgroundColor: Colors.green),
               );
 
               Navigator.pop(context, true);
-
             } else if (state is LeaveFailure) {
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
@@ -234,39 +300,58 @@ class _LeaveFormPageState extends State<LeaveFormPage> {
                       children: [
                         // Dropdown Jenis Cuti
                         DropdownButtonFormField<String>(
-                          value: _selectedLeaveType,
+                          value: _leaveTypes.contains(_selectedLeaveType)
+                              ? _selectedLeaveType
+                              : null,
+                          // biar tidak error
                           decoration: _inputDecoration("Pilih jenis cuti ..."),
-                          icon: const Icon(Icons.arrow_drop_down, color: Colors.grey),
-                          items: _leaveTypes.map((String type) {
-                            return DropdownMenuItem<String>(
-                              value: type,
-                              child: Text(type, style: const TextStyle(fontSize: 14)),
-                            );
-                          }).toList(),
-                          onChanged: (newValue) {
-                            setState(() {
-                              _selectedLeaveType = newValue;
-                            });
-                          },
+
+                          hint: const Text("Pilih jenis cuti ..."),
+                          icon: const Icon(Icons.arrow_drop_down,
+                              color: Colors.grey),
+
+                          items: _leaveTypes.isNotEmpty
+                              ? _leaveTypes.map((type) {
+                                  return DropdownMenuItem(
+                                    value: type,
+                                    child: Text(type,
+                                        style: const TextStyle(fontSize: 14)),
+                                  );
+                                }).toList()
+                              : [],
+
+                          onChanged: _leaveTypes.isEmpty
+                              ? null // disable kalau belum siap
+                              : (newValue) {
+                                  setState(() => _selectedLeaveType = newValue);
+                                },
                         ),
                         const SizedBox(height: 20),
 
                         // TANGGAL MULAI
-                        const Text("Tanggal Mulai", style: TextStyle(fontSize: 13, color: Colors.black54)),
+                        const Text("Tanggal Mulai",
+                            style:
+                                TextStyle(fontSize: 13, color: Colors.black54)),
                         const SizedBox(height: 6),
-                        _buildDateField(_startDateController, "Pilih tanggal mulai", true),
+                        _buildDateField(
+                            _startDateController, "Pilih tanggal mulai", true),
 
                         const SizedBox(height: 20),
 
                         // TANGGAL BERAKHIR
-                        const Text("Tanggal Berakhir", style: TextStyle(fontSize: 13, color: Colors.black54)),
+                        const Text("Tanggal Berakhir",
+                            style:
+                                TextStyle(fontSize: 13, color: Colors.black54)),
                         const SizedBox(height: 6),
-                        _buildDateField(_endDateController, "Pilih tanggal berakhir", false),
+                        _buildDateField(_endDateController,
+                            "Pilih tanggal berakhir", false),
 
                         const SizedBox(height: 20),
 
                         // ALASAN CUTI
-                        const Text("Alasan Cuti", style: TextStyle(fontSize: 13, color: Colors.black54)),
+                        const Text("Alasan Cuti",
+                            style:
+                                TextStyle(fontSize: 13, color: Colors.black54)),
                         const SizedBox(height: 6),
                         _buildReasonField(),
                       ],
@@ -289,15 +374,19 @@ class _LeaveFormPageState extends State<LeaveFormPage> {
                         elevation: 2,
                       ),
                       child: isLoading
-                          ? const SizedBox(width: 24, height: 24, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
-                          : const Text(
-                        "Simpan",
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
-                        ),
-                      ),
+                          ? const SizedBox(
+                              width: 24,
+                              height: 24,
+                              child: CircularProgressIndicator(
+                                  color: Colors.white, strokeWidth: 2))
+                          : Text(
+                              widget.existingData == null ? "Simpan" : "Ubah",
+                              style: const TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white,
+                              ),
+                            ),
                     ),
                   ),
                 ],
@@ -310,7 +399,8 @@ class _LeaveFormPageState extends State<LeaveFormPage> {
   }
 
   // Helper untuk Date Field dengan Hint Text Custom
-  Widget _buildDateField(TextEditingController controller, String hintText, bool isStart) {
+  Widget _buildDateField(
+      TextEditingController controller, String hintText, bool isStart) {
     return TextFormField(
       controller: controller,
       readOnly: true,
@@ -358,7 +448,8 @@ class _LeaveFormPageState extends State<LeaveFormPage> {
       ),
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(6),
-        borderSide: const BorderSide(color: Color(0xFFD4552F)), // Warna Orange saat aktif
+        borderSide: const BorderSide(
+            color: Color(0xFFD4552F)), // Warna Orange saat aktif
       ),
     );
   }

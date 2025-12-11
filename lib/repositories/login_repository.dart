@@ -4,6 +4,7 @@ import 'package:newbkmmobile/core/R/HiveTypeId.dart';
 import 'package:newbkmmobile/core/constants.dart';
 import 'package:newbkmmobile/models/login_local.dart';
 import 'package:newbkmmobile/models/login/login_resp.dart';
+import 'package:newbkmmobile/repositories/master_data_repository.dart';
 import 'package:newbkmmobile/services/http_communicator.dart';
 import '../core/R/hive/AuthBoxSchema.dart';
 import '../models/login/UserSession.dart';
@@ -133,24 +134,9 @@ class LoginRepository {
 
       await saveUserSession(session);
 
-      // --------------------------------------------------------
-      //  SIMPAN LOGIN LOCAL
-      // --------------------------------------------------------
+      MasterDataRepository repository = MasterDataRepository();
+      await repository.fetchMasterData();
 
-      // final user = resp.data.user;
-      // final driver = user.driver;
-      //
-      // await addLoginLocal(
-      //   LoginLocal(
-      //     status: 200,
-      //     message: "Login berhasil",
-      //     userId: user.id,
-      //     token: resp.data.token,
-      //     firebaseToken: "",
-      //     siteId: driver.siteId,
-      //     driverId: driver.id,
-      //   ),
-      // );
 
       // Berhasil
       return LoginResp(
@@ -233,4 +219,6 @@ class LoginRepository {
     final box = await Hive.openBox(AuthBoxSchema.authBox);
     return box.get(AuthBoxSchema.phone);
   }
+
+
 }

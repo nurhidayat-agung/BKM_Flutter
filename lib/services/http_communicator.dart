@@ -139,6 +139,56 @@ class HttpCommunicator {
 
 
   /// --------------------------------------------------------------------------
+  /// PUT JSON REQUEST
+  Future<HttpResponse> putJson(
+      String endpoint, {
+        required Map<String, dynamic> body,
+        Map<String, String>? headers,
+      }) async {
+    final url = Uri.parse('$baseUrl/$endpoint');
+
+    // Gabungkan header
+    final mergedHeaders = {
+      'Accept': 'application/json',
+      'Content-Type': 'application/json',
+      if (headers != null) ...headers,
+    };
+
+    try {
+      // Request pertama
+      var response = await http.put(
+        url,
+        headers: mergedHeaders,
+        body: jsonEncode(body),
+      );
+
+      // Jika token kadaluarsa → refresh → retry
+      if (response.statusCode == 401) {
+        final newToken = await refreshToken();
+
+        if (newToken != null) {
+          // Replace Authorization saja
+          mergedHeaders['Authorization'] = 'Bearer $newToken';
+
+          response = await http.put(
+            url,
+            headers: mergedHeaders,
+            body: jsonEncode(body),
+          );
+        }
+      }
+
+      return _handleResponse(response);
+    } on SocketException {
+      throw Exception('Tidak ada koneksi internet');
+    } catch (e) {
+      throw Exception('Gagal PUT JSON: $e');
+    }
+  }
+
+
+
+  /// --------------------------------------------------------------------------
   /// POST FORM DATA REQUEST (MULTIPART)
   Future<HttpResponse> postFormData(
       String endpoint, {

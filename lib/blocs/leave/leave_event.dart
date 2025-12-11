@@ -1,4 +1,6 @@
 import 'package:equatable/equatable.dart';
+import 'package:newbkmmobile/models/common/hive/hive_simple_master.dart';
+import 'package:newbkmmobile/models/common/master_data.dart';
 
 abstract class LeaveEvent extends Equatable {
   const LeaveEvent();
@@ -14,18 +16,22 @@ class GetListLeave extends LeaveEvent {
 }
 
 class SubmitLeave extends LeaveEvent {
+  final List<HiveSimpleMaster> leaveTypes;
+  final String? leaveId;
   final String leaveType;
   final String startDate;
   final String endDate;
   final String reason;
 
   const SubmitLeave({
+    required this.leaveId,
     required this.leaveType,
     required this.startDate,
     required this.endDate,
     required this.reason,
+    required this.leaveTypes,
   });
 
   @override
-  List<Object?> get props => [leaveType, startDate, endDate, reason];
+  List<Object?> get props => [leaveId, leaveType, startDate, endDate, reason, leaveTypes];
 }

@@ -159,13 +159,17 @@ class _LeaveApplicationPageState extends State<LeaveApplicationPage> {
         LeaveData item = data.data![index];
 
         return GestureDetector(
-          onTap: () {
-            Navigator.push(
+          onTap: () async {
+            final result = await Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (_) => LeaveDetailPage(data: item),
+                builder: (_) => LeaveFormPage(existingData: item),
               ),
             );
+
+            if (result == true) {
+              context.read<LeaveBloc>().add(const GetListLeave());
+            }
           },
           child: _buildLeaveCard(item),
         );
