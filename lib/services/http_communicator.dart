@@ -48,6 +48,60 @@ class HttpCommunicator {
     }
   }
 
+  /// =========================
+  /// GET JSON
+  /// =========================
+  Future<HttpResponse> getJson(
+      String endpoint, {
+        Map<String, String>? headers,
+        Map<String, dynamic>? body,
+      }) async {
+
+    final uri = Uri.parse('$baseUrl/$endpoint');
+
+    Future<http.Response> sendRequest(http.Request request) async {
+      final streamed = await request.send();
+      return await http.Response.fromStream(streamed);
+    }
+
+    /// ===== REQUEST PERTAMA =====
+    http.Request request = http.Request('GET', uri);
+
+    if (headers != null) {
+      request.headers.addAll(headers);
+    }
+
+    if (body != null) {
+      request.body = jsonEncode(body);
+    }
+
+    http.Response response = await sendRequest(request);
+
+    /// ===== JIKA TOKEN EXPIRED =====
+    if (response.statusCode == 401) {
+      final newToken = await refreshToken();
+
+      if (newToken != null) {
+        /// BUAT REQUEST BARU (WAJIB!)
+        final retryRequest = http.Request('GET', uri);
+
+        retryRequest.headers.addAll({
+          ...?headers,
+          'Authorization': 'Bearer $newToken',
+        });
+
+        if (body != null) {
+          retryRequest.body = jsonEncode(body);
+        }
+
+        response = await sendRequest(retryRequest);
+      }
+    }
+
+    return _handleResponse(response);
+  }
+
+
   /// --------------------------------------------------------------------------
   /// GET REQUEST
   Future<HttpResponse> get(

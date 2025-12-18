@@ -57,6 +57,22 @@ class MasterDataRepository {
   }
 
   /// --------------------------------------------------------------------------
+  /// GET dari HIVE
+  /// --------------------------------------------------------------------------
+  static Future<HiveMasterData?> getCommonData() async {
+    if (!Hive.isAdapterRegistered(HiveTypeId.masterData)) {
+      Hive.registerAdapter(HiveMasterDataAdapter());
+    }
+
+    if (!Hive.isAdapterRegistered(HiveTypeId.masterDataItem)) {
+      Hive.registerAdapter(HiveSimpleMasterAdapter());
+    }
+
+    final box = await Hive.openBox<HiveMasterData>(hiveBox);
+    return box.get(hiveKey);
+  }
+
+  /// --------------------------------------------------------------------------
   /// CLEAR HIVE
   /// --------------------------------------------------------------------------
   Future<void> clear() async {

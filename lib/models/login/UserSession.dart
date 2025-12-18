@@ -1,5 +1,6 @@
 import 'package:hive/hive.dart';
 import 'package:newbkmmobile/core/R/HiveTypeId.dart';
+import 'package:newbkmmobile/models/login/login_response.dart';
 
 part 'UserSession.g.dart';
 
@@ -53,6 +54,12 @@ class UserSession extends HiveObject {
   @HiveField(14)
   String? password;
 
+  @HiveField(15)
+  String? saving;
+
+  @HiveField(16)
+  String? heldAmmount;
+
   UserSession({
     this.userId,
     this.roleId,
@@ -69,29 +76,37 @@ class UserSession extends HiveObject {
     this.status = 0,
     this.userLogin,
     this.password,
+    this.saving,
+    this.heldAmmount,
   });
 
   /// Factory untuk buat UserSession dari LoginResponse
-  factory UserSession.fromLoginResponse(dynamic response) {
-    final user = response.data.user;
-    final role = user.roles.isNotEmpty ? user.roles.first : null;
-    final driver = user.driver;
-    final vehicle = driver.vehicle;
-    final wallet = driver.wallet;
+  factory UserSession.fromLoginResponse(LoginResponse response) {
+    final user = response.data?.user;
+    final Role? role;
+    if (user?.roles != null && user!.roles!.isNotEmpty) {
+      role = user.roles?.first;
+    } else {
+      role = null;
+    }
+    final driver = user?.driver;
+    final vehicle = driver?.vehicle;
+    final wallet = driver?.wallet;
 
     return UserSession(
-      userId: user.id,
-      roleId: user.roleId,
-      name: user.name,
+      userId: user?.id,
+      roleId: user?.roleId,
+      name: user?.name,
       roleName: role?.name,
-      token: response.data.token,
-      siteId: driver.siteId,
-      driverId: driver.id,
-      vehicleId: vehicle.id,
-      policeNumber: vehicle.policeNumber,
-      walletId: wallet.id,
-      balance: wallet.balance,
-      savings: wallet.savings,
+      token: response.data?.token,
+      siteId: driver?.siteId,
+      driverId: driver?.id,
+      vehicleId: vehicle?.id,
+      policeNumber: vehicle?.policeNumber,
+      walletId: wallet?.id,
+      balance: wallet?.balance,
+      savings: wallet?.savings,
+      heldAmmount: wallet?.heldAmount,
     );
   }
 
@@ -111,6 +126,7 @@ class UserSession extends HiveObject {
       balance: json['balance'] as String?,
       savings: json['savings'] as String?,
       status: json['status'] as int? ?? 0,
+      heldAmmount: json['held_amount'] as String?
     );
   }
 

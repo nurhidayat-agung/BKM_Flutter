@@ -809,14 +809,16 @@ class _TripPageState extends State<TripPage> {
                   print("SPB Sambung: ${req.spbSambung}");
                 }
 
-                context.read<TripBloc>().add(
-                      PushMuat(
+                if(validateMuatForm(isAction: isAction, deliveryData: deliveryData)){
+                  context.read<TripBloc>().add(
+                    PushMuat(
                         deliveryData: deliveryData,
                         tripDetail: data,
                         muatRequest: req,
                         isEdit: isEdit
-                      ),
-                    );
+                    ),
+                  );
+                }
               }
             }),
         ],
@@ -911,12 +913,15 @@ class _TripPageState extends State<TripPage> {
                   "Apakah anda yakin akan menyimpan ke server ?")) {
                 final req = collectBongkarData(deliveryData);
 
-                context.read<TripBloc>().add(PushBongkar(
-                    deliveryData: deliveryData,
-                    tripDetail: tripDetail,
-                    bongkarRequest: req,
-                    isEdit: isEdit
-                ));
+                if(validateBongkarForm(isAction: isAction, deliveryData: deliveryData)){
+                  context.read<TripBloc>().add(PushBongkar(
+                      deliveryData: deliveryData,
+                      tripDetail: tripDetail,
+                      bongkarRequest: req,
+                      isEdit: isEdit
+                  ));
+                }
+
               }
             }),
         ],
@@ -950,6 +955,78 @@ class _TripPageState extends State<TripPage> {
     );
   }
 
+  void showSnackBar(String message) {
+    ScaffoldMessenger.of(context)
+      ..hideCurrentSnackBar()
+      ..showSnackBar(
+        SnackBar(
+          content: Text(message),
+          behavior: SnackBarBehavior.floating,
+          backgroundColor: Colors.redAccent,
+          duration: const Duration(seconds: 2),
+        ),
+      );
+  }
+
+
+  bool validateMuatForm({
+    required bool isAction,
+    required ListNewDoData deliveryData,
+  }) {
+    // === DO UTAMA ===
+    if (spbMuat.text.trim().isEmpty) {
+      showSnackBar("No. SPB wajib diisi");
+      return false;
+    }
+
+    if (tarraMuat.text.trim().isEmpty) {
+      showSnackBar("Jumlah Tarra Muat wajib diisi");
+      return false;
+    }
+
+    if (brutoMuat.text.trim().isEmpty) {
+      showSnackBar("Jumlah Bruto Muat wajib diisi");
+      return false;
+    }
+
+    if (nettoMuat.text.trim().isEmpty) {
+      showSnackBar("Netto Muat wajib diisi");
+      return false;
+    }
+
+    // === FOTO WAJIB ===
+    if (isAction && fotoSPBMuat == null) {
+      showSnackBar("Foto SPB wajib diunggah");
+      return false;
+    }
+
+    // === DO SAMBUNG (JIKA ADA) ===
+    if (deliveryData.linkedDetail != null) {
+      if (spbMuatSambung.text.trim().isEmpty) {
+        showSnackBar("No. SPB DO Sambung wajib diisi");
+        return false;
+      }
+
+      if (tarraMuatSambung.text.trim().isEmpty) {
+        showSnackBar("Jumlah Tarra Muat DO Sambung wajib diisi");
+        return false;
+      }
+
+      if (brutoMuatSambung.text.trim().isEmpty) {
+        showSnackBar("Jumlah Bruto Muat DO Sambung wajib diisi");
+        return false;
+      }
+
+      if (nettoMuatSambung.text.trim().isEmpty) {
+        showSnackBar("Netto Muat DO Sambung wajib diisi");
+        return false;
+      }
+    }
+
+    return true;
+  }
+
+
   LoadUnloadRequest collectMuatData(ListNewDoData deliveryData) {
     return LoadUnloadRequest(
       noDo: noDO,
@@ -971,6 +1048,54 @@ class _TripPageState extends State<TripPage> {
           deliveryData.linkedDetail != null ? nettoMuatSambung.text : null,
     );
   }
+
+  bool validateBongkarForm({
+    required bool isAction,
+    required ListNewDoData deliveryData,
+  }) {
+    // === DO UTAMA ===
+    if (tarraBongkar.text.trim().isEmpty) {
+      showSnackBar("Jumlah Tarra Bongkar wajib diisi");
+      return false;
+    }
+
+    if (brutoBongkar.text.trim().isEmpty) {
+      showSnackBar("Jumlah Bruto Bongkar wajib diisi");
+      return false;
+    }
+
+    if (nettoBongkar.text.trim().isEmpty) {
+      showSnackBar("Netto Bongkar wajib diisi");
+      return false;
+    }
+
+    // === FOTO WAJIB ===
+    if (isAction && fotoSPBBongkar == null) {
+      showSnackBar("Foto SPB Bongkar wajib diunggah");
+      return false;
+    }
+
+    // === DO SAMBUNG (JIKA ADA) ===
+    if (deliveryData.linkedDetail != null) {
+      if (tarraBongkarSambung.text.trim().isEmpty) {
+        showSnackBar("Jumlah Tarra Bongkar DO Sambung wajib diisi");
+        return false;
+      }
+
+      if (brutoBongkarSambung.text.trim().isEmpty) {
+        showSnackBar("Jumlah Bruto Bongkar DO Sambung wajib diisi");
+        return false;
+      }
+
+      if (nettoBongkarSambung.text.trim().isEmpty) {
+        showSnackBar("Netto Bongkar DO Sambung wajib diisi");
+        return false;
+      }
+    }
+
+    return true;
+  }
+
 
   LoadUnloadRequest collectBongkarData(ListNewDoData deliveryData) {
     return LoadUnloadRequest(

@@ -1,4 +1,5 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:newbkmmobile/models/langsir/local_hauling_response.dart';
 import 'langsir_event.dart';
 import 'langsir_state.dart';
 import 'package:newbkmmobile/repositories/langsir_repository.dart';
@@ -16,8 +17,15 @@ class LangsirBloc extends Bloc<LangsirEvent, LangsirState> {
   Future<void> _onFetchList(FetchLangsirList event, Emitter<LangsirState> emit) async {
     emit(LangsirLoading());
     try {
-      final list = await repository.fetchList();
-      emit(LangsirListLoaded(list));
+      final (intStatusCode, response) = await repository.getOpenLocalHauling();
+      if (intStatusCode == 200) {
+        LocalHaulingResponse data = LocalHaulingResponse.fromJson(response);
+        emit(LangsirListLoaded(data.data ?? []));
+      }
+      else{
+        emit(LangsirFailure("fetch data gagal"));
+      }
+
     } catch (e) {
       emit(LangsirFailure(e.toString()));
     }

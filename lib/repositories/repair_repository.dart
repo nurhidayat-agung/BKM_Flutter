@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:newbkmmobile/core/convert_date.dart';
 import 'package:newbkmmobile/models/repair/repair_model.dart';
 import 'package:newbkmmobile/repositories/session_manager_repository.dart';
 import 'package:newbkmmobile/services/http_communicator.dart';
 
 class RepairRepository {
+  final ConvertDate _dateConverter = ConvertDate();
+
   // Data Dummy Static .
   static final List<RepairModel> _dummyData = [
     RepairModel(
@@ -68,30 +71,73 @@ class RepairRepository {
   }
 
   // Menyimpan data baru (Post/Store)
-  Future<void> submitRepair({
+  Future<(int, dynamic)> submitRepair({
     required String type,
     required String urgency,
     required String lastKm,
     required String description,
   }) async {
-    // Simulasi Delay API
-    await Future.delayed(const Duration(seconds: 1));
+    final session = await SessionManager.getUserSession();
 
-    // Membuat object model baru dari inputan user(form)
-    final newItem = RepairModel(
-      id: DateTime.now().millisecondsSinceEpoch.toString(),
-      urgencyTitle: urgency, // Judul diambil dari urgensi (Low/Medium/High)
-      date: _getTodayDate(), // Tanggal
-      repairType: type,
-      lastKm: '$lastKm Km', // Format KM
-      status: 'Proses', // Status default untuk pengajuan baru
-      statusColor: const Color(0xFF1976D2), // Warna Biru (Proses)
-      description: description,
+    final headers = {
+      'X-Client-Type': 'mobile',
+      if (session?.token != null)
+        'Authorization': 'Bearer ${session!.token}',
+    };
+
+    final response = await HttpCommunicator().postJson(
+      'vehicle-repairs',
+      headers: headers,
+      body: {
+        'user_id': session?.userId ?? '',
+        'vehicle_id': session?.vehicleId ?? '',
+        'request_date': _dateConverter.getDateToday(format: "yyyy-MM-dd"), // yyyy-MM-dd
+        'current_km': int.tryParse(lastKm) ?? 0,
+        'repair_type_id': type,
+        'damage_description': description,
+        'urgency_level_id': urgency,
+      },
     );
 
-    // Masukkan data baru ke urutan paling atas
-    _dummyData.insert(0, newItem);
+    /// RETURN SESUAI REQUEST KAMU
+    return (response.status, response.result);
   }
+
+  Future<(int, dynamic)> updateRepair({
+    required String id,
+    required String type,
+    required String urgency,
+    required String lastKm,
+    required String description
+  }) async {
+    final session = await SessionManager.getUserSession();
+
+    final headers = {
+      'X-Client-Type': 'mobile',
+      if (session?.token != null)
+        'Authorization': 'Bearer ${session!.token}',
+    };
+
+    final response = await HttpCommunicator().putJson(
+      'vehicle-repairs/$id',
+      headers: headers,
+      body: {
+        'id': id,
+        'user_id': session?.userId ?? '',
+        'vehicle_id': session?.vehicleId ?? '',
+        'request_date': _dateConverter.getDateToday(format: "yyyy-MM-dd"),
+        'current_km': int.tryParse(lastKm) ?? 0,
+        'repair_type_id': type,
+        'damage_description': description,
+        'urgency_level_id': urgency,
+      },
+    );
+
+    /// RETURN SESUAI REQUEST KAMU
+    return (response.status, response.result);
+  }
+
+
 
   // Helper function untuk format tanggal
   String _getTodayDate() {

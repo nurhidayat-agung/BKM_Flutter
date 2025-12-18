@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import 'package:newbkmmobile/models/langsir/local_hauling_data.dart';
 
 abstract class LangsirState extends Equatable {
   const LangsirState();
@@ -12,7 +13,7 @@ class LangsirInitial extends LangsirState {}
 class LangsirLoading extends LangsirState {}
 
 class LangsirListLoaded extends LangsirState {
-  final List<Map<String, dynamic>> items;
+  final List<LocalHaulingData> items;
   const LangsirListLoaded(this.items);
 
   @override

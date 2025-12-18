@@ -3,6 +3,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:newbkmmobile/blocs/langsir/langsir_bloc.dart';
 import 'package:newbkmmobile/blocs/langsir/langsir_event.dart';
 import 'package:newbkmmobile/blocs/langsir/langsir_state.dart';
+import 'package:newbkmmobile/core/convert_date.dart';
+import 'package:newbkmmobile/ui/widgets/bkm_loading.dart';
 import 'langsir_tambah_page.dart'; // IMPORT KE TAMBAH PAGE
 
 class LangsirListPage extends StatefulWidget {
@@ -27,6 +29,7 @@ class _LangsirListPageState extends State<LangsirListPage> {
     final Color darkBlue = const Color(0xFF002B4C);
     final Color orangeText = const Color(0xFFD4552F);
     final Color dividerColor = const Color(0xFFEEEEEE);
+    final ConvertDate convertDate = ConvertDate();
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -54,12 +57,12 @@ class _LangsirListPageState extends State<LangsirListPage> {
         ),
       ),
       body: BlocConsumer<LangsirBloc, LangsirState>(
-        listener: (context, state) {},
-        builder: (context, state) {
+        listener: (context, state) {
           if (state is LangsirLoading) {
-            return const Center(child: CircularProgressIndicator());
+            BkmLoading.show(context, message: "mohon tungu");
           }
-
+        },
+        builder: (context, state) {
           if (state is LangsirListLoaded) {
             final items = state.items;
 
@@ -76,25 +79,26 @@ class _LangsirListPageState extends State<LangsirListPage> {
                 itemBuilder: (context, index) {
                   final item = items[index];
 
-                  final doNumber = (item['do'] ?? item['doNumber'] ?? '051/KAL-EUP/IP-CPO/X/2025').toString();
-                  final route = (item['route'] ?? 'SAM1 \u2192 ASK').toString();
-                  final commodity = (item['commodity'] ?? 'CPO').toString();
-                  final tanggal = (item['tanggal'] ?? '11 Nov 2025').toString();
-                  final id = item['id'].toString();
+                  final doNumber = item.doNumber ?? "-";
+                  final route = "${item.pks?.code ?? "-"} \u2192 ${item.destination?.code ?? "-"}";
+                  final commodity = (item.commodity?.code ?? '-').toString();
+                  final tanggal = convertDate.isoFormatToReadable(item.doDate ?? "");
+                  final id = item.id ?? "";
 
                   return InkWell(
                     // NAVIGASI KE TAMBAH PAGE (Gambar 2)
                     onTap: () {
-                      Navigator.push(context, MaterialPageRoute(builder: (_) {
-                        return LangsirTambahPage(
-                          id: id,
-                          // Simulasi data history steps
-                          steps: const [
-                            {"no": 1, "jumlahMuat": "27000", "jumlahBongkar": "27000", "tanggalMuat": "13 Nov 2025"},
-                            {"no": 2, "jumlahMuat": "27000", "jumlahBongkar": "27000", "tanggalMuat": "13 Nov 2025"}
-                          ],
-                        );
-                      }));
+                      context.read<LangsirBloc>().add(FetchLangsirDetail(item.id ?? ""));
+                      // Navigator.push(context, MaterialPageRoute(builder: (_) {
+                      //   return LangsirTambahPage(
+                      //     id: id,
+                      //     // Simulasi data history steps
+                      //     steps: const [
+                      //       {"no": 1, "jumlahMuat": "27000", "jumlahBongkar": "27000", "tanggalMuat": "13 Nov 2025"},
+                      //       {"no": 2, "jumlahMuat": "27000", "jumlahBongkar": "27000", "tanggalMuat": "13 Nov 2025"}
+                      //     ],
+                      //   );
+                      // }));
                     },
                     child: Padding(
                       padding: const EdgeInsets.symmetric(vertical: 16),

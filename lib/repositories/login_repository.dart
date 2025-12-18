@@ -124,7 +124,7 @@ class LoginRepository {
       }
 
       // PARSING JSON
-      var resp = LoginResponse.fromJson(response.result);
+      LoginResponse resp = LoginResponse.fromJson(response.result);
 
       // SIMPAN USERSESSION
       var session = UserSession.fromLoginResponse(resp);
@@ -143,7 +143,7 @@ class LoginRepository {
         status: 200,
         message: "Login berhasil",
         userId: session.userId,
-        token: resp.data.token,
+        token: resp.data?.token,
         firebaseToken: '',
       );
 

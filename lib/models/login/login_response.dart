@@ -1,460 +1,498 @@
-import 'dart:convert';
+// ------------------ Login Response ------------------
 
 class LoginResponse {
-  final String status;
-  final LoginData data;
-  final String message;
+  final String? status;
+  final LoginData? data;
+  final String? message;
 
   LoginResponse({
-    required this.status,
-    required this.data,
-    required this.message,
+    this.status,
+    this.data,
+    this.message,
   });
 
-  factory LoginResponse.fromJson(Map<String, dynamic> json) => LoginResponse(
-    status: json["status"],
-    data: LoginData.fromJson(json["data"]),
-    message: json["message"],
-  );
-
-  Map<String, dynamic> toJson() => {
-    "status": status,
-    "data": data.toJson(),
-    "message": message,
-  };
+  factory LoginResponse.fromJson(Map<String, dynamic> json) {
+    return LoginResponse(
+      status: _safeString(json['status']),
+      data: _safeMap(json['data']) != null
+          ? LoginData.fromJson(json['data'])
+          : null,
+      message: _safeString(json['message']),
+    );
+  }
 }
+
+// ------------------ Login Data ------------------
 
 class LoginData {
-  final User user;
-  final String tokenType;
-  final String token;
-  final int expiresIn;
+  final User? user;
+  final String? tokenType;
+  final String? token;
+  final int? expiresIn;
 
   LoginData({
-    required this.user,
-    required this.tokenType,
-    required this.token,
-    required this.expiresIn,
+    this.user,
+    this.tokenType,
+    this.token,
+    this.expiresIn,
   });
 
-  factory LoginData.fromJson(Map<String, dynamic> json) => LoginData(
-    user: User.fromJson(json["user"]),
-    tokenType: json["token_type"],
-    token: json["token"],
-    expiresIn: json["expires_in"],
-  );
-
-  Map<String, dynamic> toJson() => {
-    "user": user.toJson(),
-    "token_type": tokenType,
-    "token": token,
-    "expires_in": expiresIn,
-  };
+  factory LoginData.fromJson(Map<String, dynamic> json) {
+    return LoginData(
+      user: _safeMap(json['user']) != null ? User.fromJson(json['user']) : null,
+      tokenType: _safeString(json['token_type']),
+      token: _safeString(json['token']),
+      expiresIn: _safeInt(json['expires_in']),
+    );
+  }
 }
+
+// ------------------ User ------------------
 
 class User {
-  final String id;
-  final String roleId;
-  final String name;
-  final String phone;
-  final String? email;
-  final String? emailVerifiedAt;
-  final String password;
-  final String platform;
+  final String? id;
+  final String? roleId;
+  final String? name;
+  final String? phone;
   final String? firebaseToken;
-  final String? lastLoginAt;
-  final String createdAt;
-  final String updatedAt;
-  final List<Role> roles;
-  final Driver driver;
+  final List<Role>? roles;
+  final Driver? driver;
+  final Wallet? wallet; // ✅ TAMBAH
 
   User({
-    required this.id,
-    required this.roleId,
-    required this.name,
-    required this.phone,
-    this.email,
-    this.emailVerifiedAt,
-    required this.password,
-    required this.platform,
+    this.id,
+    this.roleId,
+    this.name,
+    this.phone,
     this.firebaseToken,
-    this.lastLoginAt,
-    required this.createdAt,
-    required this.updatedAt,
-    required this.roles,
-    required this.driver,
+    this.roles,
+    this.driver,
+    this.wallet, // ✅ TAMBAH
   });
 
-  factory User.fromJson(Map<String, dynamic> json) => User(
-    id: json["id"],
-    roleId: json["role_id"],
-    name: json["name"],
-    phone: json["phone"],
-    email: json["email"],
-    emailVerifiedAt: json["email_verified_at"],
-    password: json["password"],
-    platform: json["platform"],
-    firebaseToken: json["firebase_token"],
-    lastLoginAt: json["last_login_at"],
-    createdAt: json["created_at"],
-    updatedAt: json["updated_at"],
-    roles: List<Role>.from(json["roles"].map((x) => Role.fromJson(x))),
-    driver: Driver.fromJson(json["driver"]),
-  );
-
-  Map<String, dynamic> toJson() => {
-    "id": id,
-    "role_id": roleId,
-    "name": name,
-    "phone": phone,
-    "email": email,
-    "email_verified_at": emailVerifiedAt,
-    "password": password,
-    "platform": platform,
-    "firebase_token": firebaseToken,
-    "last_login_at": lastLoginAt,
-    "created_at": createdAt,
-    "updated_at": updatedAt,
-    "roles": List<dynamic>.from(roles.map((x) => x.toJson())),
-    "driver": driver.toJson(),
-  };
+  factory User.fromJson(Map<String, dynamic> json) {
+    return User(
+      id: _safeString(json['id']),
+      roleId: _safeString(json['role_id']),
+      name: _safeString(json['name']),
+      phone: _safeString(json['phone']),
+      firebaseToken: _safeString(json['firebase_token']),
+      roles: _safeList(json['roles'])
+          ?.map((e) => Role.fromJson(e))
+          .toList(),
+      driver: _safeMap(json['driver']) != null
+          ? Driver.fromJson(json['driver'])
+          : null,
+      wallet: _safeMap(json['wallet']) != null
+          ? Wallet.fromJson(json['wallet'])
+          : null, // ✅ TAMBAH
+    );
+  }
 }
 
-class Role {
-  final String id;
-  final String name;
-  final String description;
-  final int isActive;
 
-  Role({
-    required this.id,
-    required this.name,
-    required this.description,
-    required this.isActive,
-  });
+//
 
-  factory Role.fromJson(Map<String, dynamic> json) => Role(
-    id: json["id"],
-    name: json["name"],
-    description: json["description"],
-    isActive: json["is_active"],
-  );
-
-  Map<String, dynamic> toJson() => {
-    "id": id,
-    "name": name,
-    "description": description,
-    "is_active": isActive,
-  };
-}
-
-// Driver class
-class Driver {
-  final String id;
-  final String siteId;
-  final String userId;
-  final String name;
-  final String code;
-  final String status;
-  final String placeOfBirth;
-  final String simNumber;
-  final String simType;
-  final String rekeningNumber;
-  final String phoneNumber;
-  final String address;
-  final int isActive;
-  final Site site;
-  final Vehicle vehicle;
-  final Wallet wallet;
-  final List<Deduction> deductions;
-  final DriverStatus driverStatus;
-
-  Driver({
-    required this.id,
-    required this.siteId,
-    required this.userId,
-    required this.name,
-    required this.code,
-    required this.status,
-    required this.placeOfBirth,
-    required this.simNumber,
-    required this.simType,
-    required this.rekeningNumber,
-    required this.phoneNumber,
-    required this.address,
-    required this.isActive,
-    required this.site,
-    required this.vehicle,
-    required this.wallet,
-    required this.deductions,
-    required this.driverStatus,
-  });
-
-  factory Driver.fromJson(Map<String, dynamic> json) => Driver(
-    id: json["id"],
-    siteId: json["site_id"],
-    userId: json["user_id"],
-    name: json["name"],
-    code: json["code"],
-    status: json["status"],
-    placeOfBirth: json["place_of_birth"],
-    simNumber: json["sim_number"],
-    simType: json["sim_type"],
-    rekeningNumber: json["rekening_number"],
-    phoneNumber: json["phone_number"],
-    address: json["address"],
-    isActive: json["is_active"],
-    site: Site.fromJson(json["site"]),
-    vehicle: Vehicle.fromJson(json["vehicle"]),
-    wallet: Wallet.fromJson(json["wallet"]),
-    deductions: List<Deduction>.from(
-        json["deductions"].map((x) => Deduction.fromJson(x))),
-    driverStatus: DriverStatus.fromJson(json["driver_status"]),
-  );
-
-  Map<String, dynamic> toJson() => {
-    "id": id,
-    "site_id": siteId,
-    "user_id": userId,
-    "name": name,
-    "code": code,
-    "status": status,
-    "place_of_birth": placeOfBirth,
-    "sim_number": simNumber,
-    "sim_type": simType,
-    "rekening_number": rekeningNumber,
-    "phone_number": phoneNumber,
-    "address": address,
-    "is_active": isActive,
-    "site": site.toJson(),
-    "vehicle": vehicle.toJson(),
-    "wallet": wallet.toJson(),
-    "deductions": List<dynamic>.from(deductions.map((x) => x.toJson())),
-    "driver_status": driverStatus.toJson(),
-  };
-}
-
-// Site class
-class Site {
-  final String id;
-  final String name;
-  final String alias;
-  final String code;
-  final int sort;
-  final int isActive;
-
-  Site({
-    required this.id,
-    required this.name,
-    required this.alias,
-    required this.code,
-    required this.sort,
-    required this.isActive,
-  });
-
-  factory Site.fromJson(Map<String, dynamic> json) => Site(
-    id: json["id"],
-    name: json["name"],
-    alias: json["alias"],
-    code: json["code"],
-    sort: json["sort"],
-    isActive: json["is_active"],
-  );
-
-  Map<String, dynamic> toJson() => {
-    "id": id,
-    "name": name,
-    "alias": alias,
-    "code": code,
-    "sort": sort,
-    "is_active": isActive,
-  };
-}
-
-// Vehicle class
-class Vehicle {
-  final String id;
-  final String siteId;
-  final String typeVehicleId;
-  final String fuelTypeId;
-  final String pic;
-  final String status;
-  final String policeNumber;
-  final String stnkNumber;
-  final int capacity;
-  final int productionYear;
-  final int isActive;
-
-  Vehicle({
-    required this.id,
-    required this.siteId,
-    required this.typeVehicleId,
-    required this.fuelTypeId,
-    required this.pic,
-    required this.status,
-    required this.policeNumber,
-    required this.stnkNumber,
-    required this.capacity,
-    required this.productionYear,
-    required this.isActive,
-  });
-
-  factory Vehicle.fromJson(Map<String, dynamic> json) => Vehicle(
-    id: json["id"],
-    siteId: json["site_id"],
-    typeVehicleId: json["type_vehicle_id"],
-    fuelTypeId: json["fuel_type_id"],
-    pic: json["pic"],
-    status: json["status"],
-    policeNumber: json["police_number"],
-    stnkNumber: json["stnk_number"],
-    capacity: json["capacity"],
-    productionYear: json["production_year"],
-    isActive: json["is_active"],
-  );
-
-  Map<String, dynamic> toJson() => {
-    "id": id,
-    "site_id": siteId,
-    "type_vehicle_id": typeVehicleId,
-    "fuel_type_id": fuelTypeId,
-    "pic": pic,
-    "status": status,
-    "police_number": policeNumber,
-    "stnk_number": stnkNumber,
-    "capacity": capacity,
-    "production_year": productionYear,
-    "is_active": isActive,
-  };
-}
-
-// Wallet class
 class Wallet {
-  final String id;
-  final String driverId;
-  final String balance;
-  final String savings;
-  final String heldAmount;
-  final int isActive;
+  final String? id;
+  final String? driverId;
+  final String? balance;
+  final String? savings;
+  final String? heldAmount;
+  final int? isActive;
+  final String? createdBy;
+  final String? updatedBy;
+  final String? deletedBy;
+  final String? deletedAt;
+  final String? createdAt;
+  final String? updatedAt;
 
   Wallet({
-    required this.id,
-    required this.driverId,
-    required this.balance,
-    required this.savings,
-    required this.heldAmount,
-    required this.isActive,
+    this.id,
+    this.driverId,
+    this.balance,
+    this.savings,
+    this.heldAmount,
+    this.isActive,
+    this.createdBy,
+    this.updatedBy,
+    this.deletedBy,
+    this.deletedAt,
+    this.createdAt,
+    this.updatedAt,
   });
 
-  factory Wallet.fromJson(Map<String, dynamic> json) => Wallet(
-    id: json["id"],
-    driverId: json["driver_id"],
-    balance: json["balance"],
-    savings: json["savings"],
-    heldAmount: json["held_amount"],
-    isActive: json["is_active"],
-  );
-
-  Map<String, dynamic> toJson() => {
-    "id": id,
-    "driver_id": driverId,
-    "balance": balance,
-    "savings": savings,
-    "held_amount": heldAmount,
-    "is_active": isActive,
-  };
+  factory Wallet.fromJson(Map<String, dynamic> json) {
+    return Wallet(
+      id: _safeString(json['id']),
+      driverId: _safeString(json['driver_id']),
+      balance: _safeString(json['balance']),
+      savings: _safeString(json['savings']),
+      heldAmount: _safeString(json['held_amount']),
+      isActive: json['is_active'] is int ? json['is_active'] : null,
+      createdBy: _safeString(json['created_by']),
+      updatedBy: _safeString(json['updated_by']),
+      deletedBy: _safeString(json['deleted_by']),
+      deletedAt: _safeString(json['deleted_at']),
+      createdAt: _safeString(json['created_at']),
+      updatedAt: _safeString(json['updated_at']),
+    );
+  }
 }
 
-// Deduction class
+
+
+// ------------------ Role ------------------
+
+class Role {
+  final String? id;
+  final String? name;
+  final String? description;
+
+  Role({this.id, this.name, this.description});
+
+  factory Role.fromJson(Map<String, dynamic> json) {
+    return Role(
+      id: _safeString(json['id']),
+      name: _safeString(json['name']),
+      description: _safeString(json['description']),
+    );
+  }
+}
+
+// ------------------ Driver ------------------
+
+class Driver {
+  final String? id;
+  final String? siteId;
+  final String? userId;
+  final String? name;
+  final String? alias;
+  final String? code;
+  final String? status;
+  final String? ein;
+  final String? dateOfBirth;
+  final String? placeOfBirth;
+  final String? lastEducation;
+  final String? gender;
+  final String? nik;
+  final String? simNumber;
+  final String? simType;
+  final String? bpjsNumber;
+  final String? kkNumber;
+  final String? rekeningNumber;
+  final String? phoneNumber;
+  final int? isBackupDriver;
+  final String? activeWorkingDate;
+  final String? address;
+  final String? bloodType;
+  final String? statusDesc;
+  final String? description;
+
+  final Site? site;
+  final Vehicle? vehicle;
+  final Wallet? wallet;
+  final List<Deduction>? deductions;
+  final DriverStatus? driverStatus;
+
+  Driver({
+    this.id,
+    this.siteId,
+    this.userId,
+    this.name,
+    this.alias,
+    this.code,
+    this.status,
+    this.ein,
+    this.dateOfBirth,
+    this.placeOfBirth,
+    this.lastEducation,
+    this.gender,
+    this.nik,
+    this.simNumber,
+    this.simType,
+    this.bpjsNumber,
+    this.kkNumber,
+    this.rekeningNumber,
+    this.phoneNumber,
+    this.isBackupDriver,
+    this.activeWorkingDate,
+    this.address,
+    this.bloodType,
+    this.statusDesc,
+    this.description,
+    this.site,
+    this.vehicle,
+    this.wallet,
+    this.deductions,
+    this.driverStatus,
+  });
+
+  factory Driver.fromJson(Map<String, dynamic> json) {
+    return Driver(
+      id: _safeString(json['id']),
+      siteId: _safeString(json['site_id']),
+      userId: _safeString(json['user_id']),
+      name: _safeString(json['name']),
+      alias: _safeString(json['alias']),
+      code: _safeString(json['code']),
+      status: _safeString(json['status']),
+      ein: _safeString(json['ein']),
+      dateOfBirth: _safeString(json['date_of_birth']),
+      placeOfBirth: _safeString(json['place_of_birth']),
+      lastEducation: _safeString(json['last_education']),
+      gender: _safeString(json['gender']),
+      nik: _safeString(json['nik']),
+      simNumber: _safeString(json['sim_number']),
+      simType: _safeString(json['sim_type']),
+      bpjsNumber: _safeString(json['bpjs_number']),
+      kkNumber: _safeString(json['kk_number']),
+      rekeningNumber: _safeString(json['rekening_number']),
+      phoneNumber: _safeString(json['phone_number']),
+      isBackupDriver: _safeInt(json['is_backup_driver']),
+      activeWorkingDate: _safeString(json['active_working_date']),
+      address: _safeString(json['address']),
+      bloodType: _safeString(json['blood_type']),
+      statusDesc: _safeString(json['status_desc']),
+      description: _safeString(json['description']),
+      site: _safeMap(json['site']) != null ? Site.fromJson(json['site']) : null,
+      vehicle: _safeMap(json['vehicle']) != null
+          ? Vehicle.fromJson(json['vehicle'])
+          : null,
+      wallet: _safeMap(json['wallet']) != null
+          ? Wallet.fromJson(json['wallet'])
+          : null,
+      deductions: _safeList(json['deductions'])
+          ?.map((e) => Deduction.fromJson(e))
+          .toList(),
+      driverStatus: _safeMap(json['driver_status']) != null
+          ? DriverStatus.fromJson(json['driver_status'])
+          : null,
+    );
+  }
+}
+
+// ------------------ Site ------------------
+
+class Site {
+  final String? id;
+  final String? name;
+  final String? alias;
+  final String? code;
+  final int? sort;
+  final String? description;
+
+  Site({
+    this.id,
+    this.name,
+    this.alias,
+    this.code,
+    this.sort,
+    this.description,
+  });
+
+  factory Site.fromJson(Map<String, dynamic> json) {
+    return Site(
+      id: _safeString(json['id']),
+      name: _safeString(json['name']),
+      alias: _safeString(json['alias']),
+      code: _safeString(json['code']),
+      sort: _safeInt(json['sort']),
+      description: _safeString(json['description']),
+    );
+  }
+}
+
+// ------------------ Vehicle ------------------
+
+class Vehicle {
+  final String? id;
+  final String? siteId;
+  final String? typeVehicleId;
+  final String? fuelTypeId;
+  final String? pic;
+  final String? status;
+  final String? policeNumber;
+  final String? stnkNumber;
+  final String? stnkExpiration;
+  final String? taxExpiration;
+  final String? kirExpiration;
+  final String? chassisNumber;
+  final String? machineNumber;
+  final int? capacity;
+  final String? estimatedLoad;
+  final int? productionYear;
+  final String? terminal;
+  final String? description;
+
+  Vehicle({
+    this.id,
+    this.siteId,
+    this.typeVehicleId,
+    this.fuelTypeId,
+    this.pic,
+    this.status,
+    this.policeNumber,
+    this.stnkNumber,
+    this.stnkExpiration,
+    this.taxExpiration,
+    this.kirExpiration,
+    this.chassisNumber,
+    this.machineNumber,
+    this.capacity,
+    this.estimatedLoad,
+    this.productionYear,
+    this.terminal,
+    this.description,
+  });
+
+  factory Vehicle.fromJson(Map<String, dynamic> json) {
+    return Vehicle(
+      id: _safeString(json['id']),
+      siteId: _safeString(json['site_id']),
+      typeVehicleId: _safeString(json['type_vehicle_id']),
+      fuelTypeId: _safeString(json['fuel_type_id']),
+      pic: _safeString(json['pic']),
+      status: _safeString(json['status']),
+      policeNumber: _safeString(json['police_number']),
+      stnkNumber: _safeString(json['stnk_number']),
+      stnkExpiration: _safeString(json['stnk_expiration']),
+      taxExpiration: _safeString(json['tax_expiration']),
+      kirExpiration: _safeString(json['kir_expiration']),
+      chassisNumber: _safeString(json['chassis_number']),
+      machineNumber: _safeString(json['machine_number']),
+      capacity: _safeInt(json['capacity']),
+      estimatedLoad: _safeString(json['estimated_load']),
+      productionYear: _safeInt(json['production_year']),
+      terminal: _safeString(json['terminal']),
+      description: _safeString(json['description']),
+    );
+  }
+}
+
+// ------------------ Deduction ------------------
+
 class Deduction {
-  final String id;
-  final String driverId;
-  final String deductionTypeId;
-  final String amount;
+  final String? id;
+  final String? driverId;
+  final String? deductionTypeId;
+  final String? amount;
   final String? remainingAmount;
   final String? installmentPerMonth;
   final int? totalInstallments;
-  final int? remainingInstallments;
-  final int isPaid;
-  final int isActive;
+  final dynamic remainingInstallments;
+  final int? isPaid;
+  final String? note;
+  final String? effectiveDate;
 
   Deduction({
-    required this.id,
-    required this.driverId,
-    required this.deductionTypeId,
-    required this.amount,
+    this.id,
+    this.driverId,
+    this.deductionTypeId,
+    this.amount,
     this.remainingAmount,
     this.installmentPerMonth,
     this.totalInstallments,
     this.remainingInstallments,
-    required this.isPaid,
-    required this.isActive,
+    this.isPaid,
+    this.note,
+    this.effectiveDate,
   });
 
-  factory Deduction.fromJson(Map<String, dynamic> json) => Deduction(
-    id: json["id"],
-    driverId: json["driver_id"],
-    deductionTypeId: json["deduction_type_id"],
-    amount: json["amount"],
-    remainingAmount: json["remaining_amount"],
-    installmentPerMonth: json["installment_per_month"],
-    totalInstallments: json["total_installments"],
-    remainingInstallments: json["remaining_installments"],
-    isPaid: json["is_paid"],
-    isActive: json["is_active"],
-  );
-
-  Map<String, dynamic> toJson() => {
-    "id": id,
-    "driver_id": driverId,
-    "deduction_type_id": deductionTypeId,
-    "amount": amount,
-    "remaining_amount": remainingAmount,
-    "installment_per_month": installmentPerMonth,
-    "total_installments": totalInstallments,
-    "remaining_installments": remainingInstallments,
-    "is_paid": isPaid,
-    "is_active": isActive,
-  };
+  factory Deduction.fromJson(Map<String, dynamic> json) {
+    return Deduction(
+      id: _safeString(json['id']),
+      driverId: _safeString(json['driver_id']),
+      deductionTypeId: _safeString(json['deduction_type_id']),
+      amount: _safeString(json['amount']),
+      remainingAmount: _safeString(json['remaining_amount']),
+      installmentPerMonth: _safeString(json['installment_per_month']),
+      totalInstallments: _safeInt(json['total_installments']),
+      remainingInstallments: json['remaining_installments'],
+      isPaid: _safeInt(json['is_paid']),
+      note: _safeString(json['note']),
+      effectiveDate: _safeString(json['effective_date']),
+    );
+  }
 }
 
-// DriverStatus class
+// ------------------ Driver Status ------------------
+
 class DriverStatus {
-  final String id;
-  final String fieldName;
-  final String fieldValue;
-  final String name;
-  final String code;
-  final int sort;
-  final int isActive;
+  final String? id;
+  final String? fieldName;
+  final String? fieldValue;
+  final String? name;
+  final String? code;
+  final int? sort;
+  final String? description;
+  final String? color;
+  final String? colorHex;
 
   DriverStatus({
-    required this.id,
-    required this.fieldName,
-    required this.fieldValue,
-    required this.name,
-    required this.code,
-    required this.sort,
-    required this.isActive,
+    this.id,
+    this.fieldName,
+    this.fieldValue,
+    this.name,
+    this.code,
+    this.sort,
+    this.description,
+    this.color,
+    this.colorHex,
   });
 
-  factory DriverStatus.fromJson(Map<String, dynamic> json) => DriverStatus(
-    id: json["id"],
-    fieldName: json["field_name"],
-    fieldValue: json["field_value"],
-    name: json["name"],
-    code: json["code"],
-    sort: json["sort"],
-    isActive: json["is_active"],
-  );
+  factory DriverStatus.fromJson(Map<String, dynamic> json) {
+    return DriverStatus(
+      id: _safeString(json['id']),
+      fieldName: _safeString(json['field_name']),
+      fieldValue: _safeString(json['field_value']),
+      name: _safeString(json['name']),
+      code: _safeString(json['code']),
+      sort: _safeInt(json['sort']),
+      description: _safeString(json['description']),
+      color: _safeString(json['color']),
+      colorHex: _safeString(json['color_hex']),
+    );
+  }
+}
 
-  Map<String, dynamic> toJson() => {
-    "id": id,
-    "field_name": fieldName,
-    "field_value": fieldValue,
-    "name": name,
-    "code": code,
-    "sort": sort,
-    "is_active": isActive,
-  };
+// --------------------------------------------------------------------
+// SAFE CAST HELPERS (ANTI ERROR / TIDAK BIKIN CRASH)
+// --------------------------------------------------------------------
+
+String? _safeString(dynamic value) {
+  try {
+    if (value == null) return null;
+    return value.toString();
+  } catch (_) {
+    return null;
+  }
+}
+
+int? _safeInt(dynamic value) {
+  try {
+    if (value == null) return null;
+    if (value is int) return value;
+    return int.tryParse(value.toString());
+  } catch (_) {
+    return null;
+  }
+}
+
+Map<String, dynamic>? _safeMap(dynamic value) {
+  try {
+    if (value is Map<String, dynamic>) return value;
+    return null;
+  } catch (_) {
+    return null;
+  }
+}
+
+List<dynamic>? _safeList(dynamic value) {
+  try {
+    if (value is List) return value;
+    return null;
+  } catch (_) {
+    return null;
+  }
 }

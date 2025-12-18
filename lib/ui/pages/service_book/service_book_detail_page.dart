@@ -34,7 +34,7 @@ class _ServiceBookDetailPageState extends State<ServiceBookDetailPage> {
               const SizedBox(height: 8.0),
               SpaceBetweenHorizontalText(
                 title: R.strings.tglServis,
-                content: "${_convertDate.convertToddMMMyyyy1(widget.dataServiceBook.serviceDate!)}",
+                content: _convertDate.convertToddMMMyyyy1(widget.dataServiceBook.serviceDate!),
                 colorTitle: R.colors.colorText,
                 colorContent: R.colors.colorText,
                 fontSizeTitle: 14.0,

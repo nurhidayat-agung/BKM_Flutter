@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:newbkmmobile/blocs/home/home_bloc.dart';
 import 'package:newbkmmobile/blocs/home/home_event.dart';
 import 'package:newbkmmobile/blocs/home/home_state.dart';
+import 'package:newbkmmobile/core/currency_formatter.dart';
 import 'package:newbkmmobile/repositories/login_repository.dart';
 import 'package:newbkmmobile/ui/pages/repair/repair_page.dart';
 import 'package:newbkmmobile/ui/pages/trip/trip_page.dart';
@@ -79,7 +80,9 @@ class _HomePageState extends State<HomePage> {
                     String balance = "0";
                     if (state is HomeLoaded) {
                       userName = state.name;
-                      balance = state.balance;
+                      balance = state.balance ?? "0.00";
+                      tabungan = state.savings ?? "0.00";
+                      uangTertahan = state.heldAmmount ?? "0.00";
                     }
 
                     return SingleChildScrollView(
@@ -202,7 +205,7 @@ class _HomePageState extends State<HomePage> {
                                           child: Text(
                                             _isSaldoHidden
                                                 ? "**************"
-                                                : balance,
+                                                : CurrencyFormatter.formatFromString(balance),
                                             style: const TextStyle(
                                               color: Colors.black,
                                               fontSize: 17,
@@ -294,9 +297,9 @@ class _HomePageState extends State<HomePage> {
                             padding: const EdgeInsets.symmetric(horizontal: 16),
                             child: Row(
                               children: [
-                                Expanded(child: _walletBox("Tabungan", "IDR $tabungan")),
+                                Expanded(child: _walletBox("Tabungan", "IDR ${CurrencyFormatter.formatFromString(tabungan)}")),
                                 const SizedBox(width: 12),
-                                Expanded(child: _walletBox("Uang Tertahan", "IDR $uangTertahan")),
+                                Expanded(child: _walletBox("Uang Tertahan", "IDR ${CurrencyFormatter.formatFromString(uangTertahan)}")),
                               ],
                             ),
                           ),

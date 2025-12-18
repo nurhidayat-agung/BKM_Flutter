@@ -32,13 +32,15 @@ class UserSessionAdapter extends TypeAdapter<UserSession> {
       status: fields[12] as int,
       userLogin: fields[13] as String?,
       password: fields[14] as String?,
+      saving: fields[15] as String?,
+      heldAmmount: fields[16] as String?,
     );
   }
 
   @override
   void write(BinaryWriter writer, UserSession obj) {
     writer
-      ..writeByte(15)
+      ..writeByte(17)
       ..writeByte(0)
       ..write(obj.userId)
       ..writeByte(1)
@@ -68,7 +70,11 @@ class UserSessionAdapter extends TypeAdapter<UserSession> {
       ..writeByte(13)
       ..write(obj.userLogin)
       ..writeByte(14)
-      ..write(obj.password);
+      ..write(obj.password)
+      ..writeByte(15)
+      ..write(obj.saving)
+      ..writeByte(16)
+      ..write(obj.heldAmmount);
   }
 
   @override
