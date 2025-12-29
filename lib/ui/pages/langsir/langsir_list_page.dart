@@ -4,11 +4,15 @@ import 'package:newbkmmobile/blocs/langsir/langsir_bloc.dart';
 import 'package:newbkmmobile/blocs/langsir/langsir_event.dart';
 import 'package:newbkmmobile/blocs/langsir/langsir_state.dart';
 import 'package:newbkmmobile/core/convert_date.dart';
+import 'package:newbkmmobile/ui/pages/langsir/langsir_detail_page.dart';
+import 'package:newbkmmobile/ui/pages/langsir/langsir_step_page.dart';
+import 'package:newbkmmobile/ui/pages/langsir/langsir_step_page_wrapper.dart';
 import 'package:newbkmmobile/ui/widgets/bkm_loading.dart';
 import 'langsir_tambah_page.dart'; // IMPORT KE TAMBAH PAGE
 
 class LangsirListPage extends StatefulWidget {
   const LangsirListPage({super.key});
+
   @override
   State<LangsirListPage> createState() => _LangsirListPageState();
 }
@@ -38,7 +42,8 @@ class _LangsirListPageState extends State<LangsirListPage> {
         centerTitle: true,
         title: const Text(
           'Langsir',
-          style: TextStyle(fontWeight: FontWeight.w700, fontSize: 16, color: Colors.white),
+          style: TextStyle(
+              fontWeight: FontWeight.w700, fontSize: 16, color: Colors.white),
         ),
         leading: Center(
           child: Container(
@@ -50,20 +55,22 @@ class _LangsirListPageState extends State<LangsirListPage> {
             ),
             child: IconButton(
               padding: EdgeInsets.zero,
-              icon: const Icon(Icons.arrow_back_ios_new, size: 16, color: Colors.white),
+              icon: const Icon(Icons.arrow_back_ios_new,
+                  size: 16, color: Colors.white),
               onPressed: () => Navigator.pop(context),
             ),
           ),
         ),
       ),
       body: BlocConsumer<LangsirBloc, LangsirState>(
-        listener: (context, state) {
+        listener: (context, state) async {
           if (state is LangsirLoading) {
             BkmLoading.show(context, message: "mohon tungu");
           }
         },
         builder: (context, state) {
           if (state is LangsirListLoaded) {
+            BkmLoading.hide(context);
             final items = state.items;
 
             if (items.isEmpty) {
@@ -73,33 +80,38 @@ class _LangsirListPageState extends State<LangsirListPage> {
             return RefreshIndicator(
               onRefresh: _onRefresh,
               child: ListView.separated(
-                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
                 itemCount: items.length,
-                separatorBuilder: (context, index) => Divider(height: 1, color: dividerColor),
+                separatorBuilder: (context, index) =>
+                    Divider(height: 1, color: dividerColor),
                 itemBuilder: (context, index) {
                   final item = items[index];
 
                   final doNumber = item.doNumber ?? "-";
-                  final route = "${item.pks?.code ?? "-"} \u2192 ${item.destination?.code ?? "-"}";
+                  final route =
+                      "${item.pks?.code ?? "-"} \u2192 ${item.destination?.code ?? "-"}";
                   final commodity = (item.commodity?.code ?? '-').toString();
-                  final tanggal = convertDate.isoFormatToReadable(item.doDate ?? "");
+                  final tanggal =
+                      convertDate.isoFormatToReadable(item.doDate ?? "");
                   final id = item.id ?? "";
 
                   return InkWell(
                     // NAVIGASI KE TAMBAH PAGE (Gambar 2)
-                    onTap: () {
-                      context.read<LangsirBloc>().add(FetchLangsirDetail(item.id ?? ""));
-                      // Navigator.push(context, MaterialPageRoute(builder: (_) {
-                      //   return LangsirTambahPage(
-                      //     id: id,
-                      //     // Simulasi data history steps
-                      //     steps: const [
-                      //       {"no": 1, "jumlahMuat": "27000", "jumlahBongkar": "27000", "tanggalMuat": "13 Nov 2025"},
-                      //       {"no": 2, "jumlahMuat": "27000", "jumlahBongkar": "27000", "tanggalMuat": "13 Nov 2025"}
-                      //     ],
-                      //   );
-                      // }));
-                    },
+                      onTap: () async {
+                        final shouldRefresh = await Navigator.push<bool>(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => LangsirStepPageWrapper(
+                              id: item.id ?? "",
+                            ),
+                          ),
+                        );
+
+                        if (shouldRefresh == true) {
+                          context.read<LangsirBloc>().add(FetchLangsirList());
+                        }
+                      },
                     child: Padding(
                       padding: const EdgeInsets.symmetric(vertical: 16),
                       child: Column(

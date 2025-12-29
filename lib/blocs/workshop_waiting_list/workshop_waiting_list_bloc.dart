@@ -2,7 +2,7 @@ import 'dart:convert';
 
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
-import 'package:newbkmmobile/models/history_waiting_list_resp.dart';
+import 'package:newbkmmobile/models/legacy/history_waiting_list_resp.dart';
 import 'package:newbkmmobile/repositories/workshop_repository.dart';
 
 part 'workshop_waiting_list_event.dart';

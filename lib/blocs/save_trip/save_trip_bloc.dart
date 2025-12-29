@@ -3,7 +3,6 @@ import 'dart:io';
 
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
-import 'package:newbkmmobile/models/debug_resp.dart';
 import 'package:newbkmmobile/repositories/trip_repository.dart';
 
 part 'save_trip_event.dart';

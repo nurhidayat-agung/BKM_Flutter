@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:newbkmmobile/core/r.dart';
-import 'package:newbkmmobile/models/trip_resp.dart';
+import 'package:newbkmmobile/models/legacy/trip_resp.dart';
 
 class TripRow extends StatefulWidget {
   const TripRow({Key? key, required this.tripResp}) : super(key: key);

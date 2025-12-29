@@ -2,7 +2,7 @@ import 'dart:convert';
 
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
-import 'package:newbkmmobile/models/help_resp.dart';
+import 'package:newbkmmobile/models/legacy/help_resp.dart';
 import 'package:newbkmmobile/repositories/help_repository.dart';
 
 part 'help_event.dart';

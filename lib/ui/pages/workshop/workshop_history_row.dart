@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:newbkmmobile/core/convert_date.dart';
 import 'package:newbkmmobile/core/r.dart';
-import 'package:newbkmmobile/models/history_workshop_resp.dart';
+import 'package:newbkmmobile/models/legacy/history_workshop_resp.dart';
 import 'package:newbkmmobile/ui/widgets/align_start_horizontal_text.dart';
 
 class WorkshopHistoryRow extends StatefulWidget {

@@ -75,7 +75,7 @@ class LangsirTambahPage extends StatelessWidget {
                       Navigator.push(context, MaterialPageRoute(
                         builder: (_) => BlocProvider.value(
                           value: context.read<LangsirBloc>(),
-                          child: LangsirFormPage(id: id),
+                          //child: LangsirFormPage(id: id),
                         ),
                       ));
                     },

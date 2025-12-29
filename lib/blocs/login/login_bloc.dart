@@ -1,8 +1,6 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
-import 'package:newbkmmobile/models/login_form_local.dart';
 import 'package:newbkmmobile/models/login/login_resp.dart';
-import 'package:newbkmmobile/models/user_detail_resp.dart';
 import 'package:newbkmmobile/repositories/login_form_repository.dart';
 import 'package:newbkmmobile/repositories/login_repository.dart';
 import 'package:newbkmmobile/repositories/user_detail_repository.dart';

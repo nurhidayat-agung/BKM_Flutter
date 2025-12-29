@@ -62,5 +62,18 @@ class ConvertDate {
     }
   }
 
+  String formatToDayMonthYear(String? date) {
+    if (date == null || date.isEmpty) return '-';
+
+    try {
+      final parsedDate =
+      DateFormat('yyyy-MM-dd HH:mm:ss').parse(date);
+
+      return DateFormat('dd MMM yyyy', 'en_US').format(parsedDate);
+    } catch (e) {
+      return '-';
+    }
+  }
+
 
 }

@@ -1,5 +1,7 @@
 import 'package:equatable/equatable.dart';
 import 'package:newbkmmobile/models/langsir/local_hauling_data.dart';
+import 'package:newbkmmobile/models/langsir_detail/local_hauling_detail_data.dart';
+import 'package:newbkmmobile/models/langsir_detail_item/langsir_detail_item_response.dart';
 
 abstract class LangsirState extends Equatable {
   const LangsirState();
@@ -21,7 +23,7 @@ class LangsirListLoaded extends LangsirState {
 }
 
 class LangsirDetailLoaded extends LangsirState {
-  final Map<String, dynamic> detail;
+  final LocalHaulingDetailData detail;
   const LangsirDetailLoaded(this.detail);
 
   @override
@@ -42,4 +44,38 @@ class LangsirFailure extends LangsirState {
 
   @override
   List<Object?> get props => [error];
+}
+
+class LangsirSubmitSuccess extends LangsirState {
+  final String message;
+
+  const LangsirSubmitSuccess(this.message);
+}
+
+class LangsirSubmitFailed extends LangsirState {
+  final String message;
+
+  const LangsirSubmitFailed(this.message);
+}
+
+class FetchLangsirDetailItemSuccess extends LangsirState {
+  final LangsirDetailItemResponse resp;
+
+  const FetchLangsirDetailItemSuccess({
+    required this.resp,
+  });
+}
+
+class UpdateLangsirDetailItemSuccess extends LangsirState {
+  final String message;
+
+  const UpdateLangsirDetailItemSuccess({
+    required this.message,
+  });
+}
+
+class UpdateLangsirDetailItemFailure extends LangsirState {
+  final String error;
+
+  const UpdateLangsirDetailItemFailure(this.error);
 }

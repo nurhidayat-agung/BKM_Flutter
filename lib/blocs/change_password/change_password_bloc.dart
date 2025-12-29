@@ -2,7 +2,7 @@ import 'dart:convert';
 
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
-import 'package:newbkmmobile/models/general_resp.dart';
+import 'package:newbkmmobile/models/legacy/general_resp.dart';
 import 'package:newbkmmobile/repositories/change_password_repository.dart';
 import 'package:newbkmmobile/repositories/login_form_repository.dart';
 

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:newbkmmobile/core/convert_date.dart';
 import 'package:newbkmmobile/core/r.dart';
-import 'package:newbkmmobile/models/service_book_resp.dart';
+import 'package:newbkmmobile/models/legacy/service_book_resp.dart';
 import 'package:newbkmmobile/ui/widgets/space_between_horizontal_text.dart';
 
 class ServiceBookDetailPage extends StatefulWidget {

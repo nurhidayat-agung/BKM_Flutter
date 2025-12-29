@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:newbkmmobile/core/r.dart';
-import 'package:newbkmmobile/models/service_part_resp.dart';
+import 'package:newbkmmobile/models/legacy/service_part_resp.dart';
 import 'package:newbkmmobile/ui/pages/service_part/replacement_part_history_page.dart';
 
 class ServicePartRow extends StatefulWidget {

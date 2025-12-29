@@ -1,5 +1,5 @@
-import 'data_resp.dart';
-import 'msg_resp.dart';
+import 'package:newbkmmobile/models/legacy/data_resp.dart';
+import 'package:newbkmmobile/models/legacy/msg_resp.dart';
 
 class DebugResp {
   MsgResp? msg;

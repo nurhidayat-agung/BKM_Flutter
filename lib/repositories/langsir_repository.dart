@@ -5,6 +5,7 @@ import 'package:newbkmmobile/repositories/session_manager_repository.dart';
 import 'package:newbkmmobile/services/http_communicator.dart';
 
 class LangsirRepository {
+  final HttpCommunicator _httpCommunicator = HttpCommunicator();
   Future<List<Map<String, dynamic>>> fetchList() async {
     await Future.delayed(const Duration(milliseconds: 300));
     return [
@@ -56,6 +57,176 @@ class LangsirRepository {
       });
     }
   }
+
+
+  Future<(int, dynamic)> getDeliveryOrderDetail(
+      String deliveryOrderId,
+      ) async {
+    try {
+      final UserSession? session = await SessionManager.getUserSession();
+
+      final headers = {
+        'X-Site-ID': session?.siteId ?? '',
+        if (session?.token != null)
+          'Authorization': 'Bearer ${session!.token}',
+      };
+
+      final response = await HttpCommunicator().get(
+        'delivery-orders/$deliveryOrderId',
+        headers: headers,
+      );
+
+      /// RETURN SESUAI POLA (status, response.result)
+      return (response.status, response.result);
+
+    } catch (e) {
+      /// ERROR GLOBAL (SAMAKAN DENGAN YANG SUDAH ADA)
+      return (500, {
+        'message': 'Failed get delivery order detail',
+        'error': e.toString(),
+      });
+    }
+  }
+
+  Future<HttpResponse> submitLocalHauling({
+    required String doId,
+    required String spbNumber,
+    required String loadQuantity,
+    required String unloadQuantity,
+    required String loadDate,
+    required String unloadDate,
+    required String actionButton, // partial_save / submit
+    File? imgSpbLoad,
+    File? imgSpbUnload,
+  }) async {
+    var session = await SessionManager.getUserSession();
+
+    return _httpCommunicator.postFormData(
+      'delivery-order-details/local-hauling',
+      fields: {
+        'do_id': doId,
+        'driver_id': session?.driverId ?? "",
+        'vehicle_id': session?.vehicleId ?? "",
+        'spb_number': spbNumber,
+        'load_quantity': loadQuantity,
+        'unload_quantity': unloadQuantity,
+        'load_date': loadDate,       // yyyy-MM-dd
+        'unload_date': unloadDate,   // yyyy-MM-dd
+        'action_button': actionButton,
+      },
+      files: {
+        if (imgSpbLoad != null) 'img_spb_load': imgSpbLoad,
+        if (imgSpbUnload != null) 'img_spb_unload': imgSpbUnload,
+      },
+      headers: {
+        'X-Client-Type': 'mobile',
+      },
+    );
+  }
+
+  /// ===========================================================
+  /// GET LANGSIR DETAIL ITEM (APP)
+  /// ===========================================================
+  /// Endpoint:
+  /// GET delivery-order-details/app/{id}
+  ///
+  /// Behavior:
+  /// - Return (statusCode, rawResponse)
+  /// - Parsing model dilakukan di Bloc / Cubit
+  ///
+  Future<(int, dynamic)> getLangsirDetailItem(
+      String detailId,
+      ) async {
+    try {
+      final UserSession? session = await SessionManager.getUserSession();
+
+      final headers = {
+        'Accept': 'application/json',
+        'X-Site-ID': session?.siteId ?? '',
+        if (session?.token != null)
+          'Authorization': 'Bearer ${session!.token}',
+      };
+
+      final response = await _httpCommunicator.get(
+        'delivery-order-details/app/$detailId',
+        headers: headers,
+      );
+
+      /// RETURN SESUAI POLA REPO
+      return (response.status, response.result);
+
+    } catch (e) {
+      return (500, {
+        'message': 'Failed get langsir detail item',
+        'error': e.toString(),
+      });
+    }
+  }
+
+
+  /// ===========================================================
+  /// UPDATE LANGSIR DETAIL ITEM
+  /// ===========================================================
+  /// Endpoint:
+  /// POST delivery-order-details/local-hauling/{detailId}
+  ///
+  /// Behavior:
+  /// - Return (statusCode, rawResponse)
+  /// - TIDAK parsing model
+  ///
+  Future<(int, dynamic)> updateLangsirDetailItem({
+    required String detailId,
+    required String doId,
+    required String spbNumber,
+    required String loadQuantity,
+    required String unloadQuantity,
+    required String loadDate,
+    required String unloadDate,
+    required String actionButton, // final_save / partial_save
+    File? imgSpbLoad,
+    File? imgSpbUnload,
+  }) async {
+    try {
+      final UserSession? session = await SessionManager.getUserSession();
+
+      final response = await _httpCommunicator.postFormData(
+        'delivery-order-details/local-hauling/$detailId',
+        fields: {
+          'do_id': doId,
+          'driver_id': session?.driverId ?? '',
+          'vehicle_id': session?.vehicleId ?? '',
+          'spb_number': spbNumber,
+          'load_quantity': loadQuantity,
+          'unload_quantity': unloadQuantity,
+          'load_date': loadDate,       // yyyy-MM-dd
+          'unload_date': unloadDate,   // yyyy-MM-dd
+          'action_button': actionButton,
+        },
+        files: {
+          if (imgSpbLoad != null) 'img_spb_load': imgSpbLoad,
+          if (imgSpbUnload != null) 'img_spb_unload': imgSpbUnload,
+        },
+        headers: {
+          'X-Client-Type': 'mobile',
+          'X-Site-ID': session?.siteId ?? '',
+          if (session?.token != null)
+            'Authorization': 'Bearer ${session!.token}',
+        },
+      );
+
+      /// RETURN SESUAI POLA REPO
+      return (response.status, response.result);
+
+    } catch (e) {
+      return (500, {
+        'message': 'Failed update langsir detail item',
+        'error': e.toString(),
+      });
+    }
+  }
+
+
+
 
   Future<Map<String, dynamic>> fetchDetail(String id) async {
     await Future.delayed(const Duration(milliseconds: 300));

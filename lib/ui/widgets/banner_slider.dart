@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:newbkmmobile/models/announcement_local.dart';
+import 'package:newbkmmobile/models/legacy/announcement_local.dart';
 
 class BannerSlider extends StatelessWidget {
   const BannerSlider({Key? key, required this.announcementLocal})

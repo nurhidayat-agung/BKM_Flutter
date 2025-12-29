@@ -1,4 +1,4 @@
-import 'package:newbkmmobile/models/do_connect_resp.dart';
+import 'package:newbkmmobile/models/legacy/do_connect_resp.dart';
 
 class TripDetailResp {
   String? id;

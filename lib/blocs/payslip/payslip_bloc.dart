@@ -2,7 +2,7 @@ import 'dart:convert';
 
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
-import 'package:newbkmmobile/models/payslip_resp.dart';
+import 'package:newbkmmobile/models/legacy/payslip_resp.dart';
 import 'package:newbkmmobile/repositories/payslip_repository.dart';
 
 part 'payslip_event.dart';

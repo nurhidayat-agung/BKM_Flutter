@@ -112,70 +112,70 @@ class _LangsirDetailPageState extends State<LangsirDetailPage> {
         builder: (context, state) {
           if (state is LangsirLoading) return const Center(child: CircularProgressIndicator());
 
-          if (state is LangsirDetailLoaded) {
-            final d = state.detail;
-            final muatData = (d['muat'] is List && (d['muat'] as List).isNotEmpty) ? d['muat'][0] : {};
-            final bongkarData = (d['bongkar'] is List && (d['bongkar'] as List).isNotEmpty) ? d['bongkar'][0] : {};
-
-            return SingleChildScrollView(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // --- HEADER CARD UTAMA ---
-                  Container(
-                    padding: const EdgeInsets.all(16),
-                    decoration: BoxDecoration(
-                      color: const Color(0xFFF8F9FA),
-                      borderRadius: BorderRadius.circular(8),
-                      border: Border.all(color: Colors.grey.shade200),
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          children: [
-                            Text(d['route'] ?? "SAM1 → ASK", style: TextStyle(color: orange, fontWeight: FontWeight.bold, fontSize: 16)),
-                          ],
-                        ),
-                        const SizedBox(height: 4),
-                        const Text("PT. Subur Arum Makmur 1 → PT. Adhitya Serayakorita", style: TextStyle(color: Colors.grey, fontSize: 12)),
-                        const SizedBox(height: 12),
-
-                        Text("Komoditi", style: TextStyle(fontSize: 12, color: darkBlue)),
-                        Text(d['commodity'] ?? "CPO (Crud Palm Oil)", style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: darkBlue)),
-                        const SizedBox(height: 12),
-
-                        Text("No DO Besar", style: TextStyle(fontSize: 12, color: darkBlue)),
-                        Text(d['do'] ?? "051/KAL-EUP/IP-CPO/X/2025", style: TextStyle(fontSize: 18, fontWeight: FontWeight.w900, color: darkBlue)),
-                        Text("10002/TEST/VIII/2025", style: TextStyle(fontSize: 13, color: darkBlue, fontWeight: FontWeight.w500)),
-                        const SizedBox(height: 16),
-
-                        const Divider(height: 1),
-                        const SizedBox(height: 12),
-
-                        _buildDetailRowWithColor("No DO Kecil", "01/15", darkBlue),
-                        const SizedBox(height: 6),
-                        _buildDetailRowWithColor("Nama Supir", d['supir'] ?? "DEDI PURWANTO", darkBlue),
-                        const SizedBox(height: 6),
-                        _buildDetailRowWithColor("No Kendaraan", d['plat'] ?? "B 9501 UVX", darkBlue),
-                      ],
-                    ),
-                  ),
-
-                  const SizedBox(height: 24),
-
-                  Text("MUAT", style: TextStyle(color: darkBlue, fontWeight: FontWeight.bold, fontSize: 14)),
-                  const SizedBox(height: 8),
-                  _buildActivityCard("MUAT", muatData, darkBlue),
-
-                  Text("BONGKAR", style: TextStyle(color: darkBlue, fontWeight: FontWeight.bold, fontSize: 14)),
-                  const SizedBox(height: 8),
-                  _buildActivityCard("BONGKAR", bongkarData, darkBlue),
-                ],
-              ),
-            );
-          }
+          // if (state is LangsirDetailLoaded) {
+          //   final d = state.detail;
+          //   final muatData = (d['muat'] is List && (d['muat'] as List).isNotEmpty) ? d['muat'][0] : {};
+          //   final bongkarData = (d['bongkar'] is List && (d['bongkar'] as List).isNotEmpty) ? d['bongkar'][0] : {};
+          //
+          //   return SingleChildScrollView(
+          //     padding: const EdgeInsets.all(16),
+          //     child: Column(
+          //       crossAxisAlignment: CrossAxisAlignment.start,
+          //       children: [
+          //         // --- HEADER CARD UTAMA ---
+          //         Container(
+          //           padding: const EdgeInsets.all(16),
+          //           decoration: BoxDecoration(
+          //             color: const Color(0xFFF8F9FA),
+          //             borderRadius: BorderRadius.circular(8),
+          //             border: Border.all(color: Colors.grey.shade200),
+          //           ),
+          //           child: Column(
+          //             crossAxisAlignment: CrossAxisAlignment.start,
+          //             children: [
+          //               Row(
+          //                 children: [
+          //                   Text(d['route'] ?? "SAM1 → ASK", style: TextStyle(color: orange, fontWeight: FontWeight.bold, fontSize: 16)),
+          //                 ],
+          //               ),
+          //               const SizedBox(height: 4),
+          //               const Text("PT. Subur Arum Makmur 1 → PT. Adhitya Serayakorita", style: TextStyle(color: Colors.grey, fontSize: 12)),
+          //               const SizedBox(height: 12),
+          //
+          //               Text("Komoditi", style: TextStyle(fontSize: 12, color: darkBlue)),
+          //               Text(d['commodity'] ?? "CPO (Crud Palm Oil)", style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: darkBlue)),
+          //               const SizedBox(height: 12),
+          //
+          //               Text("No DO Besar", style: TextStyle(fontSize: 12, color: darkBlue)),
+          //               Text(d['do'] ?? "051/KAL-EUP/IP-CPO/X/2025", style: TextStyle(fontSize: 18, fontWeight: FontWeight.w900, color: darkBlue)),
+          //               Text("10002/TEST/VIII/2025", style: TextStyle(fontSize: 13, color: darkBlue, fontWeight: FontWeight.w500)),
+          //               const SizedBox(height: 16),
+          //
+          //               const Divider(height: 1),
+          //               const SizedBox(height: 12),
+          //
+          //               _buildDetailRowWithColor("No DO Kecil", "01/15", darkBlue),
+          //               const SizedBox(height: 6),
+          //               _buildDetailRowWithColor("Nama Supir", d['supir'] ?? "DEDI PURWANTO", darkBlue),
+          //               const SizedBox(height: 6),
+          //               _buildDetailRowWithColor("No Kendaraan", d['plat'] ?? "B 9501 UVX", darkBlue),
+          //             ],
+          //           ),
+          //         ),
+          //
+          //         const SizedBox(height: 24),
+          //
+          //         Text("MUAT", style: TextStyle(color: darkBlue, fontWeight: FontWeight.bold, fontSize: 14)),
+          //         const SizedBox(height: 8),
+          //         _buildActivityCard("MUAT", muatData, darkBlue),
+          //
+          //         Text("BONGKAR", style: TextStyle(color: darkBlue, fontWeight: FontWeight.bold, fontSize: 14)),
+          //         const SizedBox(height: 8),
+          //         _buildActivityCard("BONGKAR", bongkarData, darkBlue),
+          //       ],
+          //     ),
+          //   );
+          // }
           return const SizedBox();
         },
       ),

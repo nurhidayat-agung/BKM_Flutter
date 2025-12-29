@@ -11,6 +11,8 @@ class LocalHaulingDetailData {
   final String? description;
   final double? progressPercentage;
 
+
+
   final StatusModel? status;
   final PksModel? pks;
   final DestinationModel? destination;

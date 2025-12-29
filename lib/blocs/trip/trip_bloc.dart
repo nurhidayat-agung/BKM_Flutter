@@ -7,7 +7,6 @@ import 'package:newbkmmobile/models/trip/list_new_do_response.dart' show ListNew
 import 'package:newbkmmobile/models/trip/muat_request.dart';
 import 'package:newbkmmobile/models/trip/show_do_response.dart';
 import 'package:newbkmmobile/models/trip/v2/do_detail_response.dart';
-import 'package:newbkmmobile/models/trip_resp.dart';
 import 'package:newbkmmobile/repositories/trip_repository.dart';
 
 part 'trip_event.dart';

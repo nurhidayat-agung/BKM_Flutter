@@ -293,9 +293,9 @@
 //   }
 // }
 
-import 'package:newbkmmobile/models/announcement_local.dart';
-import 'package:newbkmmobile/models/user_detail_local.dart';
-import 'package:newbkmmobile/models/vehicle_local.dart';
+import 'package:newbkmmobile/models/legacy/announcement_local.dart';
+import 'package:newbkmmobile/models/legacy/user_detail_local.dart';
+import 'package:newbkmmobile/models/legacy/vehicle_local.dart';
 
 class UserDetailResp {
   String? userId;

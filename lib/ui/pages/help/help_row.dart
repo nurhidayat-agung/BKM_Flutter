@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:newbkmmobile/core/r.dart';
-import 'package:newbkmmobile/models/help_resp.dart';
+import 'package:newbkmmobile/models/legacy/help_resp.dart';
 import 'package:newbkmmobile/ui/pages/help/help_detail_page.dart';
 
 class HelpRow extends StatefulWidget {

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:newbkmmobile/blocs/replacement_part_history/replacement_part_history_bloc.dart';
 import 'package:newbkmmobile/core/r.dart';
-import 'package:newbkmmobile/models/service_part_resp.dart';
+import 'package:newbkmmobile/models/legacy/service_part_resp.dart';
 import 'package:newbkmmobile/repositories/service_part_repository.dart';
 import 'package:newbkmmobile/ui/pages/service_part/replacement_part_history_row.dart';
 import 'package:newbkmmobile/ui/widgets/space_between_horizontal_text.dart';

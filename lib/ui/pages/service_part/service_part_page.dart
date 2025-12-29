@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:newbkmmobile/blocs/service_part/service_part_bloc.dart';
 import 'package:newbkmmobile/core/r.dart';
-import 'package:newbkmmobile/models/service_part_resp.dart';
+import 'package:newbkmmobile/models/legacy/service_part_resp.dart';
 import 'package:newbkmmobile/repositories/service_part_repository.dart';
 import 'package:newbkmmobile/ui/pages/service_part/service_part_row.dart';
 

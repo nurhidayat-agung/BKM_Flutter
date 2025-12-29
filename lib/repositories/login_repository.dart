@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'package:hive/hive.dart';
 import 'package:newbkmmobile/core/R/HiveTypeId.dart';
 import 'package:newbkmmobile/core/constants.dart';
-import 'package:newbkmmobile/models/login_local.dart';
+import 'package:newbkmmobile/models/legacy/login_local.dart';
 import 'package:newbkmmobile/models/login/login_resp.dart';
 import 'package:newbkmmobile/repositories/master_data_repository.dart';
 import 'package:newbkmmobile/services/http_communicator.dart';

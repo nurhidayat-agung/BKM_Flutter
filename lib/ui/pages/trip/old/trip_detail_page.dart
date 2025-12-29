@@ -5,7 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:newbkmmobile/blocs/save_trip/save_trip_bloc.dart';
 import 'package:newbkmmobile/blocs/trip_detail/trip_detail_bloc.dart';
 import 'package:newbkmmobile/core/r.dart';
-import 'package:newbkmmobile/models/trip_detail_resp.dart';
+import 'package:newbkmmobile/models/legacy/trip_detail_resp.dart';
 import 'package:newbkmmobile/repositories/trip_repository.dart';
 import 'package:newbkmmobile/ui/pages/trip/old/trip_detail_capture_photo.dart';
 import 'package:newbkmmobile/ui/widgets/custom_loading.dart';

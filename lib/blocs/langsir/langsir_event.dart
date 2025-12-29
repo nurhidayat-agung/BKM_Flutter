@@ -18,6 +18,69 @@ class FetchLangsirDetail extends LangsirEvent {
   List<Object?> get props => [id];
 }
 
+class SubmitLocalHauling extends LangsirEvent {
+  final String doId;
+  final String spbNumber;
+  final String loadQuantity;
+  final String unloadQuantity;
+  final String loadDate;
+  final String unloadDate;
+  final String actionButton; // partial_save / submit
+  final File? imgSpbLoad;
+  final File? imgSpbUnload;
+
+  const SubmitLocalHauling({
+    required this.doId,
+    required this.spbNumber,
+    required this.loadQuantity,
+    required this.unloadQuantity,
+    required this.loadDate,
+    required this.unloadDate,
+    required this.actionButton,
+    this.imgSpbLoad,
+    this.imgSpbUnload,
+  });
+}
+
+class FetchLangsirDetailItem extends LangsirEvent {
+  final String doId;
+
+  const FetchLangsirDetailItem({
+    required this.doId,
+  });
+}
+
+
+class UpdateLangsirDetailItem extends LangsirEvent {
+  final String detailId;
+
+  final String doId;
+  final String spbNumber;
+  final String loadQuantity;
+  final String unloadQuantity;
+  final String loadDate;
+  final String unloadDate;
+  final String actionButton;
+
+  final File? imgSpbLoad;
+  final File? imgSpbUnload;
+
+  const UpdateLangsirDetailItem({
+    required this.detailId,
+    required this.doId,
+    required this.spbNumber,
+    required this.loadQuantity,
+    required this.unloadQuantity,
+    required this.loadDate,
+    required this.unloadDate,
+    required this.actionButton,
+    this.imgSpbLoad,
+    this.imgSpbUnload,
+
+  });
+}
+
+
 class SaveLangsirMuat extends LangsirEvent {
   final String id;
   final String jumlahMuat;

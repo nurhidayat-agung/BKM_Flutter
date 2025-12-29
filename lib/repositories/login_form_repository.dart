@@ -1,6 +1,6 @@
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:newbkmmobile/core/constants.dart';
-import 'package:newbkmmobile/models/login_form_local.dart';
+import 'package:newbkmmobile/models/legacy/login_form_local.dart';
 
 class LoginFormRepository {
 

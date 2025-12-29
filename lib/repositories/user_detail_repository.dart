@@ -59,9 +59,9 @@
 
 import 'package:hive/hive.dart';
 import 'package:newbkmmobile/core/constants.dart';
-import 'package:newbkmmobile/models/announcement_local.dart';
-import 'package:newbkmmobile/models/user_detail_local.dart';
-import 'package:newbkmmobile/models/vehicle_local.dart';
+import 'package:newbkmmobile/models/legacy/announcement_local.dart';
+import 'package:newbkmmobile/models/legacy/user_detail_local.dart';
+import 'package:newbkmmobile/models/legacy/vehicle_local.dart';
 import 'package:newbkmmobile/repositories/login_repository.dart';
 import 'package:http/http.dart' as http;
 

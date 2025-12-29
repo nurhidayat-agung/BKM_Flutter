@@ -113,6 +113,8 @@ class HttpCommunicator {
     // Merge header awal
     final mergedHeaders = {
       'Accept': 'application/json',
+      'Content-Type': 'application/json',
+      'X-Client-Type': 'mobile',
       if (headers != null) ...headers,
     };
 

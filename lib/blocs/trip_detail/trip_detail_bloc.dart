@@ -2,7 +2,7 @@ import 'dart:convert';
 
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
-import 'package:newbkmmobile/models/trip_detail_resp.dart';
+import 'package:newbkmmobile/models/legacy/trip_detail_resp.dart';
 import 'package:newbkmmobile/repositories/trip_repository.dart';
 
 part 'trip_detail_event.dart';

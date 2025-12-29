@@ -61,7 +61,7 @@
 import 'dart:convert';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
-import 'package:newbkmmobile/models/user_detail_resp.dart';
+import 'package:newbkmmobile/models/legacy/user_detail_resp.dart';
 import 'package:newbkmmobile/repositories/user_detail_repository.dart';
 
 part 'user_detail_event.dart';

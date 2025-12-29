@@ -1,4 +1,5 @@
-import '../login_local.dart';
+import 'package:newbkmmobile/models/legacy/login_local.dart';
+
 import 'UserSession.dart';
 
 class LoginResp {
