@@ -12,13 +12,17 @@ import 'package:newbkmmobile/models/langsir_detail/local_hauling_detail_data.dar
 import 'package:newbkmmobile/models/langsir_detail_item/langsir_detail_item_response.dart';
 import 'package:newbkmmobile/ui/widgets/bkm_loading.dart';
 import 'package:newbkmmobile/ui/widgets/confirm_dialog.dart';
-import 'langsir_detail_page.dart';
 import 'package:flutter/services.dart';
 
 class LangsirFormPage extends StatefulWidget {
   final LocalHaulingDetailData data;
-  final String? detailItemId; // ⬅️ OPTIONAL
-  const LangsirFormPage({required this.data, this.detailItemId, super.key});
+  final String? detailItemId;
+
+  const LangsirFormPage({
+    required this.data,
+    this.detailItemId,
+    super.key,
+  });
 
   bool get isEdit => detailItemId != null;
 
@@ -31,42 +35,38 @@ class _LangsirFormPageState extends State<LangsirFormPage> {
   final _muatController = TextEditingController();
   final _tanggalMuatController = TextEditingController();
 
-  final _spbBongkarController = TextEditingController();
   final _bongkarController = TextEditingController();
   final _tanggalBongkarController = TextEditingController();
+
   final _convertDate = ConvertDate();
 
   File? _photoMuat;
   File? _photoBongkar;
 
   @override
-  void dispose() {
-    _spbMuatController.dispose();
-    _muatController.dispose();
-    _tanggalMuatController.dispose();
-    _spbBongkarController.dispose();
-    _bongkarController.dispose();
-    _tanggalBongkarController.dispose();
-    super.dispose();
-  }
-
-  @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     if (widget.isEdit) {
       context.read<LangsirBloc>().add(
         FetchLangsirDetailItem(doId: widget.detailItemId!),
       );
     }
+  }
 
-
+  @override
+  void dispose() {
+    _spbMuatController.dispose();
+    _muatController.dispose();
+    _tanggalMuatController.dispose();
+    _bongkarController.dispose();
+    _tanggalBongkarController.dispose();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    final Color darkBlue = const Color(0xFF002B4C);
-    final Color orange = const Color(0xFFE55300);
+    final darkBlue = const Color(0xFF002B4C);
+    final orange = const Color(0xFFE55300);
 
     return BlocListener<LangsirBloc, LangsirState>(
       listener: (context, state) {
@@ -78,7 +78,9 @@ class _LangsirFormPageState extends State<LangsirFormPage> {
           BkmLoading.hide(context);
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-                content: Text(state.message), backgroundColor: Colors.green),
+              content: Text(state.message),
+              backgroundColor: Colors.green,
+            ),
           );
           Navigator.pop(context, true);
         }
@@ -90,27 +92,38 @@ class _LangsirFormPageState extends State<LangsirFormPage> {
       },
       child: Scaffold(
         backgroundColor: Colors.white,
+
         appBar: AppBar(
-            title: Text(
-              widget.isEdit ? 'Edit Item Langsir' : 'Tambah Item Langsir',
-              style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 16, color: Colors.white),
+          title: Text(
+            widget.isEdit ? 'Edit Item Langsir' : 'Tambah Item Langsir',
+            style: const TextStyle(
+              fontWeight: FontWeight.w700,
+              fontSize: 16,
+              color: Colors.white,
             ),
+          ),
           backgroundColor: darkBlue,
           centerTitle: true,
           leading: IconButton(
             icon: Container(
-                padding: const EdgeInsets.all(4),
-                decoration: const BoxDecoration(
-                    color: Color(0xFF2C4A64),
-                    borderRadius: BorderRadius.all(Radius.circular(4))),
-                child: const Icon(Icons.arrow_back_ios_new,
-                    size: 16, color: Colors.white)),
+              padding: const EdgeInsets.all(4),
+              decoration: const BoxDecoration(
+                color: Color(0xFF2C4A64),
+                borderRadius: BorderRadius.all(Radius.circular(4)),
+              ),
+              child: const Icon(
+                Icons.arrow_back_ios_new,
+                size: 16,
+                color: Colors.white,
+              ),
+            ),
             onPressed: () => Navigator.pop(context),
           ),
         ),
+
         body: Column(
           children: [
-            // Header Info Card
+            // HEADER
             Container(
               width: double.infinity,
               padding: const EdgeInsets.all(16),
@@ -118,46 +131,63 @@ class _LangsirFormPageState extends State<LangsirFormPage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(widget.data.doNumber ?? "-",
-                      style: TextStyle(
-                          color: darkBlue,
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold)),
+                  Text(
+                    widget.data.doNumber ?? "-",
+                    style: TextStyle(
+                      color: darkBlue,
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
                   const SizedBox(height: 4),
                   Text.rich(
-                    TextSpan(children: [
-                      TextSpan(
+                    TextSpan(
+                      children: [
+                        TextSpan(
                           text:
-                              "${widget.data.pks?.code ?? "-"} → ${widget.data.destination?.code ?? "-"}",
+                          "${widget.data.pks?.code ?? "-"} → ${widget.data.destination?.code ?? "-"}",
                           style: TextStyle(
-                              color: orange, fontWeight: FontWeight.bold)),
-                      TextSpan(
+                            color: orange,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        TextSpan(
                           text: " | ${widget.data.commodity?.code ?? '-'}",
-                          style: TextStyle(color: orange)),
-                    ]),
+                          style: TextStyle(color: orange),
+                        ),
+                      ],
+                    ),
                   ),
                   const SizedBox(height: 4),
                   Text(
-                      _convertDate
-                          .isoFormatToReadable(widget.data.doDate ?? ""),
-                      style: TextStyle(
-                          color: Colors.grey,
-                          fontSize: 12,
-                          fontStyle: FontStyle.italic)),
+                    _convertDate.isoFormatToReadable(
+                      widget.data.doDate ?? "",
+                    ),
+                    style: const TextStyle(
+                      color: Colors.grey,
+                      fontSize: 12,
+                      fontStyle: FontStyle.italic,
+                    ),
+                  ),
                 ],
               ),
             ),
 
+            // ================= SCROLL AREA =================
             Expanded(
               child: SingleChildScrollView(
+                padding: EdgeInsets.only(
+                  bottom: MediaQuery.of(context).padding.bottom + 140,
+                ),
                 child: Column(
                   children: [
-                    // --- KOTAK MUAT ---
+                    // MUAT
                     Container(
                       margin: const EdgeInsets.all(16),
                       decoration: BoxDecoration(
-                          border: Border.all(color: Colors.grey.shade200),
-                          borderRadius: BorderRadius.circular(8)),
+                        border: Border.all(color: Colors.grey.shade200),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
                       child: Column(
                         children: [
                           _buildSectionHeader("MUAT", darkBlue),
@@ -166,11 +196,16 @@ class _LangsirFormPageState extends State<LangsirFormPage> {
                             child: Column(
                               children: [
                                 _buildInput("No. SPB", _spbMuatController),
-                                _buildInput("Jumlah Muat", _muatController,
-                                    isNumeric: true),
                                 _buildInput(
-                                    "Tanggal Muat", _tanggalMuatController,
-                                    isDate: true),
+                                  "Jumlah Muat",
+                                  _muatController,
+                                  isNumeric: true,
+                                ),
+                                _buildInput(
+                                  "Tanggal Muat",
+                                  _tanggalMuatController,
+                                  isDate: true,
+                                ),
                                 _buildPhotoUpload(true),
                               ],
                             ),
@@ -179,12 +214,13 @@ class _LangsirFormPageState extends State<LangsirFormPage> {
                       ),
                     ),
 
-                    // --- KOTAK BONGKAR ---
+                    // BONGKAR
                     Container(
                       margin: const EdgeInsets.symmetric(horizontal: 16),
                       decoration: BoxDecoration(
-                          border: Border.all(color: Colors.grey.shade200),
-                          borderRadius: BorderRadius.circular(8)),
+                        border: Border.all(color: Colors.grey.shade200),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
                       child: Column(
                         children: [
                           _buildSectionHeader("BONGKAR", darkBlue),
@@ -193,11 +229,15 @@ class _LangsirFormPageState extends State<LangsirFormPage> {
                             child: Column(
                               children: [
                                 _buildInput(
-                                    "Jumlah Bongkar", _bongkarController,
-                                    isNumeric: true),
-                                _buildInput("Tanggal Bongkar",
-                                    _tanggalBongkarController,
-                                    isDate: true),
+                                  "Jumlah Bongkar",
+                                  _bongkarController,
+                                  isNumeric: true,
+                                ),
+                                _buildInput(
+                                  "Tanggal Bongkar",
+                                  _tanggalBongkarController,
+                                  isDate: true,
+                                ),
                                 _buildPhotoUpload(false),
                               ],
                             ),
@@ -205,218 +245,191 @@ class _LangsirFormPageState extends State<LangsirFormPage> {
                         ],
                       ),
                     ),
-                    const SizedBox(height: 100), // Space extra bawah
                   ],
                 ),
               ),
             ),
           ],
         ),
-        bottomSheet: Container(
-          color: Colors.white,
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              // TOMBOL SIMPAN
-              ElevatedButton(
-                onPressed: () async {
-                  final confirmed = await ConfirmDialog.show(
-                    context: context,
-                    title: 'Konfirmasi',
-                    message: 'Apakah data akan disimpan ?',
-                  );
 
-                  if (confirmed) {
-                    // ===== VALIDASI SEDERHANA =====
-                    if (_spbMuatController.text.isEmpty ||
-                        _muatController.text.isEmpty ||
-                        _tanggalMuatController.text.isEmpty) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                            content: Text("Data muat belum lengkap")),
-                      );
-                      return;
-                    }
-
-                    final bool isEdit = widget.isEdit;
-                    final String? detailId = widget.detailItemId;
-
-                    if (isEdit) {
-                      context.read<LangsirBloc>().add(
-                        UpdateLangsirDetailItem(
-                          detailId: detailId!,
-                          doId: widget.data.id!,
-                          spbNumber: _spbMuatController.text,
-                          loadQuantity: _muatController.text,
-                          unloadQuantity: _bongkarController.text.isEmpty
-                              ? '0'
-                              : _bongkarController.text,
-                          loadDate: _toApiDate(_tanggalMuatController.text),
-                          unloadDate: _tanggalBongkarController.text.isEmpty
-                              ? ''
-                              : _toApiDate(_tanggalBongkarController.text),
-                          actionButton: 'partial_save',
-                          imgSpbLoad: _photoMuat,
-                          imgSpbUnload: _photoBongkar,
-
-                        ),
-                      );
-                    } else {
-                      context.read<LangsirBloc>().add(
-                        SubmitLocalHauling(
-                          doId: widget.data.id!,
-                          spbNumber: _spbMuatController.text,
-                          loadQuantity: _muatController.text,
-                          unloadQuantity: _bongkarController.text.isEmpty
-                              ? '0'
-                              : _bongkarController.text,
-                          loadDate: _toApiDate(_tanggalMuatController.text),
-                          unloadDate: _tanggalBongkarController.text.isEmpty
-                              ? ''
-                              : _toApiDate(_tanggalBongkarController.text),
-                          actionButton: 'partial_save',
-                          imgSpbLoad: _photoMuat,
-                          imgSpbUnload: _photoBongkar,
-                        ),
-                      );
-                    }
-
-                  }
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFFD4552F), // Orange Bata
-                  minimumSize: const Size(double.infinity, 48),
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8)),
-                ),
-                child: const Text("Simpan",
-                    style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 16,
-                        color: Colors.white)),
-              ),
-              const SizedBox(height: 12),
-
-              // TOMBOL SELESAI -> Masuk ke DETAIL
-              ElevatedButton(
-                onPressed: () async {
-                  final confirmed = await ConfirmDialog.show(
-                    context: context,
-                    title: 'Konfirmasi',
-                    message:
-                        'Apakah data MUAT & BONGKAR sudah selesai dan akan dikirim?',
-                  );
-
-                  if (!confirmed) return;
-
-                  // ===== VALIDASI MUAT =====
-                  if (_spbMuatController.text.isEmpty ||
-                      _muatController.text.isEmpty ||
-                      _tanggalMuatController.text.isEmpty ||
-                      _photoMuat == null) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text("Data MUAT belum lengkap")),
-                    );
-                    return;
-                  }
-
-                  // ===== VALIDASI BONGKAR =====
-                  if (_bongkarController.text.isEmpty ||
-                      _tanggalBongkarController.text.isEmpty ||
-                      _photoBongkar == null) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                          content: Text("Data BONGKAR belum lengkap")),
-                    );
-                    return;
-                  }
-
-                  final bool isEdit = widget.isEdit;
-                  final String? detailId = widget.detailItemId;
-
-                  // ===== SUBMIT FINAL =====
-                  if (isEdit) {
-                    context.read<LangsirBloc>().add(
-                      UpdateLangsirDetailItem(
-                        detailId: detailId!,
-                        doId: widget.data.id!,
-                        spbNumber: _spbMuatController.text,
-                        loadQuantity: _muatController.text,
-                        unloadQuantity: _bongkarController.text.isEmpty
-                            ? '0'
-                            : _bongkarController.text,
-                        loadDate: _toApiDate(_tanggalMuatController.text),
-                        unloadDate: _tanggalBongkarController.text.isEmpty
-                            ? ''
-                            : _toApiDate(_tanggalBongkarController.text),
-                        actionButton: 'partial_save',
-                        imgSpbLoad: _photoMuat,
-                        imgSpbUnload: _photoBongkar,
-
-                      ),
-                    );
-                  } else {
-                    context.read<LangsirBloc>().add(
-                      SubmitLocalHauling(
-                        doId: widget.data.id!,
-                        spbNumber: _spbMuatController.text,
-                        loadQuantity: _muatController.text,
-                        unloadQuantity: _bongkarController.text.isEmpty
-                            ? '0'
-                            : _bongkarController.text,
-                        loadDate: _toApiDate(_tanggalMuatController.text),
-                        unloadDate: _tanggalBongkarController.text.isEmpty
-                            ? ''
-                            : _toApiDate(_tanggalBongkarController.text),
-                        actionButton: 'partial_save',
-                        imgSpbLoad: _photoMuat,
-                        imgSpbUnload: _photoBongkar,
-                      ),
-                    );
-                  }
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: darkBlue,
-                  minimumSize: const Size(double.infinity, 48),
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8)),
-                ),
-                child: const Text(
-                  "Selesai",
-                  style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 16,
-                      color: Colors.white),
-                ),
-              ),
-            ],
+        // ================= FIXED BUTTON =================
+        bottomNavigationBar: SafeArea(
+          child: Container(
+            color: Colors.white,
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                _buildSaveButton(),
+                const SizedBox(height: 12),
+                _buildFinishButton(darkBlue),
+              ],
+            ),
           ),
         ),
       ),
     );
   }
 
+  // ================= BUTTONS =================
+
+  Widget _buildSaveButton() {
+    return ElevatedButton(
+      onPressed: () async {
+        final confirmed = await ConfirmDialog.show(
+          context: context,
+          title: 'Konfirmasi',
+          message: 'Apakah data akan disimpan ?',
+        );
+
+        if (!confirmed) return;
+
+        if (_spbMuatController.text.isEmpty ||
+            _muatController.text.isEmpty ||
+            _tanggalMuatController.text.isEmpty) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text("Data muat belum lengkap")),
+          );
+          return;
+        }
+
+        final isEdit = widget.isEdit;
+        final detailId = widget.detailItemId;
+
+        if (isEdit) {
+          context.read<LangsirBloc>().add(
+            UpdateLangsirDetailItem(
+              detailId: detailId!,
+              doId: widget.data.id!,
+              spbNumber: _spbMuatController.text,
+              loadQuantity: _muatController.text,
+              unloadQuantity:
+              _bongkarController.text.isEmpty ? '0' : _bongkarController.text,
+              loadDate: _toApiDate(_tanggalMuatController.text),
+              unloadDate: _tanggalBongkarController.text.isEmpty
+                  ? ''
+                  : _toApiDate(_tanggalBongkarController.text),
+              actionButton: 'partial_save',
+              imgSpbLoad: _photoMuat,
+              imgSpbUnload: _photoBongkar,
+            ),
+          );
+        } else {
+          context.read<LangsirBloc>().add(
+            SubmitLocalHauling(
+              doId: widget.data.id!,
+              spbNumber: _spbMuatController.text,
+              loadQuantity: _muatController.text,
+              unloadQuantity:
+              _bongkarController.text.isEmpty ? '0' : _bongkarController.text,
+              loadDate: _toApiDate(_tanggalMuatController.text),
+              unloadDate: _tanggalBongkarController.text.isEmpty
+                  ? ''
+                  : _toApiDate(_tanggalBongkarController.text),
+              actionButton: 'partial_save',
+              imgSpbLoad: _photoMuat,
+              imgSpbUnload: _photoBongkar,
+            ),
+          );
+        }
+      },
+      style: ElevatedButton.styleFrom(
+        backgroundColor: const Color(0xFFD4552F),
+        minimumSize: const Size(double.infinity, 48),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(8),
+        ),
+      ),
+      child: const Text(
+        "Simpan",
+        style: TextStyle(
+          fontWeight: FontWeight.bold,
+          fontSize: 16,
+          color: Colors.white,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildFinishButton(Color darkBlue) {
+    return ElevatedButton(
+      onPressed: () async {
+        final confirmed = await ConfirmDialog.show(
+          context: context,
+          title: 'Konfirmasi',
+          message:
+          'Apakah data MUAT & BONGKAR sudah selesai dan akan dikirim?',
+        );
+
+        if (!confirmed) return;
+
+        if (_spbMuatController.text.isEmpty ||
+            _muatController.text.isEmpty ||
+            _tanggalMuatController.text.isEmpty ||
+            _photoMuat == null) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text("Data MUAT belum lengkap")),
+          );
+          return;
+        }
+
+        if (_bongkarController.text.isEmpty ||
+            _tanggalBongkarController.text.isEmpty ||
+            _photoBongkar == null) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text("Data BONGKAR belum lengkap")),
+          );
+          return;
+        }
+
+        context.read<LangsirBloc>().add(
+          UpdateLangsirDetailItem(
+            detailId: widget.detailItemId!,
+            doId: widget.data.id!,
+            spbNumber: _spbMuatController.text,
+            loadQuantity: _muatController.text,
+            unloadQuantity: _bongkarController.text,
+            loadDate: _toApiDate(_tanggalMuatController.text),
+            unloadDate: _toApiDate(_tanggalBongkarController.text),
+            actionButton: 'partial_save',
+            imgSpbLoad: _photoMuat,
+            imgSpbUnload: _photoBongkar,
+          ),
+        );
+      },
+      style: ElevatedButton.styleFrom(
+        backgroundColor: darkBlue,
+        minimumSize: const Size(double.infinity, 48),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(8),
+        ),
+      ),
+      child: const Text(
+        "Selesai",
+        style: TextStyle(
+          fontWeight: FontWeight.bold,
+          fontSize: 16,
+          color: Colors.white,
+        ),
+      ),
+    );
+  }
+
+  // ================= HELPERS =================
+
   void _fillFormFromResponse(LangsirDetailItemResponse resp) {
     final data = resp.data;
     if (data == null) return;
 
-    // MUAT
     _spbMuatController.text = data.spbNumber ?? '';
     _muatController.text = data.loadQuantity?.toString() ?? '';
     _tanggalMuatController.text =
         _convertDate.isoFormatToReadable(data.loadDate ?? '');
 
-    // BONGKAR
     _bongkarController.text = data.unloadQuantity?.toString() ?? '';
     _tanggalBongkarController.text =
         _convertDate.isoFormatToReadable(data.unloadDate ?? '');
-
-    // FOTO (optional, kalau mau tampilkan thumbnail)
-    // _photoMuat = File(data.loadPhotoPath ?? '');
-    // _photoBongkar = File(data.unloadPhotoPath ?? '');
   }
-
 
   String _toApiDate(String value) {
     if (value.isEmpty) return '';
@@ -439,7 +452,7 @@ class _LangsirFormPageState extends State<LangsirFormPage> {
   Future<void> _pickImage(bool isMuat) async {
     final picker = ImagePicker();
     final picked =
-        await picker.pickImage(source: ImageSource.camera, imageQuality: 60);
+    await picker.pickImage(source: ImageSource.camera, imageQuality: 60);
     if (picked != null) {
       setState(() {
         if (isMuat) {
@@ -451,78 +464,62 @@ class _LangsirFormPageState extends State<LangsirFormPage> {
     }
   }
 
-  // Widget Header Section (MUAT / BONGKAR)
   Widget _buildSectionHeader(String title, Color color) {
     return Container(
       width: double.infinity,
       color: const Color(0xFFF8F9FA),
-      padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 16),
+      padding: const EdgeInsets.symmetric(vertical: 10),
       child: Text(
         title,
-        textAlign: TextAlign.center, // Center title sesuai mockup
-        style:
-            TextStyle(color: color, fontWeight: FontWeight.bold, fontSize: 14),
+        textAlign: TextAlign.center,
+        style: TextStyle(
+          color: color,
+          fontWeight: FontWeight.bold,
+          fontSize: 14,
+        ),
       ),
     );
   }
 
   Widget _buildInput(
-    String label,
-    TextEditingController controller, {
-    bool isDate = false,
-    bool isNumeric = false, // ⬅️ OPTION BARU
-  }) {
+      String label,
+      TextEditingController controller, {
+        bool isDate = false,
+        bool isNumeric = false,
+      }) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 12),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Container(
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(6),
-              border: Border.all(color: Colors.grey.shade300),
-            ),
-            child: TextField(
-              controller: controller,
-              readOnly: isDate,
-              onTap: isDate ? () => _pickDate(controller) : null,
-              keyboardType: isDate
-                  ? TextInputType.none
-                  : isNumeric
-                      ? TextInputType.number
-                      : TextInputType.text,
-              inputFormatters:
-                  isNumeric ? [FilteringTextInputFormatter.digitsOnly] : null,
-              style: const TextStyle(fontSize: 14),
-              decoration: InputDecoration(
-                labelText: label,
-                labelStyle: TextStyle(
-                  color: Colors.grey.shade600,
-                  fontSize: 14,
-                ),
-                contentPadding: const EdgeInsets.symmetric(
-                  horizontal: 12,
-                  vertical: 12,
-                ),
-                border: InputBorder.none,
-              ),
-            ),
+      child: Container(
+        decoration: BoxDecoration(
+          border: Border.all(color: Colors.grey.shade300),
+          borderRadius: BorderRadius.circular(6),
+        ),
+        child: TextField(
+          controller: controller,
+          readOnly: isDate,
+          onTap: isDate ? () => _pickDate(controller) : null,
+          keyboardType: isNumeric ? TextInputType.number : TextInputType.text,
+          inputFormatters:
+          isNumeric ? [FilteringTextInputFormatter.digitsOnly] : null,
+          decoration: InputDecoration(
+            labelText: label,
+            border: InputBorder.none,
+            contentPadding:
+            const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
           ),
-        ],
+        ),
       ),
     );
   }
 
   Widget _buildPhotoUpload(bool isMuat) {
-    File? file = isMuat ? _photoMuat : _photoBongkar;
+    final file = isMuat ? _photoMuat : _photoBongkar;
+
     return Container(
-      width: double.infinity,
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(6),
         border: Border.all(color: Colors.grey.shade300),
+        borderRadius: BorderRadius.circular(6),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -538,15 +535,15 @@ class _LangsirFormPageState extends State<LangsirFormPage> {
           ElevatedButton(
             onPressed: () => _pickImage(isMuat),
             style: ElevatedButton.styleFrom(
-              backgroundColor: const Color(0xFF002B4C), // Dark Blue Button
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(6)),
+              backgroundColor: const Color(0xFF002B4C),
               minimumSize: const Size(140, 40),
             ),
-            child: const Text("Unggah Foto",
-                style: TextStyle(
-                    color: Colors.white, fontWeight: FontWeight.bold)),
-          )
+            child: const Text(
+              "Unggah Foto",
+              style:
+              TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+            ),
+          ),
         ],
       ),
     );
