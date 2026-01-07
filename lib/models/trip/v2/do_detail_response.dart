@@ -62,6 +62,17 @@ class DoDetailResponseData {
 
   final List<FileData>? files;
 
+  String? getFotoMuatSpbUrl() {
+    if (files == null || files!.isEmpty) return null;
+    return files!.first.url;
+  }
+
+  String? getFotoBongkarSpbUrl() {
+    if (files == null || files!.isEmpty || files!.length  <= 1) return null;
+    var url = files!.last.url;
+    return url;
+  }
+
   DoDetailResponseData({
     this.id,
     this.doId,

@@ -85,6 +85,16 @@ class _LangsirFormPageState extends State<LangsirFormPage> {
           Navigator.pop(context, true);
         }
 
+        if (state is LangsirSubmitFailed) {
+          BkmLoading.hide(context);
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(state.message),
+              backgroundColor: Colors.green,
+            ),
+          );
+        }
+
         if (state is FetchLangsirDetailItemSuccess) {
           BkmLoading.hide(context);
           _fillFormFromResponse(state.resp);
@@ -382,20 +392,46 @@ class _LangsirFormPageState extends State<LangsirFormPage> {
           return;
         }
 
-        context.read<LangsirBloc>().add(
-          UpdateLangsirDetailItem(
-            detailId: widget.detailItemId!,
-            doId: widget.data.id!,
-            spbNumber: _spbMuatController.text,
-            loadQuantity: _muatController.text,
-            unloadQuantity: _bongkarController.text,
-            loadDate: _toApiDate(_tanggalMuatController.text),
-            unloadDate: _toApiDate(_tanggalBongkarController.text),
-            actionButton: 'partial_save',
-            imgSpbLoad: _photoMuat,
-            imgSpbUnload: _photoBongkar,
-          ),
-        );
+        final isEdit = widget.isEdit;
+        final detailId = widget.detailItemId;
+
+        if (isEdit) {
+          context.read<LangsirBloc>().add(
+            UpdateLangsirDetailItem(
+              detailId: detailId!,
+              doId: widget.data.id!,
+              spbNumber: _spbMuatController.text,
+              loadQuantity: _muatController.text,
+              unloadQuantity:
+              _bongkarController.text.isEmpty ? '0' : _bongkarController.text,
+              loadDate: _toApiDate(_tanggalMuatController.text),
+              unloadDate: _tanggalBongkarController.text.isEmpty
+                  ? ''
+                  : _toApiDate(_tanggalBongkarController.text),
+              actionButton: 'final_save',
+              imgSpbLoad: _photoMuat,
+              imgSpbUnload: _photoBongkar,
+            ),
+          );
+        } else {
+          context.read<LangsirBloc>().add(
+            SubmitLocalHauling(
+              doId: widget.data.id!,
+              spbNumber: _spbMuatController.text,
+              loadQuantity: _muatController.text,
+              unloadQuantity:
+              _bongkarController.text.isEmpty ? '0' : _bongkarController.text,
+              loadDate: _toApiDate(_tanggalMuatController.text),
+              unloadDate: _tanggalBongkarController.text.isEmpty
+                  ? ''
+                  : _toApiDate(_tanggalBongkarController.text),
+              actionButton: 'final_save',
+              imgSpbLoad: _photoMuat,
+              imgSpbUnload: _photoBongkar,
+            ),
+          );
+        }
+
       },
       style: ElevatedButton.styleFrom(
         backgroundColor: darkBlue,

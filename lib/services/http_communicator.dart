@@ -339,7 +339,7 @@ class HttpCommunicator {
 
     return HttpResponse(
       status: statusCode,
-      result: statusCode >= 200 && statusCode < 300 ? body : null,
+      result: body,
     );
   }
 }

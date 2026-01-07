@@ -31,7 +31,6 @@ class _TripPageState extends State<TripPage> {
   bool showBongkarEdit = false;
   bool isFormInitialized = false;
 
-
   // Controller MUAT
   final TextEditingController spbMuat = TextEditingController();
   final TextEditingController tarraMuat = TextEditingController();
@@ -116,8 +115,17 @@ class _TripPageState extends State<TripPage> {
             }
 
             if (state is TripError) {
-              return Center(child: Text("Error: ${state.message}"));
+              return _buildEmptyPengangkutan(
+                context,
+                title: 'Belum Ada Pengangkutan',
+                description: state.message,
+                buttonText: 'Muat Ulang',
+                onRetry: () {
+                  context.read<TripBloc>().add(GetTrip());
+                },
+              );
             }
+
 
             if (state is TripSuccess) {
               final trip = state.doDetailResponseData;
@@ -172,9 +180,74 @@ class _TripPageState extends State<TripPage> {
     );
   }
 
-  Widget generateContent(
-      BuildContext context, DoDetailResponseData tripDetail, ListNewDoData deliveryData)
-  {
+  Widget _buildEmptyPengangkutan(
+      BuildContext context, {
+        required String title,
+        required String description,
+        String? buttonText,
+        VoidCallback? onRetry,
+        IconData icon = Icons.local_shipping_outlined,
+      }) {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 32),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            // ICON
+            Container(
+              padding: const EdgeInsets.all(20),
+              decoration: BoxDecoration(
+                color: Theme.of(context).colorScheme.primary.withOpacity(0.08),
+                shape: BoxShape.circle,
+              ),
+              child: Icon(
+                icon,
+                size: 64,
+                color: Theme.of(context).colorScheme.primary,
+              ),
+            ),
+
+            const SizedBox(height: 24),
+
+            // TITLE
+            Text(
+              title,
+              style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                fontWeight: FontWeight.w600,
+              ),
+              textAlign: TextAlign.center,
+            ),
+
+            const SizedBox(height: 8),
+
+            // DESCRIPTION
+            Text(
+              description,
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                color: Colors.grey.shade600,
+              ),
+              textAlign: TextAlign.center,
+            ),
+
+            if (buttonText != null && onRetry != null) ...[
+              const SizedBox(height: 24),
+
+              OutlinedButton.icon(
+                onPressed: onRetry,
+                icon: const Icon(Icons.refresh),
+                label: Text(buttonText),
+              ),
+            ],
+          ],
+        ),
+      ),
+    );
+  }
+
+
+  Widget generateContent(BuildContext context, DoDetailResponseData tripDetail,
+      ListNewDoData deliveryData) {
     Widget content = Container();
     _step = deliveryData.status ?? "";
 
@@ -339,7 +412,7 @@ class _TripPageState extends State<TripPage> {
           }),
           statusCard(
             expanded: showMuatEdit,
-            "MUAT",
+            "Edit Muat",
             onTap: () {
               setState(() {
                 showMuatEdit = !showMuatEdit;
@@ -348,13 +421,9 @@ class _TripPageState extends State<TripPage> {
           ),
           // FORM EXPANDED (tanpa tombol simpan)
           if (showMuatEdit)
-            buildFormMuat(
-              context,
-              tripDetail,
-              deliveryData,
-              isAction: true,
-              isEdit: true// ⬅ tidak ada tombol save
-            ),
+            buildFormMuat(context, tripDetail, deliveryData,
+                isAction: true, isEdit: true // ⬅ tidak ada tombol save
+                ),
           statusCard(
             expanded: showMuatEdit,
             "Edit Bongkar",
@@ -366,13 +435,9 @@ class _TripPageState extends State<TripPage> {
           ),
           // FORM EXPANDED (tanpa tombol simpan)
           if (showBongkarEdit)
-            buildFormBongkar(
-                context,
-                deliveryData,
-                tripDetail,
-                isAction: true,
-                isEdit: true// ⬅ tidak ada tombol save
-            ),
+            buildFormBongkar(context, deliveryData, tripDetail,
+                isAction: true, isEdit: true // ⬅ tidak ada tombol save
+                ),
         ],
       );
     }
@@ -437,7 +502,8 @@ class _TripPageState extends State<TripPage> {
   }
 
   //Perubahan detail Pengangkutan(Card Info)
-  Widget buildInfoCard(DoDetailResponseData detail, ListNewDoData deliveryData) {
+  Widget buildInfoCard(
+      DoDetailResponseData detail, ListNewDoData deliveryData) {
     final origin = detail.deliveryOrder?.pks?.code ?? "-";
     final destination = detail.deliveryOrder?.destination?.code ?? "-";
     final commodity = detail.deliveryOrder?.commodity?.name ?? "-";
@@ -561,10 +627,10 @@ class _TripPageState extends State<TripPage> {
 
   // TEXTFIELD basic
   Widget inputField(
-      TextEditingController c,
-      String label, {
-        bool numericOnly = false, // default false
-      }) {
+    TextEditingController c,
+    String label, {
+    bool numericOnly = false, // default false
+  }) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 6),
       child: TextField(
@@ -574,7 +640,7 @@ class _TripPageState extends State<TripPage> {
           labelStyle: const TextStyle(fontSize: 13),
           isDense: true,
           contentPadding:
-          const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+              const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(10),
           ),
@@ -587,22 +653,21 @@ class _TripPageState extends State<TripPage> {
             borderSide: const BorderSide(color: Colors.blue, width: 1.5),
           ),
         ),
-
-        keyboardType:
-        numericOnly ? const TextInputType.numberWithOptions(decimal: true) : TextInputType.text,
-
+        keyboardType: numericOnly
+            ? const TextInputType.numberWithOptions(decimal: true)
+            : TextInputType.text,
         inputFormatters: numericOnly
             ? [
-          FilteringTextInputFormatter.allow(
-            RegExp(r'^\d*\.?\d*$',), // angka + titik
-          ),
-        ]
+                FilteringTextInputFormatter.allow(
+                  RegExp(
+                    r'^\d*\.?\d*$',
+                  ), // angka + titik
+                ),
+              ]
             : [],
       ),
     );
   }
-
-
 
   // Button utama
   Widget mainButton(String text, VoidCallback onTap,
@@ -694,12 +759,9 @@ class _TripPageState extends State<TripPage> {
   }
 
   // FORM MUAT
-  Widget buildFormMuat(
-      BuildContext context,
-      DoDetailResponseData data,
+  Widget buildFormMuat(BuildContext context, DoDetailResponseData data,
       ListNewDoData deliveryData,
-      {bool isAction = true, bool isEdit = false})
-  {
+      {bool isAction = true, bool isEdit = false}) {
     return Container(
       margin: const EdgeInsets.fromLTRB(16, 12, 16, 16),
       padding: const EdgeInsets.all(14),
@@ -726,7 +788,7 @@ class _TripPageState extends State<TripPage> {
 
           // ------ INPUT DO UTAMA ------
           inputField(spbMuat, "No. SPB"),
-          inputField(tarraMuat, "Jumlah Tarra Muat",numericOnly: true),
+          inputField(tarraMuat, "Jumlah Tarra Muat", numericOnly: true),
           inputField(brutoMuat, "Jumlah Bruto Muat", numericOnly: true),
           inputField(nettoMuat, "Netto Muat (Kg)", numericOnly: true),
 
@@ -755,17 +817,39 @@ class _TripPageState extends State<TripPage> {
               ),
             ),
 
-          // Preview gambar DO Utama
-          if (fotoSPBMuat != null)
+          // ==========================
+          // PREVIEW FOTO SPB MUAT
+          // ==========================
+          if (fotoSPBMuat != null || data.getFotoMuatSpbUrl() != null)
             Padding(
               padding: const EdgeInsets.only(top: 10),
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(10),
-                child: Image.file(
-                  fotoSPBMuat!,
+                child: SizedBox(
                   height: 160,
                   width: double.infinity,
-                  fit: BoxFit.cover,
+                  child: fotoSPBMuat != null
+                      // FOTO BARU (LOCAL)
+                      ? Image.file(
+                          fotoSPBMuat!,
+                          fit: BoxFit.cover,
+                        )
+                      // FOTO DARI SERVER
+                      : Image.network(
+                          data.getFotoMuatSpbUrl()!,
+                          fit: BoxFit.cover,
+                          loadingBuilder: (context, child, progress) {
+                            if (progress == null) return child;
+                            return const Center(
+                              child: CircularProgressIndicator(),
+                            );
+                          },
+                          errorBuilder: (context, error, stackTrace) {
+                            return const Center(
+                              child: Icon(Icons.broken_image, size: 40),
+                            );
+                          },
+                        ),
                 ),
               ),
             ),
@@ -782,8 +866,10 @@ class _TripPageState extends State<TripPage> {
             ),
             const SizedBox(height: 8),
             inputField(spbMuatSambung, "No. SPB"),
-            inputField(tarraMuatSambung, "Jumlah Tarra Muat", numericOnly: true),
-            inputField(brutoMuatSambung, "Jumlah Bruto Muat", numericOnly: true),
+            inputField(tarraMuatSambung, "Jumlah Tarra Muat",
+                numericOnly: true),
+            inputField(brutoMuatSambung, "Jumlah Bruto Muat",
+                numericOnly: true),
             inputField(nettoMuatSambung, "Netto Muat (Kg)", numericOnly: true),
           ],
 
@@ -809,15 +895,15 @@ class _TripPageState extends State<TripPage> {
                   print("SPB Sambung: ${req.spbSambung}");
                 }
 
-                if(validateMuatForm(isAction: isAction, deliveryData: deliveryData)){
+                if (validateMuatForm(
+                    isAction: isAction, deliveryData: deliveryData)) {
                   context.read<TripBloc>().add(
-                    PushMuat(
-                        deliveryData: deliveryData,
-                        tripDetail: data,
-                        muatRequest: req,
-                        isEdit: isEdit
-                    ),
-                  );
+                        PushMuat(
+                            deliveryData: deliveryData,
+                            tripDetail: data,
+                            muatRequest: req,
+                            isEdit: isEdit),
+                      );
                 }
               }
             }),
@@ -827,12 +913,10 @@ class _TripPageState extends State<TripPage> {
   }
 
   // FORM BONGKAR
-  Widget buildFormBongkar(
-    BuildContext context,
-    ListNewDoData deliveryData,
-    DoDetailResponseData tripDetail, {
-    bool isAction = true, bool isEdit = false // PARAMETER TAMBAHAN
-  }) {
+  Widget buildFormBongkar(BuildContext context, ListNewDoData deliveryData,
+      DoDetailResponseData tripDetail,
+      {bool isAction = true, bool isEdit = false // PARAMETER TAMBAHAN
+      }) {
     return Container(
       margin: const EdgeInsets.fromLTRB(16, 12, 16, 16),
       padding: const EdgeInsets.all(14),
@@ -880,20 +964,44 @@ class _TripPageState extends State<TripPage> {
               ),
             ),
 
-          // Preview gambar DO Utama
-          if (fotoSPBBongkar != null)
+          // ==========================
+          // PREVIEW FOTO SPB bongkar
+          // ==========================
+          if (fotoSPBBongkar != null ||
+              tripDetail.getFotoBongkarSpbUrl() != null)
             Padding(
               padding: const EdgeInsets.only(top: 10),
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(10),
-                child: Image.file(
-                  fotoSPBBongkar!,
+                child: SizedBox(
                   height: 160,
                   width: double.infinity,
-                  fit: BoxFit.cover,
+                  child: fotoSPBBongkar != null
+                      // FOTO BARU (LOCAL)
+                      ? Image.file(
+                          fotoSPBBongkar!,
+                          fit: BoxFit.cover,
+                        )
+                      // FOTO DARI SERVER
+                      : Image.network(
+                          tripDetail.getFotoBongkarSpbUrl()!,
+                          fit: BoxFit.cover,
+                          loadingBuilder: (context, child, progress) {
+                            if (progress == null) return child;
+                            return const Center(
+                              child: CircularProgressIndicator(),
+                            );
+                          },
+                          errorBuilder: (context, error, stackTrace) {
+                            return const Center(
+                              child: Icon(Icons.broken_image, size: 40),
+                            );
+                          },
+                        ),
                 ),
               ),
             ),
+
           const SizedBox(height: 20),
 
           // ==========================
@@ -902,9 +1010,12 @@ class _TripPageState extends State<TripPage> {
           if (deliveryData.linkedDetail != null) ...[
             Text("DO Sambung : $noDOSambung",
                 style: const TextStyle(fontWeight: FontWeight.bold)),
-            inputField(tarraBongkarSambung, "Jumlah Tarra Bongkar", numericOnly: true),
-            inputField(brutoBongkarSambung, "Jumlah Bruto Bongkar", numericOnly: true),
-            inputField(nettoBongkarSambung, "Netto Bongkar (Kg)", numericOnly: true),
+            inputField(tarraBongkarSambung, "Jumlah Tarra Bongkar",
+                numericOnly: true),
+            inputField(brutoBongkarSambung, "Jumlah Bruto Bongkar",
+                numericOnly: true),
+            inputField(nettoBongkarSambung, "Netto Bongkar (Kg)",
+                numericOnly: true),
           ],
 
           if (isAction)
@@ -913,15 +1024,14 @@ class _TripPageState extends State<TripPage> {
                   "Apakah anda yakin akan menyimpan ke server ?")) {
                 final req = collectBongkarData(deliveryData);
 
-                if(validateBongkarForm(isAction: isAction, deliveryData: deliveryData)){
+                if (validateBongkarForm(
+                    isAction: isAction, deliveryData: deliveryData)) {
                   context.read<TripBloc>().add(PushBongkar(
                       deliveryData: deliveryData,
                       tripDetail: tripDetail,
                       bongkarRequest: req,
-                      isEdit: isEdit
-                  ));
+                      isEdit: isEdit));
                 }
-
               }
             }),
         ],
@@ -967,7 +1077,6 @@ class _TripPageState extends State<TripPage> {
         ),
       );
   }
-
 
   bool validateMuatForm({
     required bool isAction,
@@ -1025,7 +1134,6 @@ class _TripPageState extends State<TripPage> {
 
     return true;
   }
-
 
   LoadUnloadRequest collectMuatData(ListNewDoData deliveryData) {
     return LoadUnloadRequest(
@@ -1095,7 +1203,6 @@ class _TripPageState extends State<TripPage> {
 
     return true;
   }
-
 
   LoadUnloadRequest collectBongkarData(ListNewDoData deliveryData) {
     return LoadUnloadRequest(
