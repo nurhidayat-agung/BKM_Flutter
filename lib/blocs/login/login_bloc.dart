@@ -29,10 +29,7 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
             event.password,
           );
 
-
-
           if (resultLogin.status == 200) {
-
             emit(LoginSuccess(resultLogin));
           } else {
             emit(LoginError(resultLogin.message ?? "Login gagal"));

@@ -7,6 +7,7 @@ import 'package:newbkmmobile/repositories/login_form_repository.dart';
 import 'package:newbkmmobile/repositories/login_repository.dart';
 import 'package:newbkmmobile/repositories/user_detail_repository.dart';
 import 'package:newbkmmobile/ui/pages/drawer_menu_page.dart';
+import 'package:newbkmmobile/ui/widgets/bkm_loading.dart';
 import 'package:newbkmmobile/ui/widgets/custom_loading.dart';
 
 
@@ -113,19 +114,21 @@ class _LoginPageState extends State<LoginPage> {
         child: BlocListener<LoginBloc, LoginState>(
           listener: (context, state) async {
             if (state is LoginLoading) {
-              showDialog(
-                barrierDismissible: false,
-                context: context,
-                builder: (context) =>
-                    CustomLoading(message: R.strings.loadingGetData),
-              );
+              BkmLoading.show(context, message: "mohon tunggu");
+              // showDialog(
+              //   barrierDismissible: false,
+              //   context: context,
+              //   builder: (context) =>
+              //       CustomLoading(message: R.strings.loadingGetData),
+              // );
             } else if (state is LoginSuccess) {
-              Navigator.of(context).pop();
+              BkmLoading.hide(context);
               Navigator.of(context).pushReplacement(
                 MaterialPageRoute(builder: (_) => const DrawerMenuPage()),
               );
             } else if (state is LoginError) {
-              Navigator.of(context).pop();
+              // Navigator.of(context).pop();
+              BkmLoading.hide(context);
               ScaffoldMessenger.of(context)
                   .showSnackBar(SnackBar(content: Text(state.message)));
             }
