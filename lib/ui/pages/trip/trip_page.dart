@@ -53,6 +53,66 @@ class _TripPageState extends State<TripPage> {
   File? fotoSPBBongkar;
 
   @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+
+    // DO UTAMA
+    tarraMuat.addListener(_recalculateNettoMuat);
+    brutoMuat.addListener(_recalculateNettoMuat);
+    // DO SAMBUNG (jika ada)
+    tarraMuatSambung.addListener(_recalculateNettoMuatSambung);
+    brutoMuatSambung.addListener(_recalculateNettoMuatSambung);
+
+    // DO UTAMA
+    tarraBongkar.addListener(_recalculateNettoBongkar);
+    brutoBongkar.addListener(_recalculateNettoBongkar);
+
+    // DO SAMBUNG (jika ada)
+    tarraBongkarSambung.addListener(_recalculateNettoBongkarSambung);
+    brutoBongkarSambung.addListener(_recalculateNettoBongkarSambung);
+
+  }
+
+  void _recalculateNettoMuat() {
+    final tara = int.tryParse(tarraMuat.text) ?? 0;
+    final bruto = int.tryParse(brutoMuat.text) ?? 0;
+
+    final netto = bruto - tara;
+
+    // Biar tidak minus
+    nettoMuat.text = netto > 0 ? netto.toString() : '0';
+  }
+
+  void _recalculateNettoMuatSambung() {
+    final tara = int.tryParse(tarraMuatSambung.text) ?? 0;
+    final bruto = int.tryParse(brutoMuatSambung.text) ?? 0;
+
+    final netto = bruto - tara;
+    nettoMuatSambung.text = netto > 0 ? netto.toString() : '0';
+  }
+
+  void _recalculateNettoBongkar() {
+    final tara = int.tryParse(tarraBongkar.text) ?? 0;
+    final bruto = int.tryParse(brutoBongkar.text) ?? 0;
+
+    final netto = bruto - tara;
+
+    // Biar tidak minus
+    nettoBongkar.text = netto > 0 ? netto.toString() : '0';
+  }
+
+  void _recalculateNettoBongkarSambung() {
+    final tara = int.tryParse(tarraBongkarSambung.text) ?? 0;
+    final bruto = int.tryParse(brutoBongkarSambung.text) ?? 0;
+
+    final netto = bruto - tara;
+    nettoBongkarSambung.text = netto > 0 ? netto.toString() : '0';
+  }
+
+
+
+  @override
   void dispose() {
     spbMuat.dispose();
     tarraMuat.dispose();
