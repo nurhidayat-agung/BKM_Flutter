@@ -309,7 +309,7 @@ class _TripPageState extends State<TripPage> {
   Widget generateContent(BuildContext context, DoDetailResponseData tripDetail,
       ListNewDoData deliveryData) {
     Widget content = Container();
-    _step = deliveryData.status ?? "";
+    _step = deliveryData.status?.fieldValue ?? "";
 
     noDO = deliveryData.deliveryOrder?.doNumber ?? "";
     namaSupir = deliveryData.driver?.name ?? "";
@@ -320,14 +320,14 @@ class _TripPageState extends State<TripPage> {
       noDOSambung = deliveryData.linkedDetail?.deliveryOrder?.doNumber ?? "";
     }
 
-    if (deliveryData.status == "waiting") {
+    if (deliveryData.status?.fieldValue == "waiting") {
       content = Column(
         children: [
           buildInfoCard(tripDetail, deliveryData),
           buildFirstButtons(context, tripDetail.id ?? ""),
         ],
       );
-    } else if (deliveryData.status == "accepted") {
+    } else if (deliveryData.status?.fieldValue == "accepted") {
       content = Column(
         children: [
           buildInfoCard(tripDetail, deliveryData),
@@ -343,7 +343,7 @@ class _TripPageState extends State<TripPage> {
           }),
         ],
       );
-    } else if (deliveryData.status == "process" &&
+    } else if (deliveryData.status?.fieldValue == "process" &&
         deliveryData.latestStatusLog == "1") {
       content = Column(
         children: [
@@ -360,7 +360,7 @@ class _TripPageState extends State<TripPage> {
           }),
         ],
       );
-    } else if (deliveryData.status == "process" &&
+    } else if (deliveryData.status?.fieldValue == "process" &&
         deliveryData.latestStatusLog == "2") {
       content = Column(
         children: [
@@ -368,7 +368,7 @@ class _TripPageState extends State<TripPage> {
           buildFormMuat(context, tripDetail, deliveryData),
         ],
       );
-    } else if (deliveryData.status == "process" &&
+    } else if (deliveryData.status?.fieldValue == "process" &&
         deliveryData.latestStatusLog == "3") {
       content = Column(
         children: [
@@ -400,7 +400,7 @@ class _TripPageState extends State<TripPage> {
         ],
       );
     } else if (deliveryData.latestStatusLog == "4" &&
-        deliveryData.status == "process") {
+        deliveryData.status?.fieldValue == "process") {
       content = Column(
         children: [
           buildInfoCard(tripDetail, deliveryData),
@@ -431,7 +431,7 @@ class _TripPageState extends State<TripPage> {
         ],
       );
     } else if (deliveryData.latestStatusLog == "5" &&
-        deliveryData.status == "process") {
+        deliveryData.status?.fieldValue == "process") {
       content = Column(
         children: [
           buildInfoCard(tripDetail, deliveryData),
@@ -456,7 +456,7 @@ class _TripPageState extends State<TripPage> {
         ],
       );
     } else if (deliveryData.latestStatusLog == "6" &&
-        deliveryData.status == "process") {
+        deliveryData.status?.fieldValue == "process") {
       content = Column(
         children: [
           buildInfoCard(tripDetail, deliveryData),

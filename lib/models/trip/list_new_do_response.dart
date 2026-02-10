@@ -46,7 +46,7 @@ class ListNewDoData {
   final int? loadBruto;
   final int? unloadTare;
   final int? unloadBruto;
-  final String? status;
+  final DoStatus? status;
   final String? latestStatusLog;
   final String? spbNumber;
   final int? shippingCost;
@@ -121,7 +121,9 @@ class ListNewDoData {
       loadBruto: json['load_bruto'],
       unloadTare: json['unload_tare'],
       unloadBruto: json['unload_bruto'],
-      status: json['status'],
+      status: json['status'] != null
+          ? DoStatus.fromJson(json['status'])
+          : null,
       latestStatusLog: json['latest_status_log'],
       spbNumber: json['spb_number'],
       shippingCost: json['shipping_cost'],
@@ -168,7 +170,7 @@ class ListNewDoData {
       'load_bruto': loadBruto,
       'unload_tare': unloadTare,
       'unload_bruto': unloadBruto,
-      'status': status,
+      'status': status?.toJson(),
       'latest_status_log': latestStatusLog,
       'spb_number': spbNumber,
       'shipping_cost': shippingCost,
@@ -190,6 +192,63 @@ class ListNewDoData {
     };
   }
 }
+
+class DoStatus {
+  final String? id;
+  final String? fieldName;
+  final String? fieldValue;
+  final String? name;
+  final String? code;
+  final int? sort;
+  final String? description;
+  final String? color;
+  final String? colorHex;
+  final int? isActive;
+
+  DoStatus({
+    this.id,
+    this.fieldName,
+    this.fieldValue,
+    this.name,
+    this.code,
+    this.sort,
+    this.description,
+    this.color,
+    this.colorHex,
+    this.isActive,
+  });
+
+  factory DoStatus.fromJson(Map<String, dynamic> json) {
+    return DoStatus(
+      id: json['id'],
+      fieldName: json['field_name'],
+      fieldValue: json['field_value'],
+      name: json['name'],
+      code: json['code'],
+      sort: json['sort'],
+      description: json['description'],
+      color: json['color'],
+      colorHex: json['color_hex'],
+      isActive: json['is_active'],
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'field_name': fieldName,
+      'field_value': fieldValue,
+      'name': name,
+      'code': code,
+      'sort': sort,
+      'description': description,
+      'color': color,
+      'color_hex': colorHex,
+      'is_active': isActive,
+    };
+  }
+}
+
 
 class NextStep {
   final String? id;
