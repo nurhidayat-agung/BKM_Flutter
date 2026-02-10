@@ -9,17 +9,25 @@ import 'package:newbkmmobile/models/leave/leave_list_response.dart';
 import 'package:newbkmmobile/models/repair/vehicle_repair_data.dart';
 import 'package:newbkmmobile/repositories/repair_repository.dart';
 
+import '../../../models/repair/maintenance_model.dart';
+import '../../widgets/confirm_dialog.dart';
+
 class RepairFormPage extends StatefulWidget {
   const RepairFormPage(
     this.repairTypes,
-    this.urgencyLevels, {
+    this.urgencyLevels,
+    this.maintenanceTypes, {
     this.data, // ⬅️ object edit
     super.key,
   });
 
   final List<HiveSimpleMaster>? repairTypes;
   final List<HiveSimpleMaster>? urgencyLevels;
-  final VehicleRepairData? data; // ⬅️ ADD
+
+  final MaintenanceListData? data; // ⬅️ ADD
+
+  // DATA MASTER dari API
+  final List<HiveSimpleMaster>? maintenanceTypes;
 
   @override
   State<RepairFormPage> createState() => _RepairFormPageState();
@@ -32,6 +40,9 @@ class _RepairFormPageState extends State<RepairFormPage> {
   String? _selectedType;
   String? _selectedUrgency;
 
+  // ID yang dipilih user
+  List<String> _selectedMaintenanceTypeIds = [];
+
   late final List<String> _types;
   late final List<String> _urgencies;
 
@@ -40,7 +51,7 @@ class _RepairFormPageState extends State<RepairFormPage> {
     if (widget.data == null) return true;
 
     // EDIT tapi hanya kalau status PENDING
-    return widget.data?.status == 'pending';
+    return widget.data?.status?.fieldValue == 'pending';
   }
 
   // Inisialisasi Bloc
@@ -50,7 +61,7 @@ class _RepairFormPageState extends State<RepairFormPage> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    _types = widget.repairTypes
+    _types = widget.maintenanceTypes
             ?.map((e) => e.name ?? '')
             .where((e) => e.isNotEmpty)
             .toList() ??
@@ -68,12 +79,12 @@ class _RepairFormPageState extends State<RepairFormPage> {
     if (widget.data != null) {
       final data = widget.data!;
 
-      _descController.text = data.damageDescription ?? '';
+      _descController.text = data.description ?? '';
 
       // contoh mapping leaveTypeId -> name
-      _selectedType = widget.repairTypes
+      _selectedType = widget.maintenanceTypes
           ?.firstWhere(
-            (e) => e.fieldValue == data.repairTypeId,
+            (e) => e.fieldValue == data.maintenanceType?.code,
             orElse: () => HiveSimpleMaster(),
           )
           .name;
@@ -81,10 +92,18 @@ class _RepairFormPageState extends State<RepairFormPage> {
       // contoh urgency dari status / field lain (sesuaikan API)
       _selectedUrgency = widget.urgencyLevels
           ?.firstWhere(
-            (e) => e.fieldValue == data.urgencyLevelId,
+            (e) => e.fieldValue == data.priority?.code,
             orElse: () => HiveSimpleMaster(),
           )
           .name;
+
+      /// ⬇️⬇️⬇️ INI YANG PENTING ⬇️⬇️⬇️
+      _selectedMaintenanceTypeIds = data.damages
+          ?.map((e) => e?.damageType?.id)
+          .whereType<String>() // buang null
+          .toList() ??
+          [];
+
 
       // kalau ada KM di object
       _kmController.text = data.currentKm.toString() ?? '0';
@@ -99,11 +118,20 @@ class _RepairFormPageState extends State<RepairFormPage> {
     super.dispose();
   }
 
-  void _submit() {
+  Future<void> _submit() async {
+    final confirmed = await ConfirmDialog.show(
+      context: context,
+      title: 'Konfirmasi',
+      message: 'Apakah data akan disimpan ?',
+    );
+
+    if (!confirmed) return;
+
     if (_selectedType == null ||
         _selectedUrgency == null ||
         _kmController.text.isEmpty ||
-        _descController.text.isEmpty) {
+        _descController.text.isEmpty ||
+        _selectedMaintenanceTypeIds.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
             content: Text("Semua field harus diisi!"),
@@ -119,8 +147,10 @@ class _RepairFormPageState extends State<RepairFormPage> {
         urgency: _selectedUrgency!,
         lastKm: _kmController.text,
         description: _descController.text,
-        listRepairType: widget.repairTypes,
-        listUrgencyLevel: widget.urgencyLevels,
+        listRepairType: widget.repairTypes!,
+        listUrgencyLevel: widget.urgencyLevels!,
+        maintenanceType: widget.maintenanceTypes!,
+        listRepair: _selectedMaintenanceTypeIds
       ),
     );
   }
@@ -191,6 +221,7 @@ class _RepairFormPageState extends State<RepairFormPage> {
                   padding: const EdgeInsets.all(20),
                   child: Column(
                     children: [
+                      if (widget.data?.status != null) _statusBadge(),
                       Container(
                         padding: const EdgeInsets.all(20),
                         decoration: BoxDecoration(
@@ -204,7 +235,7 @@ class _RepairFormPageState extends State<RepairFormPage> {
                             DropdownButtonFormField<String>(
                               value: _selectedType,
                               decoration:
-                                  _inputDecoration("Pilih Jenis Perbaikan ..."),
+                              _inputDecoration("Pilih Jenis Perbaikan ..."),
                               icon: const Icon(Icons.arrow_drop_down,
                                   color: Colors.grey),
                               items: _types.map((String type) {
@@ -217,6 +248,8 @@ class _RepairFormPageState extends State<RepairFormPage> {
                               onChanged: (val) =>
                                   setState(() => _selectedType = val),
                             ),
+                            const SizedBox(height: 20),
+                            _maintenanceMultiSelectField(),
                             const SizedBox(height: 20),
                             DropdownButtonFormField<String>(
                               value: _selectedUrgency,
@@ -263,8 +296,7 @@ class _RepairFormPageState extends State<RepairFormPage> {
                         ),
                       ),
                       const SizedBox(height: 30),
-                      if (widget.data != null &&
-                          widget.data?.status == 'pending')
+                      if (_canSubmit)
                         SizedBox(
                           width: double.infinity,
                           height: 52,
@@ -283,7 +315,7 @@ class _RepairFormPageState extends State<RepairFormPage> {
                                     child: CircularProgressIndicator(
                                         color: Colors.white, strokeWidth: 2))
                                 : Text(
-                                    widget.data != null ? "Simpan" : "Edit",
+                                    widget.data == null ? "Simpan" : "Edit",
                                     style: TextStyle(
                                         fontSize: 16,
                                         fontWeight: FontWeight.bold,
@@ -319,4 +351,139 @@ class _RepairFormPageState extends State<RepairFormPage> {
       ),
     );
   }
+
+  Widget _maintenanceMultiSelectField() {
+    return InkWell(
+      onTap: _showMaintenanceDialog,
+      child: InputDecorator(
+        decoration: _inputDecoration("Jenis Maintenance"),
+        child: _selectedMaintenanceTypeIds.isEmpty
+            ? const Text(
+                "Pilih Jenis Maintenance",
+                style: TextStyle(color: Colors.grey, fontSize: 13),
+              )
+            : Wrap(
+                spacing: 6,
+                runSpacing: -8,
+                children: widget.repairTypes!
+                    .where((e) => _selectedMaintenanceTypeIds.contains(e.id))
+                    .map(
+                      (e) => Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 10, vertical: 6),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFFFFF3E0), // orange soft
+                          borderRadius: BorderRadius.circular(6),
+                          border: Border.all(color: const Color(0xFFFFB74D)),
+                        ),
+                        child: Text(
+                          e.name ?? '-',
+                          style: const TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w600,
+                            color: Color(0xFFE65100),
+                          ),
+                        ),
+                      ),
+                    )
+                    .toList(),
+              ),
+      ),
+    );
+  }
+
+  void _showMaintenanceDialog() {
+    showDialog(
+      context: context,
+      builder: (context) {
+        final tempSelected = List<String>.from(_selectedMaintenanceTypeIds);
+
+        return StatefulBuilder(
+          builder: (context, setStateDialog) {
+            return AlertDialog(
+              title: const Text("Pilih Jenis Maintenance"),
+              content: SingleChildScrollView(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: widget.repairTypes!.map((item) {
+                    return CheckboxListTile(
+                      value: tempSelected.contains(item.id),
+                      title: Text(item.name ?? '-'),
+                      onChanged: (checked) {
+                        setStateDialog(() {
+                          if (checked == true) {
+                            tempSelected.add(item.id!);
+                          } else {
+                            tempSelected.remove(item.id);
+                          }
+                        });
+                      },
+                    );
+                  }).toList(),
+                ),
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: const Text("Batal"),
+                ),
+                ElevatedButton(
+                  onPressed: () {
+                    setState(() {
+                      _selectedMaintenanceTypeIds = tempSelected;
+                    });
+                    Navigator.pop(context);
+                  },
+                  child: const Text("Simpan"),
+                ),
+              ],
+            );
+          },
+        );
+      },
+    );
+  }
+
+  Color _hexToColor(String hex) {
+    hex = hex.replaceAll('#', '');
+    if (hex.length == 6) {
+      hex = 'FF$hex';
+    }
+    return Color(int.parse(hex, radix: 16));
+  }
+
+  Widget _statusBadge() {
+    final status = widget.data!.status!;
+    final bgColor = _hexToColor(status.colorHex ?? '#E0E0E0');
+
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 14),
+      margin: const EdgeInsets.only(bottom: 16),
+      decoration: BoxDecoration(
+        color: bgColor,
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: bgColor.withOpacity(0.7)),
+      ),
+      child: Row(
+        children: [
+          const Icon(Icons.info_outline, size: 18),
+          const SizedBox(width: 8),
+          Text(
+            status.name ?? '-',
+            style: const TextStyle(
+              fontWeight: FontWeight.w600,
+              fontSize: 14,
+              color: Colors.black87,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+
+
+
+
 }

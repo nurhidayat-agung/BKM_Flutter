@@ -1,4 +1,5 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:newbkmmobile/core/UtilityFunction.dart';
 import 'package:newbkmmobile/core/convert_date.dart';
 import 'package:newbkmmobile/models/general/general_response.dart';
 import 'package:newbkmmobile/models/repair/vehicle_repair_response.dart';
@@ -32,34 +33,57 @@ class RepairBloc extends Bloc<RepairEvent, RepairState> {
     on<SubmitRepair>((event, emit) async {
       emit(RepairLoading());
 
-      var selectedType = event.listRepairType
-          ?.firstWhere((element) => element.name == event.type)
+      var selectedType = event.maintenanceType
+          .firstWhere((element) => element.name == event.type)
           .fieldValue;
       var selectedUrgency = event.listUrgencyLevel
-          ?.firstWhere((element) => element.name == event.urgency)
+          .firstWhere((element) => element.name == event.urgency)
           .fieldValue;
+
+      List<String> listRepair = event.listRepairType
+          .where((e) => event.listRepair.contains(e.id))
+          .map((e) => e.fieldValue)
+          .whereType<String>() // buang null
+          .toList();
+
 
       try {
         var (intStatus, result) = event.id == null ? await repository.submitRepair(
           type: selectedType ?? "",
+          listRepair: listRepair,
           urgency: selectedUrgency ?? "",
           lastKm: event.lastKm,
           description: event.description,
-
         ) : await repository.updateRepair(
           id: event.id ?? "",
           type: selectedType ?? "",
+          listRepair: listRepair,
           urgency: selectedUrgency ?? "",
           lastKm: event.lastKm,
           description: event.description,
         );
 
         if (intStatus == 200) {
-          emit(RepairSuccess(GeneralResponse.fromJson(result).message ?? ""));
+
+          String message = '';
+
+          final isSuccess = UtilityFunction.isSuccessApiResponse(
+            result,
+            onMessage: (msg) => message = msg,
+          );
+          if (isSuccess) {
+            emit(RepairSuccess(message));
+
+            // Refresh data list setelah sukses simpan
+            // add(FetchRepairs());
+          } else {
+            emit(RepairFailure(message));
+          }
+        } else {
+          emit(RepairFailure(GeneralResponse.fromJson(result).message ?? ""));
         }
 
-        // Refresh data list setelah sukses simpan
-        add(FetchRepairs());
+
       } catch (e) {
         emit(RepairFailure("Gagal menyimpan data"));
       }

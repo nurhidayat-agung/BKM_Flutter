@@ -30,6 +30,9 @@ class MasterDataMapper {
       urgencyLevels: src.urgencyLevels
           ?.map((e) => toHiveSimple(e))
           .toList(),
+      maintenancetypes: src.maintenanceTypes
+          ?.map((e) => toHiveSimple(e))
+          .toList()
     );
   }
 }

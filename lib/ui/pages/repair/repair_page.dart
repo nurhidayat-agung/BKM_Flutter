@@ -3,12 +3,15 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:newbkmmobile/blocs/repair/repair_bloc.dart';
 import 'package:newbkmmobile/blocs/repair/repair_event.dart';
 import 'package:newbkmmobile/blocs/repair/repair_state.dart';
+import 'package:newbkmmobile/models/repair/maintenance_model.dart';
 import 'package:newbkmmobile/models/repair/repair_model.dart';
 import 'package:newbkmmobile/models/repair/vehicle_repair_data.dart';
 import 'package:newbkmmobile/repositories/master_data_repository.dart';
 import 'package:newbkmmobile/repositories/repair_repository.dart';
 import 'package:newbkmmobile/repositories/session_manager_repository.dart';
 import 'package:newbkmmobile/ui/widgets/bkm_loading.dart';
+import '../../../core/convert_date.dart';
+import '../../../models/common/hive/hive_master_data.dart';
 import 'repair_form_page.dart';
 import 'repair_detail_page.dart';
 
@@ -22,11 +25,18 @@ class RepairPage extends StatefulWidget {
 class _RepairPageState extends State<RepairPage> {
   // Inisialisasi Bloc
   final RepairBloc _repairBloc = RepairBloc(RepairRepository());
+  final ConvertDate dateConverter = ConvertDate();
+  late HiveMasterData masterData;
 
   @override
   void initState() {
     super.initState();
+    _loadMasterData();
     _repairBloc.add(FetchRepairs());
+  }
+
+  Future<void> _loadMasterData() async {
+    masterData = (await MasterDataRepository.getCommonData())!;
   }
 
   @override
@@ -45,7 +55,7 @@ class _RepairPageState extends State<RepairPage> {
       child: BlocListener<RepairBloc, RepairState>(
         listener: (BuildContext context, RepairState state) {
           if (state is RepairLoading) {
-            BkmLoading.show(context,message: "mohon tunggu");
+            BkmLoading.show(context, message: "mohon tunggu");
           }
 
           if (state is RepairLoaded || state is RepairFailure) {
@@ -61,7 +71,9 @@ class _RepairPageState extends State<RepairPage> {
             title: const Text(
               "Pengajuan Perbaikan",
               style: TextStyle(
-                  color: Colors.white, fontWeight: FontWeight.bold, fontSize: 18),
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 18),
             ),
             leading: Padding(
               padding: const EdgeInsets.only(left: 12),
@@ -90,20 +102,21 @@ class _RepairPageState extends State<RepairPage> {
                   height: 52,
                   child: ElevatedButton(
                     onPressed: () async {
-                      var masterData = await MasterDataRepository.getCommonData();
 
-                      if (masterData != null &&
-                          masterData.repairTypes != null &&
+                      if (masterData.repairTypes != null &&
                           masterData.repairTypes!.isNotEmpty &&
                           masterData.urgencyLevels != null &&
-                          masterData.urgencyLevels!.isNotEmpty) {
+                          masterData.urgencyLevels!.isNotEmpty &&
+                          masterData.maintenancetypes != null &&
+                          masterData.maintenancetypes!.isNotEmpty) {
                         // Navigasi ke Form
                         final result = await Navigator.push(
                           context,
                           MaterialPageRoute(
                               builder: (context) => RepairFormPage(
                                   masterData.repairTypes,
-                                  masterData.urgencyLevels)),
+                                  masterData.urgencyLevels,
+                                  masterData.maintenancetypes)),
                         );
 
                         // --- REFRESH LIST JIKA SUKSES SIMPAN --- //
@@ -144,7 +157,7 @@ class _RepairPageState extends State<RepairPage> {
                         itemCount: state.repairs.length,
                         itemBuilder: (context, index) {
                           final item = state.repairs[index];
-                          return _buildRepairCard(context, item);
+                          return _buildRepairCard(context, item, masterData);
                         },
                       );
                     } else if (state is RepairFailure) {
@@ -161,26 +174,51 @@ class _RepairPageState extends State<RepairPage> {
     );
   }
 
+  Color hexToColor(String? hex) {
+    if (hex == null || hex.isEmpty) return Colors.grey.shade300;
+
+    hex = hex.replaceAll('#', '');
+    if (hex.length == 6) {
+      hex = 'FF$hex';
+    }
+    return Color(int.parse(hex, radix: 16));
+  }
+
+
   Widget _buildRepairCard(
-      BuildContext context, VehicleRepairData item) {
+      BuildContext context, MaintenanceListData item,
+      HiveMasterData masterData) {
     const darkBlue = Color(0xFF002B4C);
+
+    Color statusColor() {
+      switch (item.status?.name) {
+        case "Tunda":
+          return Colors.orange;
+        case "Selesai":
+          return Colors.green;
+        case "Proses":
+          return Colors.blue;
+        default:
+          return Colors.grey;
+      }
+    }
 
     return GestureDetector(
       onTap: () async {
-
-        var masterData = await MasterDataRepository.getCommonData();
-
-        if (masterData != null &&
-            masterData.repairTypes != null &&
+        if (masterData.repairTypes != null &&
             masterData.repairTypes!.isNotEmpty &&
             masterData.urgencyLevels != null &&
-            masterData.urgencyLevels!.isNotEmpty) {
+            masterData.urgencyLevels!.isNotEmpty &&
+            masterData.maintenancetypes != null &&
+            masterData.maintenancetypes!.isNotEmpty) {
           // Navigasi ke Form
           final result = await Navigator.push(
             context,
             MaterialPageRoute(
                 builder: (context) => RepairFormPage(
-                    masterData.repairTypes, masterData.urgencyLevels,data: item,)),
+                    masterData.repairTypes,
+                    masterData.urgencyLevels,
+                    masterData.maintenancetypes, data: item,)),
           );
 
           // --- REFRESH LIST JIKA SUKSES SIMPAN --- //
@@ -190,89 +228,119 @@ class _RepairPageState extends State<RepairPage> {
         }
       },
       child: Container(
-        margin: const EdgeInsets.only(bottom: 12),
-        padding: const EdgeInsets.all(16),
+        margin: const EdgeInsets.only(bottom: 10), // ⬅️ lebih rapat
+        padding: const EdgeInsets.fromLTRB(14, 12, 14, 12), // ⬅️ lebih padat
         decoration: BoxDecoration(
           color: Colors.white,
-          borderRadius: BorderRadius.circular(10),
+          borderRadius: BorderRadius.circular(10), // sedikit diperkecil
           boxShadow: [
             BoxShadow(
-                color: Colors.black.withOpacity(0.04),
-                blurRadius: 8,
-                offset: const Offset(0, 2)),
+              color: Colors.black.withOpacity(0.04),
+              blurRadius: 6,
+              offset: const Offset(0, 2),
+            ),
           ],
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            /// TANGGAL
             Text(
-              "Tgl Pengajuan : ${item.requestDate}",
+              "Tgl Pengajuan : ${dateConverter.formatToDayMonthYear(item.requestAt)}",
               style: const TextStyle(
-                  fontSize: 11,
-                  color: Colors.grey,
-                  fontWeight: FontWeight.w600),
+                fontSize: 12, // ⬆️ dibesarkan
+                color: Colors.grey,
+                fontWeight: FontWeight.w500,
+              ),
             ),
-            const SizedBox(height: 8),
+
+            const SizedBox(height: 6), // ⬅️ lebih rapat
+
+            /// PRIORITY & STATUS
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  item.urgencyLevel?.name ?? "",
+                  item.priority?.name ?? "-",
                   style: const TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: darkBlue),
+                    fontSize: 17, // sedikit diturunkan
+                    fontWeight: FontWeight.bold,
+                    color: darkBlue,
+                  ),
                 ),
                 Container(
                   padding:
-                      const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+                  const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
                   decoration: BoxDecoration(
-                    color: Colors.blueAccent,
-                    borderRadius: BorderRadius.circular(20),
+                    color: hexToColor(item.status?.colorHex),
+                    borderRadius: BorderRadius.circular(14),
                   ),
                   child: Text(
-                    item.status ?? "",
+                    item.status?.name ?? "-",
                     style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 12,
-                        fontWeight: FontWeight.bold),
+                      color: Colors.white,
+                      fontSize: 11, // lebih padat
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
                 ),
               ],
             ),
-            const SizedBox(height: 12),
+
+            const SizedBox(height: 8),
+            Divider(
+              height: 1,
+              thickness: 0.8,
+              color: Colors.grey.shade200,
+            ),
+            const SizedBox(height: 8),
+
+            /// JENIS PERBAIKAN & KM
             Row(
               children: [
+                // KIRI
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text("Jenis Perbaikan",
-                          style: TextStyle(fontSize: 11, color: Colors.grey)),
-                      const SizedBox(height: 4),
+                      const Text(
+                        "Jenis Perbaikan",
+                        style:
+                        TextStyle(fontSize: 11, color: Colors.grey),
+                      ),
+                      const SizedBox(height: 2),
                       Text(
-                        item.repairType?.name ?? "",
+                        item.maintenanceType?.name ?? "-",
                         style: const TextStyle(
-                            fontSize: 13,
-                            fontWeight: FontWeight.w700,
-                            color: darkBlue),
+                          fontSize: 14, // ⬆️ lebih kebaca
+                          fontWeight: FontWeight.w600,
+                          color: darkBlue,
+                        ),
                       ),
                     ],
                   ),
                 ),
+
+                // KANAN
                 Expanded(
                   child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.end,
                     children: [
-                      const Text("Kilometer Terakhir",
-                          style: TextStyle(fontSize: 11, color: Colors.grey)),
-                      const SizedBox(height: 4),
+                      const Text(
+                        "Kilometer Terakhir",
+                        textAlign: TextAlign.right,
+                        style:
+                        TextStyle(fontSize: 11, color: Colors.grey),
+                      ),
+                      const SizedBox(height: 2),
                       Text(
-                        item.currentKm.toString(),
+                        "${item.currentKm} km",
+                        textAlign: TextAlign.right,
                         style: const TextStyle(
-                            fontSize: 13,
-                            fontWeight: FontWeight.w700,
-                            color: darkBlue),
+                          fontSize: 16, // ⬆️ fokus utama
+                          fontWeight: FontWeight.bold,
+                          color: darkBlue,
+                        ),
                       ),
                     ],
                   ),
@@ -284,4 +352,6 @@ class _RepairPageState extends State<RepairPage> {
       ),
     );
   }
+
+
 }

@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:newbkmmobile/core/convert_date.dart';
 import 'package:newbkmmobile/models/repair/repair_model.dart';
@@ -74,6 +76,7 @@ class RepairRepository {
   Future<(int, dynamic)> submitRepair({
     required String type,
     required String urgency,
+    required List<String> listRepair,
     required String lastKm,
     required String description,
   }) async {
@@ -83,19 +86,21 @@ class RepairRepository {
       'X-Client-Type': 'mobile',
       if (session?.token != null)
         'Authorization': 'Bearer ${session!.token}',
+      'X-Site-ID' : session?.siteId ?? ''
     };
 
     final response = await HttpCommunicator().postJson(
-      'vehicle-repairs',
+      'maintenance-requests',
       headers: headers,
       body: {
-        'user_id': session?.userId ?? '',
+        'requested_by': session?.driverId ?? '',
         'vehicle_id': session?.vehicleId ?? '',
-        'request_date': _dateConverter.getDateToday(format: "yyyy-MM-dd"), // yyyy-MM-dd
+        'maintenance_type_id': type,
+        'damage_ids' : listRepair,
+        'priority': urgency,
         'current_km': int.tryParse(lastKm) ?? 0,
-        'repair_type_id': type,
-        'damage_description': description,
-        'urgency_level_id': urgency,
+        'request_at': _dateConverter.getDateToday(format: "yyyy-MM-dd"), // yyyy-MM-dd
+        'description': description
       },
     );
 
@@ -108,7 +113,8 @@ class RepairRepository {
     required String type,
     required String urgency,
     required String lastKm,
-    required String description
+    required String description,
+    required List<String> listRepair,
   }) async {
     final session = await SessionManager.getUserSession();
 
@@ -119,17 +125,17 @@ class RepairRepository {
     };
 
     final response = await HttpCommunicator().putJson(
-      'vehicle-repairs/$id',
+      'maintenance-requests/$id',
       headers: headers,
       body: {
-        'id': id,
-        'user_id': session?.userId ?? '',
+        'requested_by': session?.driverId ?? '',
         'vehicle_id': session?.vehicleId ?? '',
-        'request_date': _dateConverter.getDateToday(format: "yyyy-MM-dd"),
+        'maintenance_type_id': type,
+        'priority': urgency,
         'current_km': int.tryParse(lastKm) ?? 0,
-        'repair_type_id': type,
-        'damage_description': description,
-        'urgency_level_id': urgency,
+        'description': description,
+        'damage_ids': listRepair,
+        'request_date': _dateConverter.getDateToday(format: "yyyy-MM-dd"),
       },
     );
 
@@ -153,8 +159,8 @@ class RepairRepository {
   Future<(int, dynamic)> getVehicleRepairsByUser() async {
     final driver = await SessionManager.getUserSession();
 
-    final userId = driver?.userId ?? ""; // sesuai sub: di token userID
-    final endpoint = 'vehicle-repairs/user/$userId';
+    final userId = driver?.driverId ?? ""; // sesuai sub: di token userID
+    final endpoint = 'maintenance-requests/?requested_by=$userId';
 
     final headers = {
       'X-Site-ID': driver?.siteId ?? "",

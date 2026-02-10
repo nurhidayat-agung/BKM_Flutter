@@ -1,8 +1,10 @@
 import 'package:newbkmmobile/models/repair/vehicle_repair_data.dart';
 
+import 'maintenance_model.dart';
+
 class VehicleRepairResponse {
   String? status;
-  List<VehicleRepairData>? data;
+  List<MaintenanceListData>? data;
 
   VehicleRepairResponse({this.status, this.data});
 
@@ -11,7 +13,7 @@ class VehicleRepairResponse {
         status: json["status"],
         data: json["data"] == null
             ? []
-            : List<VehicleRepairData>.from(
-            json["data"].map((x) => VehicleRepairData.fromJson(x))),
+            : List<MaintenanceListData>.from(
+            json["data"].map((x) => MaintenanceListData.fromJson(x))),
       );
 }

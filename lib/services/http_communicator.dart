@@ -118,6 +118,12 @@ class HttpCommunicator {
       if (headers != null) ...headers,
     };
 
+    final driver = await SessionManager.getUserSession();
+    final siteId = driver?.siteId;
+    if(siteId != null) {
+      headers?['X-Site-ID'] = siteId;
+    }
+
     try {
       // Request pertama
       var response = await http.get(url, headers: mergedHeaders);
@@ -160,6 +166,12 @@ class HttpCommunicator {
       'Content-Type': 'application/json',
       if (headers != null) ...headers,
     };
+
+    final driver = await SessionManager.getUserSession();
+    final siteId = driver?.siteId;
+    if(siteId != null) {
+      headers?['X-Site-ID'] = siteId;
+    }
 
     try {
       // Request pertama
@@ -209,6 +221,12 @@ class HttpCommunicator {
       'Content-Type': 'application/json',
       if (headers != null) ...headers,
     };
+
+    final driver = await SessionManager.getUserSession();
+    final siteId = driver?.siteId;
+    if(siteId != null) {
+      headers?['X-Site-ID'] = siteId;
+    }
 
     try {
       // Request pertama

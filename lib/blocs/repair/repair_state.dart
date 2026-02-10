@@ -1,3 +1,4 @@
+import 'package:newbkmmobile/models/repair/maintenance_model.dart';
 import 'package:newbkmmobile/models/repair/repair_model.dart';
 import 'package:newbkmmobile/models/repair/vehicle_repair_data.dart';
 
@@ -8,7 +9,7 @@ class RepairInitial extends RepairState {}
 class RepairLoading extends RepairState {}
 
 class RepairLoaded extends RepairState {
-  final List<VehicleRepairData> repairs;
+  final List<MaintenanceListData> repairs;
   RepairLoaded(this.repairs);
 }
 

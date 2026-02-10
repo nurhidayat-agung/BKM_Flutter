@@ -16,9 +16,13 @@ class HiveMasterData extends HiveObject {
   @HiveField(2)
   List<HiveSimpleMaster>? urgencyLevels;
 
+  @HiveField(3)
+  List<HiveSimpleMaster>? maintenancetypes;
+
   HiveMasterData({
     this.repairTypes,
     this.leaveTypes,
     this.urgencyLevels,
+    this.maintenancetypes,
   });
 }
