@@ -15,4 +15,14 @@ class UtilityFunction{
     return false;
   }
 
+  static String normalizeNumber(String value) {
+    if (value.trim().isEmpty) return value;
+
+    final parsed = int.tryParse(value);
+    if (parsed == null) return value;
+
+    return parsed.toString(); // otomatis hilang 0 di depan
+  }
+
+
 }

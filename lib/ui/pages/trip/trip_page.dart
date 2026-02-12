@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:newbkmmobile/blocs/trip/trip_bloc.dart';
+import 'package:newbkmmobile/core/UtilityFunction.dart';
 import 'package:newbkmmobile/core/image_picker.dart';
 import 'package:newbkmmobile/models/trip/list_new_do_response.dart';
 import 'package:newbkmmobile/models/trip/muat_request.dart';
@@ -327,7 +328,7 @@ class _TripPageState extends State<TripPage> {
           buildFirstButtons(context, tripDetail.id ?? ""),
         ],
       );
-    } else if (deliveryData.status?.fieldValue == "accepted") {
+    } else if (deliveryData.nextStep?.fieldValue == "1") {
       content = Column(
         children: [
           buildInfoCard(tripDetail, deliveryData),
@@ -343,8 +344,7 @@ class _TripPageState extends State<TripPage> {
           }),
         ],
       );
-    } else if (deliveryData.status?.fieldValue == "process" &&
-        deliveryData.latestStatusLog == "1") {
+    } else if (deliveryData.nextStep?.fieldValue == "2") {
       content = Column(
         children: [
           buildInfoCard(tripDetail, deliveryData),
@@ -360,16 +360,14 @@ class _TripPageState extends State<TripPage> {
           }),
         ],
       );
-    } else if (deliveryData.status?.fieldValue == "process" &&
-        deliveryData.latestStatusLog == "2") {
+    } else if (deliveryData.nextStep?.fieldValue == "3") {
       content = Column(
         children: [
           buildInfoCard(tripDetail, deliveryData),
           buildFormMuat(context, tripDetail, deliveryData),
         ],
       );
-    } else if (deliveryData.status?.fieldValue == "process" &&
-        deliveryData.latestStatusLog == "3") {
+    } else if (deliveryData.nextStep?.fieldValue == "4") {
       content = Column(
         children: [
           buildInfoCard(tripDetail, deliveryData),
@@ -399,8 +397,7 @@ class _TripPageState extends State<TripPage> {
             ),
         ],
       );
-    } else if (deliveryData.latestStatusLog == "4" &&
-        deliveryData.status?.fieldValue == "process") {
+    } else if (deliveryData.nextStep?.fieldValue == "5") {
       content = Column(
         children: [
           buildInfoCard(tripDetail, deliveryData),
@@ -430,8 +427,7 @@ class _TripPageState extends State<TripPage> {
             ),
         ],
       );
-    } else if (deliveryData.latestStatusLog == "5" &&
-        deliveryData.status?.fieldValue == "process") {
+    } else if (deliveryData.nextStep?.fieldValue == "6") {
       content = Column(
         children: [
           buildInfoCard(tripDetail, deliveryData),
@@ -455,8 +451,7 @@ class _TripPageState extends State<TripPage> {
             ),
         ],
       );
-    } else if (deliveryData.latestStatusLog == "6" &&
-        deliveryData.status?.fieldValue == "process") {
+    } else if (deliveryData.nextStep?.fieldValue == "7") {
       content = Column(
         children: [
           buildInfoCard(tripDetail, deliveryData),
@@ -1148,17 +1143,17 @@ class _TripPageState extends State<TripPage> {
       return false;
     }
 
-    if (tarraMuat.text.trim().isEmpty) {
+    if (UtilityFunction.normalizeNumber(tarraMuat.text.trim()).isEmpty) {
       showSnackBar("Jumlah Tarra Muat wajib diisi");
       return false;
     }
 
-    if (brutoMuat.text.trim().isEmpty) {
+    if (UtilityFunction.normalizeNumber(brutoMuat.text.trim()).isEmpty) {
       showSnackBar("Jumlah Bruto Muat wajib diisi");
       return false;
     }
 
-    if (nettoMuat.text.trim().isEmpty) {
+    if (UtilityFunction.normalizeNumber(nettoMuat.text.trim()).isEmpty) {
       showSnackBar("Netto Muat wajib diisi");
       return false;
     }
@@ -1176,17 +1171,17 @@ class _TripPageState extends State<TripPage> {
         return false;
       }
 
-      if (tarraMuatSambung.text.trim().isEmpty) {
+      if (UtilityFunction.normalizeNumber(tarraMuatSambung.text.trim()).isEmpty) {
         showSnackBar("Jumlah Tarra Muat DO Sambung wajib diisi");
         return false;
       }
 
-      if (brutoMuatSambung.text.trim().isEmpty) {
+      if (UtilityFunction.normalizeNumber(brutoMuatSambung.text.trim()).isEmpty) {
         showSnackBar("Jumlah Bruto Muat DO Sambung wajib diisi");
         return false;
       }
 
-      if (nettoMuatSambung.text.trim().isEmpty) {
+      if (UtilityFunction.normalizeNumber(nettoMuatSambung.text.trim()).isEmpty) {
         showSnackBar("Netto Muat DO Sambung wajib diisi");
         return false;
       }
@@ -1199,9 +1194,9 @@ class _TripPageState extends State<TripPage> {
     return LoadUnloadRequest(
       noDo: noDO,
       spb: spbMuat.text,
-      tarra: tarraMuat.text,
-      bruto: brutoMuat.text,
-      netto: nettoMuat.text,
+      tarra: UtilityFunction.normalizeNumber(tarraMuat.text),
+      bruto: UtilityFunction.normalizeNumber(brutoMuat.text),
+      netto: UtilityFunction.normalizeNumber(nettoMuat.text),
       fotoSpb: fotoSPBMuat,
 
       // hanya diisi jika DO sambung ada
@@ -1209,11 +1204,11 @@ class _TripPageState extends State<TripPage> {
       spbSambung:
           deliveryData.linkedDetail != null ? spbMuatSambung.text : null,
       tarraSambung:
-          deliveryData.linkedDetail != null ? tarraMuatSambung.text : null,
+          deliveryData.linkedDetail != null ? UtilityFunction.normalizeNumber(tarraMuatSambung.text) : null,
       brutoSambung:
-          deliveryData.linkedDetail != null ? brutoMuatSambung.text : null,
+          deliveryData.linkedDetail != null ? UtilityFunction.normalizeNumber(brutoMuatSambung.text) : null,
       nettoSambung:
-          deliveryData.linkedDetail != null ? nettoMuatSambung.text : null,
+          deliveryData.linkedDetail != null ? UtilityFunction.normalizeNumber(nettoMuatSambung.text) : null,
     );
   }
 
@@ -1222,17 +1217,17 @@ class _TripPageState extends State<TripPage> {
     required ListNewDoData deliveryData,
   }) {
     // === DO UTAMA ===
-    if (tarraBongkar.text.trim().isEmpty) {
+    if (UtilityFunction.normalizeNumber(tarraBongkar.text.trim()).isEmpty) {
       showSnackBar("Jumlah Tarra Bongkar wajib diisi");
       return false;
     }
 
-    if (brutoBongkar.text.trim().isEmpty) {
+    if (UtilityFunction.normalizeNumber(brutoBongkar.text.trim()).isEmpty) {
       showSnackBar("Jumlah Bruto Bongkar wajib diisi");
       return false;
     }
 
-    if (nettoBongkar.text.trim().isEmpty) {
+    if (UtilityFunction.normalizeNumber(nettoBongkar.text.trim()).isEmpty) {
       showSnackBar("Netto Bongkar wajib diisi");
       return false;
     }
@@ -1245,17 +1240,17 @@ class _TripPageState extends State<TripPage> {
 
     // === DO SAMBUNG (JIKA ADA) ===
     if (deliveryData.linkedDetail != null) {
-      if (tarraBongkarSambung.text.trim().isEmpty) {
+      if (UtilityFunction.normalizeNumber(tarraBongkarSambung.text.trim()).isEmpty) {
         showSnackBar("Jumlah Tarra Bongkar DO Sambung wajib diisi");
         return false;
       }
 
-      if (brutoBongkarSambung.text.trim().isEmpty) {
+      if (UtilityFunction.normalizeNumber(brutoBongkarSambung.text.trim()).isEmpty) {
         showSnackBar("Jumlah Bruto Bongkar DO Sambung wajib diisi");
         return false;
       }
 
-      if (nettoBongkarSambung.text.trim().isEmpty) {
+      if (UtilityFunction.normalizeNumber(nettoBongkarSambung.text.trim()).isEmpty) {
         showSnackBar("Netto Bongkar DO Sambung wajib diisi");
         return false;
       }
@@ -1268,18 +1263,18 @@ class _TripPageState extends State<TripPage> {
     return LoadUnloadRequest(
       noDo: noDO,
       spb: "",
-      tarra: tarraBongkar.text,
-      bruto: brutoBongkar.text,
-      netto: nettoBongkar.text,
+      tarra: UtilityFunction.normalizeNumber(tarraBongkar.text),
+      bruto: UtilityFunction.normalizeNumber(brutoBongkar.text),
+      netto: UtilityFunction.normalizeNumber(nettoBongkar.text),
       fotoSpb: fotoSPBBongkar,
 
       // hanya diisi jika DO sambung ada
       tarraSambung:
-          deliveryData.linkedDetail != null ? tarraBongkarSambung.text : null,
+          deliveryData.linkedDetail != null ? UtilityFunction.normalizeNumber(tarraBongkarSambung.text) : null,
       brutoSambung:
-          deliveryData.linkedDetail != null ? brutoBongkarSambung.text : null,
+          deliveryData.linkedDetail != null ? UtilityFunction.normalizeNumber(brutoBongkarSambung.text) : null,
       nettoSambung:
-          deliveryData.linkedDetail != null ? nettoBongkarSambung.text : null,
+          deliveryData.linkedDetail != null ? UtilityFunction.normalizeNumber(nettoBongkarSambung.text) : null,
     );
   }
 }

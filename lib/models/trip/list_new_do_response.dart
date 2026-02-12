@@ -66,6 +66,7 @@ class ListNewDoData {
   final Vehicle? vehicle;
   final LinkedDetail? linkedDetail;
   final List<AppLog>? appLogs;
+  final NextStep? nextStep;
 
   ListNewDoData({
     this.id,
@@ -102,6 +103,7 @@ class ListNewDoData {
     this.vehicle,
     this.linkedDetail,
     this.appLogs = const [],
+    this.nextStep
   });
 
   factory ListNewDoData.fromJson(Map<String, dynamic> json) {
@@ -141,6 +143,7 @@ class ListNewDoData {
           ? DeliveryOrder.fromJson(json['delivery_order'])
           : null,
       driver: json['driver'] != null ? Driver.fromJson(json['driver']) : null,
+      nextStep: json['next_step'] != null ? NextStep.fromJson(json['next_step']) : null,
       vehicle: json['vehicle'] != null ? Vehicle.fromJson(json['vehicle']) : null,
       linkedDetail: json['linked_detail'] != null
           ? LinkedDetail.fromJson(json['linked_detail'])
@@ -189,6 +192,7 @@ class ListNewDoData {
       'vehicle': vehicle?.toJson(),
       'linked_detail': linkedDetail?.toJson(),
       'app_logs': appLogs?.map((x) => x.toJson()).toList(),
+      'next_step' : nextStep?.toJson()
     };
   }
 }
