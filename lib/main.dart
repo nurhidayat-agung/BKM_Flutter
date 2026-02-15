@@ -37,6 +37,8 @@
 //   }
 // }
 
+import 'package:alice/alice.dart';
+import 'package:alice/model/alice_configuration.dart';
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:intl/date_symbol_data_local.dart'; // ✅ Tambahkan ini untuk inisialisasi locale tanggal
@@ -45,6 +47,14 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:newbkmmobile/ui/pages/login/splash_page.dart';
 import 'package:newbkmmobile/blocs/langsir/langsir_bloc.dart';
 import 'package:newbkmmobile/repositories/langsir_repository.dart';
+
+final Alice alice = Alice(
+  configuration: AliceConfiguration(
+    showNotification: true,
+    showInspectorOnShake: true,
+    showShareButton: true,
+  )
+);
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -67,6 +77,7 @@ class MyApp extends StatelessWidget {
           ),
         ],
     child: MaterialApp(
+      navigatorKey: alice.getNavigatorKey(),
       title: R.strings.appName,
       theme: ThemeData(
         primaryColor: R.colors.colorPrimary,

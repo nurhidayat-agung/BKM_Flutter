@@ -1,7 +1,13 @@
 import 'dart:convert';
 import 'dart:io';
+import 'package:alice/model/alice_http_call.dart';
+import 'package:alice/model/alice_http_error.dart';
+import 'package:alice/model/alice_http_request.dart';
+import 'package:alice/model/alice_http_response.dart';
 import 'package:http/http.dart' as http;
 import 'package:newbkmmobile/repositories/session_manager_repository.dart';
+
+import '../main.dart';
 
 /// Helper HTTP Client menggunakan package http
 /// Support:
@@ -14,39 +20,46 @@ class HttpCommunicator {
 
   /// Refresh token
   Future<String?> refreshToken() async {
-    final url = Uri.parse('$baseUrl/login');
+    final uri = Uri.parse('$baseUrl/login');
 
     final driver = await SessionManager.getUserSession();
 
     try {
-      final response = await http.post(
-        url,
-        headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json',
-          'X-Client-Type': 'mobile',
-        },
-        body: jsonEncode({
-          "phone": driver?.userLogin ?? "",
-          "password": driver?.password,
-        }),
-      );
+      final request = http.Request('POST', uri);
+
+      request.headers.addAll({
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+        'X-Client-Type': 'mobile',
+      });
+
+      request.body = jsonEncode({
+        "phone": driver?.userLogin ?? "",
+        "password": driver?.password,
+      });
+
+      final response = await _sendWithAlice(request);
 
       if (response.statusCode == 200) {
         final json = jsonDecode(response.body);
-        var refreshedToken = json["data"]["token"];
-        driver?.token = refreshedToken;
+        final refreshedToken = json["data"]["token"];
 
-        await SessionManager.saveUserSession(driver!);
+        if (driver != null) {
+          driver.token = refreshedToken;
+          await SessionManager.saveUserSession(driver);
+        }
 
         return refreshedToken;
       }
 
       return null;
+    } on SocketException {
+      return null;
     } catch (_) {
       return null;
     }
   }
+
 
   /// =========================
   /// GET JSON
@@ -59,58 +72,6 @@ class HttpCommunicator {
 
     final uri = Uri.parse('$baseUrl/$endpoint');
 
-    Future<http.Response> sendRequest(http.Request request) async {
-      final streamed = await request.send();
-      return await http.Response.fromStream(streamed);
-    }
-
-    /// ===== REQUEST PERTAMA =====
-    http.Request request = http.Request('GET', uri);
-
-    if (headers != null) {
-      request.headers.addAll(headers);
-    }
-
-    if (body != null) {
-      request.body = jsonEncode(body);
-    }
-
-    http.Response response = await sendRequest(request);
-
-    /// ===== JIKA TOKEN EXPIRED =====
-    if (response.statusCode == 401) {
-      final newToken = await refreshToken();
-
-      if (newToken != null) {
-        /// BUAT REQUEST BARU (WAJIB!)
-        final retryRequest = http.Request('GET', uri);
-
-        retryRequest.headers.addAll({
-          ...?headers,
-          'Authorization': 'Bearer $newToken',
-        });
-
-        if (body != null) {
-          retryRequest.body = jsonEncode(body);
-        }
-
-        response = await sendRequest(retryRequest);
-      }
-    }
-
-    return _handleResponse(response);
-  }
-
-
-  /// --------------------------------------------------------------------------
-  /// GET REQUEST
-  Future<HttpResponse> get(
-      String endpoint, {
-        Map<String, String>? headers,
-      }) async {
-    final url = Uri.parse('$baseUrl/$endpoint');
-
-    // Merge header awal
     final mergedHeaders = {
       'Accept': 'application/json',
       'Content-Type': 'application/json',
@@ -119,26 +80,91 @@ class HttpCommunicator {
     };
 
     final driver = await SessionManager.getUserSession();
-    final siteId = driver?.siteId;
-    if(siteId != null) {
-      headers?['X-Site-ID'] = siteId;
+    if (driver?.siteId != null) {
+      mergedHeaders['X-Site-ID'] = driver!.siteId!;
     }
 
     try {
-      // Request pertama
-      var response = await http.get(url, headers: mergedHeaders);
+      /// ===== REQUEST PERTAMA =====
+      var request = http.Request('GET', uri);
+      request.headers.addAll(mergedHeaders);
 
-      // Jika token kadaluarsa
+      if (body != null) {
+        request.body = jsonEncode(body);
+      }
+
+      var response = await _sendWithAlice(request);
+
+      /// ===== JIKA TOKEN EXPIRED =====
       if (response.statusCode == 401) {
-        // Ambil token baru
         final newToken = await refreshToken();
 
         if (newToken != null) {
-          // HANYA replace Authorization
-          mergedHeaders['Authorization'] = 'Bearer $newToken';
+          final retryRequest = http.Request('GET', uri);
 
-          // Retry request pakai token baru
-          response = await http.get(url, headers: mergedHeaders);
+          retryRequest.headers.addAll({
+            ...mergedHeaders,
+            'Authorization': 'Bearer $newToken',
+          });
+
+          if (body != null) {
+            retryRequest.body = jsonEncode(body);
+          }
+
+          response = await _sendWithAlice(retryRequest);
+        }
+      }
+
+      return _handleResponse(response);
+    } on SocketException {
+      throw Exception('Tidak ada koneksi internet');
+    } catch (e) {
+      throw Exception('Gagal GET JSON: $e');
+    }
+  }
+
+
+
+  /// --------------------------------------------------------------------------
+  /// GET REQUEST
+  Future<HttpResponse> get(
+      String endpoint, {
+        Map<String, String>? headers,
+      }) async {
+
+    final uri = Uri.parse('$baseUrl/$endpoint');
+
+    final mergedHeaders = {
+      'Accept': 'application/json',
+      'Content-Type': 'application/json',
+      'X-Client-Type': 'mobile',
+      if (headers != null) ...headers,
+    };
+
+    final driver = await SessionManager.getUserSession();
+    if (driver?.siteId != null) {
+      mergedHeaders['X-Site-ID'] = driver!.siteId!;
+    }
+
+    try {
+      /// ===== REQUEST PERTAMA =====
+      var request = http.Request('GET', uri);
+      request.headers.addAll(mergedHeaders);
+
+      var response = await _sendWithAlice(request);
+
+      /// ===== TOKEN EXPIRED =====
+      if (response.statusCode == 401) {
+        final newToken = await refreshToken();
+
+        if (newToken != null) {
+          request = http.Request('GET', uri);
+          request.headers.addAll({
+            ...mergedHeaders,
+            'Authorization': 'Bearer $newToken',
+          });
+
+          response = await _sendWithAlice(request);
         }
       }
 
@@ -151,6 +177,7 @@ class HttpCommunicator {
   }
 
 
+
   /// --------------------------------------------------------------------------
   /// POST JSON REQUEST
   Future<HttpResponse> postJson(
@@ -158,42 +185,42 @@ class HttpCommunicator {
         required Map<String, dynamic> body,
         Map<String, String>? headers,
       }) async {
-    final url = Uri.parse('$baseUrl/$endpoint');
 
-    // Gabungkan header
+    final uri = Uri.parse('$baseUrl/$endpoint');
+
     final mergedHeaders = {
       'Accept': 'application/json',
       'Content-Type': 'application/json',
+      'X-Client-Type': 'mobile',
       if (headers != null) ...headers,
     };
 
     final driver = await SessionManager.getUserSession();
-    final siteId = driver?.siteId;
-    if(siteId != null) {
-      headers?['X-Site-ID'] = siteId;
+    if (driver?.siteId != null) {
+      mergedHeaders['X-Site-ID'] = driver!.siteId!;
     }
 
     try {
-      // Request pertama
-      var response = await http.post(
-        url,
-        headers: mergedHeaders,
-        body: jsonEncode(body),
-      );
+      /// ===== REQUEST PERTAMA =====
+      var request = http.Request('POST', uri);
+      request.headers.addAll(mergedHeaders);
+      request.body = jsonEncode(body);
 
-      // Jika token kadaluarsa → refresh → retry
+      var response = await _sendWithAlice(request);
+
+      /// ===== TOKEN EXPIRED =====
       if (response.statusCode == 401) {
         final newToken = await refreshToken();
 
         if (newToken != null) {
-          // HANYA timpa Authorization
-          mergedHeaders['Authorization'] = 'Bearer $newToken';
+          request = http.Request('POST', uri);
+          request.headers.addAll({
+            ...mergedHeaders,
+            'Authorization': 'Bearer $newToken',
+          });
+          request.body = jsonEncode(body);
 
-          response = await http.post(
-            url,
-            headers: mergedHeaders,
-            body: jsonEncode(body),
-          );
+          response = await _sendWithAlice(request);
         }
       }
 
@@ -206,6 +233,7 @@ class HttpCommunicator {
   }
 
 
+
   /// --------------------------------------------------------------------------
   /// PUT JSON REQUEST
   Future<HttpResponse> putJson(
@@ -213,42 +241,42 @@ class HttpCommunicator {
         required Map<String, dynamic> body,
         Map<String, String>? headers,
       }) async {
-    final url = Uri.parse('$baseUrl/$endpoint');
 
-    // Gabungkan header
+    final uri = Uri.parse('$baseUrl/$endpoint');
+
     final mergedHeaders = {
       'Accept': 'application/json',
       'Content-Type': 'application/json',
+      'X-Client-Type': 'mobile',
       if (headers != null) ...headers,
     };
 
     final driver = await SessionManager.getUserSession();
-    final siteId = driver?.siteId;
-    if(siteId != null) {
-      headers?['X-Site-ID'] = siteId;
+    if (driver?.siteId != null) {
+      mergedHeaders['X-Site-ID'] = driver!.siteId!;
     }
 
     try {
-      // Request pertama
-      var response = await http.put(
-        url,
-        headers: mergedHeaders,
-        body: jsonEncode(body),
-      );
+      /// ===== REQUEST PERTAMA =====
+      var request = http.Request('PUT', uri);
+      request.headers.addAll(mergedHeaders);
+      request.body = jsonEncode(body);
 
-      // Jika token kadaluarsa → refresh → retry
+      var response = await _sendWithAlice(request);
+
+      /// ===== TOKEN EXPIRED =====
       if (response.statusCode == 401) {
         final newToken = await refreshToken();
 
         if (newToken != null) {
-          // Replace Authorization saja
-          mergedHeaders['Authorization'] = 'Bearer $newToken';
+          request = http.Request('PUT', uri);
+          request.headers.addAll({
+            ...mergedHeaders,
+            'Authorization': 'Bearer $newToken',
+          });
+          request.body = jsonEncode(body);
 
-          response = await http.put(
-            url,
-            headers: mergedHeaders,
-            body: jsonEncode(body),
-          );
+          response = await _sendWithAlice(request);
         }
       }
 
@@ -262,6 +290,7 @@ class HttpCommunicator {
 
 
 
+
   /// --------------------------------------------------------------------------
   /// POST FORM DATA REQUEST (MULTIPART)
   Future<HttpResponse> postFormData(
@@ -270,37 +299,45 @@ class HttpCommunicator {
         Map<String, File>? files,
         Map<String, String>? headers,
       }) async {
-    final url = Uri.parse('$baseUrl/$endpoint');
 
-    // -------------------------------
-    // Buat function untuk membangun ulang MultipartRequest
-    // (dipakai saat retry)
-    // -------------------------------
+    final uri = Uri.parse('$baseUrl/$endpoint');
+
+    final driver = await SessionManager.getUserSession();
+    final siteId = driver?.siteId;
+
+    /// ===============================
+    /// Function untuk build request
+    /// ===============================
     Future<http.MultipartRequest> buildRequest(String? newToken) async {
-      final req = http.MultipartRequest('POST', url);
+      final request = http.MultipartRequest('POST', uri);
 
-      // Copy headers (TIDAK diubah kecuali Authorization)
       final mergedHeaders = {
         'Accept': 'application/json',
-        'Content-Type': 'multipart/form-data',
+        'X-Client-Type': 'mobile',
         if (headers != null) ...headers,
       };
+
+      if (siteId != null) {
+        mergedHeaders['X-Site-ID'] = siteId;
+      }
 
       if (newToken != null) {
         mergedHeaders['Authorization'] = 'Bearer $newToken';
       }
 
-      req.headers.addAll(mergedHeaders);
+      request.headers.addAll(mergedHeaders);
 
       // Add fields
-      req.fields.addAll(fields);
+      request.fields.addAll(fields);
 
       // Add files
       if (files != null) {
         for (final entry in files.entries) {
           final file = entry.value;
-          final fileName = file.path.split(Platform.pathSeparator).last;
-          req.files.add(
+          final fileName =
+              file.path.split(Platform.pathSeparator).last;
+
+          request.files.add(
             await http.MultipartFile.fromPath(
               entry.key,
               file.path,
@@ -310,28 +347,21 @@ class HttpCommunicator {
         }
       }
 
-      return req;
+      return request;
     }
 
     try {
-      // -------------------------------
-      // Request pertama
-      // -------------------------------
+      /// ===== REQUEST PERTAMA =====
       var request = await buildRequest(null);
-      var streamedResponse = await request.send();
-      var response = await http.Response.fromStream(streamedResponse);
+      var response = await _sendWithAlice(request);
 
-      // -------------------------------
-      // Jika 401 → refresh token → retry sekali
-      // -------------------------------
+      /// ===== TOKEN EXPIRED =====
       if (response.statusCode == 401) {
         final newToken = await refreshToken();
 
         if (newToken != null) {
-          // Build ulang request dengan token baru
           final retryRequest = await buildRequest(newToken);
-          final retryStream = await retryRequest.send();
-          response = await http.Response.fromStream(retryStream);
+          response = await _sendWithAlice(retryRequest);
         }
       }
 
@@ -342,6 +372,7 @@ class HttpCommunicator {
       throw Exception('Gagal POST FormData: $e');
     }
   }
+
 
 
   /// --------------------------------------------------------------------------
@@ -373,3 +404,66 @@ class HttpResponse {
     this.result,
   });
 }
+
+Future<http.Response> _sendWithAlice(http.BaseRequest request) async {
+  final call = AliceHttpCall(
+    DateTime.now().millisecondsSinceEpoch,
+  );
+
+  call.method = request.method;
+  call.uri = request.url.toString();
+  call.server = request.url.host;
+  call.endpoint = request.url.path;
+
+  // ===== SET REQUEST =====
+  final aliceRequest = AliceHttpRequest();
+  aliceRequest.headers = request.headers;
+  aliceRequest.contentType = request.headers['Content-Type'];
+
+  if (request is http.Request) {
+    aliceRequest.body = request.body;
+  } else if (request is http.MultipartRequest) {
+    aliceRequest.body = request.fields;
+  }
+
+  call.request = aliceRequest;
+
+  final stopwatch = Stopwatch()..start();
+
+  try {
+    final streamed = await request.send();
+    final response = await http.Response.fromStream(streamed);
+
+    stopwatch.stop();
+
+    // ===== SET RESPONSE =====
+    final aliceResponse = AliceHttpResponse();
+    aliceResponse.status = response.statusCode;
+    aliceResponse.headers = response.headers;
+    aliceResponse.body = response.body;
+
+    call.duration = stopwatch.elapsedMilliseconds;
+    call.response = aliceResponse;
+    call.loading = false;
+
+    alice.addHttpCall(call);
+
+    return response;
+  } catch (e) {
+    stopwatch.stop();
+
+    final error = AliceHttpError();
+    error.error = e.toString();
+
+    call.error = error;
+    call.duration = stopwatch.elapsedMilliseconds;
+    call.loading = false;
+
+    alice.addHttpCall(call);
+
+    rethrow;
+  }
+}
+
+
+

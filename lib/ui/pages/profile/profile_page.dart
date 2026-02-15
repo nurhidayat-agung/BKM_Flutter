@@ -1,5 +1,7 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
+import 'package:newbkmmobile/main.dart';
 import 'package:newbkmmobile/repositories/login_repository.dart';
 import 'package:newbkmmobile/repositories/session_manager_repository.dart';
 import 'package:newbkmmobile/ui/pages/login/login_page.dart';
@@ -138,6 +140,10 @@ class _ProfilePageState extends State<ProfilePage> {
       );
   }
 
+  void _openAliceInspector() {
+    alice.showInspector();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -157,7 +163,8 @@ class _ProfilePageState extends State<ProfilePage> {
           children: [
             const CircleAvatar(
               radius: 50,
-              backgroundImage: AssetImage('assets/images/user_placeholder.png'),
+              backgroundImage:
+              AssetImage('assets/images/user_placeholder.png'),
             ),
             const SizedBox(height: 16),
 
@@ -180,6 +187,24 @@ class _ProfilePageState extends State<ProfilePage> {
 
             const SizedBox(height: 30),
 
+            // 🔵 BUTTON OPEN ALICE
+            ElevatedButton.icon(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.deepPurple,
+                foregroundColor: Colors.white,
+                minimumSize: const Size.fromHeight(45),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+              ),
+              onPressed: _openAliceInspector,
+              icon: const Icon(Icons.network_check),
+              label: const Text("Open Network Inspector"),
+            ),
+
+            const SizedBox(height: 15),
+
+            // 🔴 LOGOUT BUTTON
             ElevatedButton(
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.blueGrey[900],
