@@ -59,7 +59,7 @@ class LeaveRepository {
   Future<(int, dynamic)> getLeavesByUser() async {
     final driver = await SessionManager.getUserSession();
 
-    final endpoint = 'leaves/user/${driver?.userId ?? ""}';
+    final endpoint = 'leaves?user_id=${driver?.userId ?? ""}';
 
     final headers = {
       'Accept': 'application/json',

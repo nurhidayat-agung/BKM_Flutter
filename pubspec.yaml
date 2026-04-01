@@ -33,6 +33,8 @@ dependencies:
   flutter_plugin_android_lifecycle: ^2.0.22
   alice: ^1.0.0
   flutter_alice:
+  firebase_core: ^4.6.0
+  firebase_messaging: ^16.1.3
 
 dev_dependencies:
   flutter_test:

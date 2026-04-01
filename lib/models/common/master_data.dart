@@ -5,12 +5,14 @@ class MasterData {
   List<SimpleMaster>? leaveTypes;
   List<SimpleMaster>? urgencyLevels;
   List<SimpleMaster>? maintenanceTypes; // ⬅️ tambahan
+  List<SimpleMaster>? workshopTypes;
 
   MasterData({
     this.repairTypes,
     this.leaveTypes,
     this.urgencyLevels,
     this.maintenanceTypes,
+    this.workshopTypes,
   });
 
   factory MasterData.fromJson(Map<String, dynamic> json) {
@@ -35,6 +37,11 @@ class MasterData {
           .map((e) => SimpleMaster.fromJson(e))
           .toList()
           : null,
+      workshopTypes: json['workshop_types'] != null // ⬅️ 3. TAMBAHKAN PARSING JSON DI SINI
+          ? (json['workshop_types'] as List)
+          .map((e) => SimpleMaster.fromJson(e))
+          .toList()
+          : null,
     );
   }
 
@@ -44,5 +51,6 @@ class MasterData {
     'urgency_levels': urgencyLevels?.map((e) => e.toJson()).toList(),
     'maintenance_types':
     maintenanceTypes?.map((e) => e.toJson()).toList(),
+    'workshop_types': workshopTypes?.map((e) => e.toJson()).toList(),
   };
 }

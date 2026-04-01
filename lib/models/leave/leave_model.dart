@@ -6,6 +6,7 @@ class LeaveModel {
   final String endDate;
   final String reason;
   final String statusName; // "Tunda", "Disetujui"
+  final String statusValue;
   final String statusColorClass; // "bg-soft-warning"
   final String leaveTypeName; // "Cuti Tahunan", "Sakit"
   final String createdAt; // Untuk tanggal pengajuan
@@ -18,6 +19,7 @@ class LeaveModel {
     required this.endDate,
     required this.reason,
     required this.statusName,
+    required this.statusValue,
     required this.statusColorClass,
     required this.leaveTypeName,
     required this.createdAt,
@@ -26,6 +28,7 @@ class LeaveModel {
   factory LeaveModel.fromJson(Map<String, dynamic> json) {
     // Parsing Status (Bisa berupa Objek atau String tergantung endpoint)
     String status = 'Pending';
+    String statusValue = 'pending';
     String color = 'bg-soft-secondary';
 
     if (json['status'] != null) {
@@ -34,6 +37,7 @@ class LeaveModel {
         color = json['status']['color'] ?? 'bg-soft-secondary';
       } else if (json['status'] is String) {
         status = json['status'];
+        statusValue = json['status'].toLowerCase();
       }
     }
 
@@ -51,6 +55,7 @@ class LeaveModel {
       endDate: json['end_date'] ?? '',
       reason: json['reason'] ?? '-',
       statusName: status,
+      statusValue: statusValue,
       statusColorClass: color,
       leaveTypeName: typeName,
       createdAt: json['created_at'] ?? '',

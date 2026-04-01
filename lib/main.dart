@@ -47,6 +47,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:newbkmmobile/ui/pages/login/splash_page.dart';
 import 'package:newbkmmobile/blocs/langsir/langsir_bloc.dart';
 import 'package:newbkmmobile/repositories/langsir_repository.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'firebase_options.dart';
 
 final Alice alice = Alice(
   configuration: AliceConfiguration(
@@ -58,6 +60,9 @@ final Alice alice = Alice(
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
   await Hive.initFlutter();
 
   await initializeDateFormatting('id_ID', null);

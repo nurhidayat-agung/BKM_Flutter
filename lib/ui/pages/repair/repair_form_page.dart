@@ -16,7 +16,7 @@ class RepairFormPage extends StatefulWidget {
   const RepairFormPage(
     this.repairTypes,
     this.urgencyLevels,
-    this.maintenanceTypes, {
+    this.maintenanceTypes, this.workshopTypes,{
     this.data, // ⬅️ object edit
     super.key,
   });
@@ -28,6 +28,7 @@ class RepairFormPage extends StatefulWidget {
 
   // DATA MASTER dari API
   final List<HiveSimpleMaster>? maintenanceTypes;
+  final List<HiveSimpleMaster>? workshopTypes;
 
   @override
   State<RepairFormPage> createState() => _RepairFormPageState();
@@ -39,12 +40,14 @@ class _RepairFormPageState extends State<RepairFormPage> {
 
   String? _selectedType;
   String? _selectedUrgency;
+  String? _selectedWorkshop;
 
   // ID yang dipilih user
   List<String> _selectedMaintenanceTypeIds = [];
 
   late final List<String> _types;
   late final List<String> _urgencies;
+  late final List<String> _workshops;
 
   bool get _canSubmit {
     // CREATE
@@ -72,6 +75,22 @@ class _RepairFormPageState extends State<RepairFormPage> {
             .where((e) => e.isNotEmpty)
             .toList() ??
         [];
+
+    // _workshops = widget.workshopTypes
+    //     ?.map((e) => e.name ?? '')
+    //     .where((e) => e.isNotEmpty)
+    //     .toList() ?? [];
+
+    final apiWorkshops = widget.workshopTypes
+        ?.map((e) => e.name ?? '')
+        .where((e) => e.isNotEmpty)
+        .toList() ?? [];
+
+    if (apiWorkshops.isEmpty) {
+      _workshops = ['Internal', 'External'];
+    } else {
+      _workshops = apiWorkshops;
+    }
 
     /// =====================
     /// EDIT MODE
@@ -129,6 +148,7 @@ class _RepairFormPageState extends State<RepairFormPage> {
 
     if (_selectedType == null ||
         _selectedUrgency == null ||
+        _selectedWorkshop == null ||
         _kmController.text.isEmpty ||
         _descController.text.isEmpty ||
         _selectedMaintenanceTypeIds.isEmpty) {
@@ -150,7 +170,10 @@ class _RepairFormPageState extends State<RepairFormPage> {
         listRepairType: widget.repairTypes!,
         listUrgencyLevel: widget.urgencyLevels!,
         maintenanceType: widget.maintenanceTypes!,
-        listRepair: _selectedMaintenanceTypeIds
+        listRepair: _selectedMaintenanceTypeIds,
+        // workshopType: _selectedWorkshop!,
+        workshopType: _selectedWorkshop!.toLowerCase(),
+        listWorkshopType: widget.workshopTypes ?? [],
       ),
     );
   }
@@ -267,6 +290,18 @@ class _RepairFormPageState extends State<RepairFormPage> {
                                   setState(() => _selectedUrgency = val),
                             ),
                             const SizedBox(height: 20),
+                            DropdownButtonFormField<String>(
+                              value: _selectedWorkshop,
+                              decoration: _inputDecoration("Jenis Bengkel"),
+                              icon: const Icon(Icons.arrow_drop_down, color: Colors.grey),
+                              items: _workshops.map((String val) {
+                                return DropdownMenuItem<String>(
+                                  value: val,
+                                  child: Text(val, style: const TextStyle(fontSize: 14)),
+                                );
+                              }).toList(),
+                              onChanged: (val) => setState(() => _selectedWorkshop = val),
+                            ),
                             const Text("Kilometer Terakhir",
                                 style: TextStyle(
                                     fontSize: 13, color: Colors.black54)),

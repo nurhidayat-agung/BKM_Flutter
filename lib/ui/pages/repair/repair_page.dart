@@ -116,7 +116,8 @@ class _RepairPageState extends State<RepairPage> {
                               builder: (context) => RepairFormPage(
                                   masterData.repairTypes,
                                   masterData.urgencyLevels,
-                                  masterData.maintenancetypes)),
+                                  masterData.maintenancetypes,
+                                  masterData.workshopTypes)),
                         );
 
                         // --- REFRESH LIST JIKA SUKSES SIMPAN --- //
@@ -218,7 +219,9 @@ class _RepairPageState extends State<RepairPage> {
                 builder: (context) => RepairFormPage(
                     masterData.repairTypes,
                     masterData.urgencyLevels,
-                    masterData.maintenancetypes, data: item,)),
+                    masterData.maintenancetypes,
+                    masterData.workshopTypes,
+                    data: item,)),
           );
 
           // --- REFRESH LIST JIKA SUKSES SIMPAN --- //

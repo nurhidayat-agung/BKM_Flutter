@@ -40,6 +40,12 @@ class RepairBloc extends Bloc<RepairEvent, RepairState> {
           .firstWhere((element) => element.name == event.urgency)
           .fieldValue;
 
+      // ⬅️ TAMBAHAN BARU: Cari kode/field_value untuk Jenis Bengkel
+      var selectedWorkshop = event.listWorkshopType
+          .firstWhere((element) => element.name == event.workshopType,
+          orElse: () => event.listWorkshopType.first) // Fallback aman
+          .fieldValue;
+
       List<String> listRepair = event.listRepairType
           .where((e) => event.listRepair.contains(e.id))
           .map((e) => e.fieldValue)
@@ -54,6 +60,7 @@ class RepairBloc extends Bloc<RepairEvent, RepairState> {
           urgency: selectedUrgency ?? "",
           lastKm: event.lastKm,
           description: event.description,
+          workshopTypeCode: selectedWorkshop ?? "",
         ) : await repository.updateRepair(
           id: event.id ?? "",
           type: selectedType ?? "",
@@ -61,6 +68,7 @@ class RepairBloc extends Bloc<RepairEvent, RepairState> {
           urgency: selectedUrgency ?? "",
           lastKm: event.lastKm,
           description: event.description,
+          workshopTypeCode: selectedWorkshop ?? "",
         );
 
         if (intStatus == 200) {

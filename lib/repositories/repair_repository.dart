@@ -79,6 +79,7 @@ class RepairRepository {
     required List<String> listRepair,
     required String lastKm,
     required String description,
+    required String workshopTypeCode,
   }) async {
     final session = await SessionManager.getUserSession();
 
@@ -100,7 +101,8 @@ class RepairRepository {
         'priority': urgency,
         'current_km': int.tryParse(lastKm) ?? 0,
         'request_at': _dateConverter.getDateToday(format: "yyyy-MM-dd"), // yyyy-MM-dd
-        'description': description
+        'description': description,
+        'workshop_type_code': workshopTypeCode,
       },
     );
 
@@ -115,6 +117,7 @@ class RepairRepository {
     required String lastKm,
     required String description,
     required List<String> listRepair,
+    required String workshopTypeCode,
   }) async {
     final session = await SessionManager.getUserSession();
 
@@ -136,6 +139,7 @@ class RepairRepository {
         'description': description,
         'damage_ids': listRepair,
         'request_date': _dateConverter.getDateToday(format: "yyyy-MM-dd"),
+        'workshop_type_code': workshopTypeCode,
       },
     );
 

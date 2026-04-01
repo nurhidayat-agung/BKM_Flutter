@@ -21,13 +21,14 @@ class HiveMasterDataAdapter extends TypeAdapter<HiveMasterData> {
       leaveTypes: (fields[1] as List?)?.cast<HiveSimpleMaster>(),
       urgencyLevels: (fields[2] as List?)?.cast<HiveSimpleMaster>(),
       maintenancetypes: (fields[3] as List?)?.cast<HiveSimpleMaster>(),
+      workshopTypes: (fields[4] as List?)?.cast<HiveSimpleMaster>(),
     );
   }
 
   @override
   void write(BinaryWriter writer, HiveMasterData obj) {
     writer
-      ..writeByte(4)
+      ..writeByte(5)
       ..writeByte(0)
       ..write(obj.repairTypes)
       ..writeByte(1)
@@ -35,7 +36,9 @@ class HiveMasterDataAdapter extends TypeAdapter<HiveMasterData> {
       ..writeByte(2)
       ..write(obj.urgencyLevels)
       ..writeByte(3)
-      ..write(obj.maintenancetypes);
+      ..write(obj.maintenancetypes)
+      ..writeByte(4)
+      ..write(obj.workshopTypes);
   }
 
   @override

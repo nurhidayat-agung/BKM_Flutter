@@ -19,10 +19,11 @@ class HomeLoaded extends HomeState {
   final String? heldAmmount;
 
 
-  const HomeLoaded({required this.name, required this.balance, required this.savings, required this.heldAmmount});
+
+  const HomeLoaded({required this.name, required this.balance, required this.savings, required this.heldAmmount,});
 
   @override
-  List<Object?> get props => [name, balance];
+  List<Object?> get props => [name, balance,];
 }
 
 class HomeError extends HomeState {

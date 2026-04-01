@@ -15,6 +15,8 @@ class SubmitRepair extends RepairEvent {
   final List<HiveSimpleMaster> listUrgencyLevel;
   final List<HiveSimpleMaster> listRepairType;
   final List<HiveSimpleMaster> maintenanceType;
+  final String workshopType;
+  final List<HiveSimpleMaster> listWorkshopType;
 
 
 
@@ -28,6 +30,7 @@ class SubmitRepair extends RepairEvent {
     required this.listUrgencyLevel,
     required this.listRepairType,
     required this.maintenanceType,
-
+    required this.workshopType,
+    required this.listWorkshopType,
   });
 }
