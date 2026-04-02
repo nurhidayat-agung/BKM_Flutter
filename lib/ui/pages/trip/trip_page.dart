@@ -14,7 +14,8 @@ import 'package:newbkmmobile/models/trip/v2/do_detail_response.dart';
 import '../../../repositories/trip_repository.dart';
 
 class TripPage extends StatefulWidget {
-  const TripPage({Key? key}) : super(key: key);
+  final ListNewDoData deliveryData;
+  const TripPage({Key? key, required this.deliveryData}) : super(key: key);
 
   @override
   State<TripPage> createState() => _TripPageState();
@@ -167,7 +168,10 @@ class _TripPageState extends State<TripPage> {
         ),
       ),
       body: BlocProvider(
-        create: (_) => TripBloc(TripRepository())..add(GetTrip()),
+        // create: (_) => TripBloc(TripRepository())..add(GetTrip()),
+        // child: BlocBuilder<TripBloc, TripState>
+        create: (_) => TripBloc(TripRepository())
+          ..add(GetTripDetailEvent(deliveryData: widget.deliveryData)),
         child: BlocBuilder<TripBloc, TripState>(
           builder: (context, state) {
             if (state is TripLoading) {
@@ -182,7 +186,8 @@ class _TripPageState extends State<TripPage> {
                 description: state.message,
                 buttonText: 'Muat Ulang',
                 onRetry: () {
-                  context.read<TripBloc>().add(GetTrip());
+                  context.read<TripBloc>().add(GetTripDetailEvent(deliveryData: widget.deliveryData));
+                  // add(GetTrip());
                 },
               );
             }
@@ -224,16 +229,36 @@ class _TripPageState extends State<TripPage> {
                 }
               }
 
-              return SingleChildScrollView(
-                child: Column(
-                  children: [
-                    generateContent(context, trip, delivery),
-                    const SizedBox(height: 30),
-                  ],
+              //   return SingleChildScrollView(
+              //     child: Column(
+              //       children: [
+              //         generateContent(context, trip, delivery),
+              //         const SizedBox(height: 30),
+              //       ],
+              //     ),
+              //   );
+              // }
+              // 👇 TAMBAHAN REFRESH INDICATOR
+              return RefreshIndicator(
+                color: const Color(0xFF002B4C),
+                onRefresh: () async {
+                  // Memanggil event BLoC yang baru dengan membawa data saat ini
+                  context.read<TripBloc>().add(
+                      GetTripDetailEvent(deliveryData: widget.deliveryData));
+                  await Future.delayed(const Duration(seconds: 1));
+                },
+                child: SingleChildScrollView(
+                  physics: const AlwaysScrollableScrollPhysics(),
+                  // ⬅️ Ini WAJIB biar bisa ditarik
+                  child: Column(
+                    children: [
+                      generateContent(context, trip, delivery),
+                      const SizedBox(height: 30),
+                    ],
+                  ),
                 ),
               );
             }
-
             return const SizedBox();
           },
         ),
@@ -494,6 +519,17 @@ class _TripPageState extends State<TripPage> {
                 isAction: true, isEdit: true // ⬅ tidak ada tombol save
                 ),
         ],
+      );
+    } else {
+    // 👇 TAMBAHAN UNTUK MENCEGAH LAYAR BLANK JIKA STATUS TIDAK COCOK
+      return Padding(
+        padding: const EdgeInsets.only(top: 80),
+        child: _buildEmptyPengangkutan(
+        context,
+          title: "Status Tidak Dikenali",
+          description: "Status trip saat ini: ${deliveryData.status?.fieldValue}. Tarik layar ke bawah untuk memuat ulang data.",
+          icon: Icons.warning_amber_rounded,
+        ),
       );
     }
 

@@ -9,6 +9,7 @@ import 'package:newbkmmobile/core/currency_formatter.dart';
 import 'package:newbkmmobile/repositories/login_repository.dart';
 import 'package:newbkmmobile/ui/pages/repair/repair_page.dart';
 import 'package:newbkmmobile/ui/pages/trip/trip_page.dart';
+import 'package:newbkmmobile/ui/pages/trip/trip_list_page.dart';
 import 'package:newbkmmobile/ui/pages/workshop/workshop_page.dart';
 import 'package:newbkmmobile/ui/pages/history/history_page.dart';
 import 'package:newbkmmobile/ui/pages/service_book/service_book_page.dart';
@@ -65,16 +66,6 @@ class _HomePageState extends State<HomePage> {
       fetchCommonData();
       checkLeaveStatus();
     });
-
-    //Testter triger PopUp muncul karena diAPI Cuti sudah selesai semua
-  //   Future.delayed(const Duration(seconds: 2), () {
-  //     showLeavePopup(
-  //       "Cuti Lebaran",
-  //       DateTime.now(),
-  //       DateTime.now().add(const Duration(days: 3)),
-  //     );
-  //   });
-
   }
 
   @override
@@ -367,8 +358,9 @@ class _HomePageState extends State<HomePage> {
                               children: [
                                 _menuItem("Pengangkutan Baru",
                                     "assets/Pengangkutan_Baru.png",
-                                    const TripPage(), context,
-                                    isRestrictedDuringLeave: true),
+                                    const TripListPage(),
+                                    isRestrictedDuringLeave: true,context),
+                                    // isRestrictedDuringLeave: true),// Panggil ini untuk block pengangkutan
                                 _menuItem("Langsir", "assets/Langsir.png",
                                     const LangsirListPage(), context),
                                 _menuItem("Riwayat Pengangkutan",
@@ -589,7 +581,11 @@ class _HomePageState extends State<HomePage> {
 
     for (var leave in leaves) {
       final statusLeave = leave["status"]?["field_value"];
-      if (statusLeave == "approved" || statusLeave == "pending") {
+
+      // tambah ini ==>  || statusLeave == "pending"
+      // kalo mau pop up muncul dan bloc pengangkutan baru jika status pasih tunda/panding
+      // tambah setelah "approved"
+      if (statusLeave == "approved") {
         final start = DateTime.parse(leave["start_date"]);
         final startDate = DateTime(start.year, start.month, start.day);
 

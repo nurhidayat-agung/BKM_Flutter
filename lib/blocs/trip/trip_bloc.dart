@@ -16,25 +16,30 @@ class TripBloc extends Bloc<TripEvent, TripState> {
   final TripRepository _tripRepository;
 
   TripBloc(this._tripRepository) : super(TripInitial()) {
-    // Fungsi helper untuk ambil trip terbaru
-    Future<void> fetchLatestTrip(Emitter<TripState> emit) async {
-      emit(const TripLoading());
+
+    // 👉 KODE BARU: Fungsi helper untuk ambil trip spesifik
+    Future<void> fetchSpecificTrip(String deliveryId, Emitter<TripState> emit) async {
       try {
         final (status, resp) = await _tripRepository.getNewDeliveryOrder();
 
-        if (status == 200 && resp != null && resp.data != null && resp.data!.isNotEmpty) {
-          final delivery = resp.data!.first;
+        if (status == 200 && resp != null && resp.data != null) {
+          // Cari DO yang sedang dibuka di list berdasarkan ID
+          final delivery = resp.data!.firstWhere(
+                (element) => element.id == deliveryId,
+            orElse: () => ListNewDoData(id: 'not_found'),
+          );
 
-          final (detailStatus, tripDetail) =
-          await _tripRepository.getDeliveryOrderDetail(id: delivery.id.toString());
+          if (delivery.id != 'not_found') {
+            final (detailStatus, tripDetail) =
+            await _tripRepository.getDeliveryOrderDetail(id: delivery.id.toString());
 
-          if (detailStatus == 200 && tripDetail != null) {
-            emit(TripSuccess(
-              doDetailResponseData: tripDetail,
-              listNewDoData: delivery,
-            ));
+            if (detailStatus == 200 && tripDetail != null) {
+              emit(TripSuccess(doDetailResponseData: tripDetail, listNewDoData: delivery));
+            } else {
+              emit(const TripError("Gagal memuat detail pengangkutan"));
+            }
           } else {
-            emit(const TripError("Data Tidak Ditemukan"));
+            emit(const TripError("DO tidak ditemukan. Mungkin sudah ditolak atau dialihkan."));
           }
         } else {
           emit(const TripError("Data Tidak Ditemukan"));
@@ -43,11 +48,58 @@ class TripBloc extends Bloc<TripEvent, TripState> {
         emit(TripError(e.toString()));
       }
     }
-
-    // Event GetTrip
-    on<GetTrip>((event, emit) async {
-      await fetchLatestTrip(emit);
+    // Fungsi helper untuk ambil trip terbaru
+    // Future<void> fetchLatestTrip(Emitter<TripState> emit) async {
+    //   emit(const TripLoading());
+    //   try {
+    //     final (status, resp) = await _tripRepository.getNewDeliveryOrder();
+    //
+    //     if (status == 200 && resp != null && resp.data != null && resp.data!.isNotEmpty) {
+    //       final delivery = resp.data!.first;
+    //
+    //       final (detailStatus, tripDetail) =
+    //       await _tripRepository.getDeliveryOrderDetail(id: delivery.id.toString());
+    //
+    //       if (detailStatus == 200 && tripDetail != null) {
+    //         emit(TripSuccess(
+    //           doDetailResponseData: tripDetail,
+    //           listNewDoData: delivery,
+    //         ));
+    //       } else {
+    //         emit(const TripError("Data Tidak Ditemukan"));
+    //       }
+    //     } else {
+    //       emit(const TripError("Data Tidak Ditemukan"));
+    //     }
+    //   } catch (e) {
+    //     emit(TripError(e.toString()));
+    //   }
+    // }
+    // 👉 KODE BARU: Event untuk halaman TripListPage (Nampilin List)
+    on<GetTripList>((event, emit) async {
+      emit(const TripLoading());
+      try {
+        final (status, resp) = await _tripRepository.getNewDeliveryOrder();
+        if (status == 200 && resp != null && resp.data != null) {
+          emit(TripListLoaded(resp.data!));
+        } else {
+          emit(const TripError("Gagal memuat antrean DO"));
+        }
+      } catch (e) {
+        emit(TripError(e.toString()));
+      }
     });
+
+    // 👉 KODE BARU: Event untuk halaman TripPage (Nampilin Detail)
+    on<GetTripDetailEvent>((event, emit) async {
+      emit(const TripLoading());
+      await fetchSpecificTrip(event.deliveryData.id ?? "", emit);
+    });
+
+    // // Event GetTrip
+    // on<GetTrip>((event, emit) async {
+    //   await fetchLatestTrip(emit);
+    // });
 
     // Event AcceptTrip
     on<AcceptTrip>((event, emit) async {
@@ -60,7 +112,8 @@ class TripBloc extends Bloc<TripEvent, TripState> {
 
         if (status == 200) {
           // Jika berhasil, langsung fetch trip terbaru
-          await fetchLatestTrip(emit);
+          await fetchSpecificTrip(event.deliveryOrderDetailId, emit);
+          // await fetchLatestTrip(emit);
         } else {
           emit(TripError("Gagal menerima trip"));
         }
@@ -103,7 +156,8 @@ class TripBloc extends Bloc<TripEvent, TripState> {
           loadTareLink: tarraSambung,
         );
 
-        await fetchLatestTrip(emit);
+        // await fetchLatestTrip(emit);
+        await fetchSpecificTrip(event.deliveryData.id ?? "", emit);
       } catch (e) {
         emit(TripError(e.toString()));
       }
@@ -140,7 +194,8 @@ class TripBloc extends Bloc<TripEvent, TripState> {
           unloadTareLink: tarraSambung
         );
 
-        await fetchLatestTrip(emit);
+        // await fetchLatestTrip(emit);
+        await fetchSpecificTrip(event.deliveryData.id ?? "", emit);
       } catch (e) {
         emit(TripError(e.toString()));
       }
@@ -160,7 +215,8 @@ class TripBloc extends Bloc<TripEvent, TripState> {
 
         if (status == 200) {
           // Jika berhasil, langsung fetch trip terbaru
-          await fetchLatestTrip(emit);
+          await fetchSpecificTrip(event.deliveryOrderDetailId, emit);
+          // await fetchLatestTrip(emit);
         } else {
           emit(TripError("Gagal menerima trip"));
         }
@@ -181,7 +237,8 @@ class TripBloc extends Bloc<TripEvent, TripState> {
 
         if (status == 200) {
           // Jika berhasil, langsung fetch trip terbaru
-          await fetchLatestTrip(emit);
+          await fetchSpecificTrip(event.deliveryData.id ?? "", emit);
+          // await fetchLatestTrip(emit);
         } else {
           emit(TripError("Gagal menerima trip"));
         }
@@ -202,7 +259,8 @@ class TripBloc extends Bloc<TripEvent, TripState> {
 
         if (status == 200) {
           // Jika berhasil, langsung fetch trip terbaru
-          await fetchLatestTrip(emit);
+          await fetchSpecificTrip(event.deliveryData.id ?? "", emit);
+          // await fetchLatestTrip(emit);
         } else {
           emit(TripError("Gagal menerima trip"));
         }

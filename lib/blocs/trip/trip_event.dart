@@ -4,9 +4,23 @@ abstract class TripEvent extends Equatable {
   const TripEvent();
 }
 
+class GetTripList extends TripEvent {
+  @override
+  List<Object> get props => [];
+}
+
 class GetTrip extends TripEvent {
   @override
   List<Object> get props => [];
+}
+
+class GetTripDetailEvent extends TripEvent {
+  final ListNewDoData deliveryData;
+
+  const GetTripDetailEvent({required this.deliveryData});
+
+  @override
+  List<Object> get props => [deliveryData];
 }
 
 class AcceptTrip extends TripEvent {

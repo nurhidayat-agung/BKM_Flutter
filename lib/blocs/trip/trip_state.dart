@@ -15,6 +15,15 @@ class TripLoading extends TripState {
   List<Object> get props => [];
 }
 
+class TripListLoaded extends TripState {
+  final List<ListNewDoData> tripList;
+
+  const TripListLoaded(this.tripList);
+
+  @override
+  List<Object> get props => [tripList];
+}
+
 class TripSuccess extends TripState with EquatableMixin {
   final DoDetailResponseData doDetailResponseData;
   final ListNewDoData listNewDoData;

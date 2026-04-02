@@ -76,21 +76,21 @@ class _RepairFormPageState extends State<RepairFormPage> {
             .toList() ??
         [];
 
-    // _workshops = widget.workshopTypes
-    //     ?.map((e) => e.name ?? '')
-    //     .where((e) => e.isNotEmpty)
-    //     .toList() ?? [];
-
-    final apiWorkshops = widget.workshopTypes
+    _workshops = widget.workshopTypes
         ?.map((e) => e.name ?? '')
         .where((e) => e.isNotEmpty)
         .toList() ?? [];
 
-    if (apiWorkshops.isEmpty) {
-      _workshops = ['Internal', 'External'];
-    } else {
-      _workshops = apiWorkshops;
-    }
+    // final apiWorkshops = widget.workshopTypes
+    //     ?.map((e) => e.name ?? '')
+    //     .where((e) => e.isNotEmpty)
+    //     .toList() ?? [];
+    //
+    // if (apiWorkshops.isEmpty) {
+    //   _workshops = ['Internal', 'External'];
+    // } else {
+    //   _workshops = apiWorkshops;
+    // }
 
     /// =====================
     /// EDIT MODE
@@ -114,6 +114,13 @@ class _RepairFormPageState extends State<RepairFormPage> {
             (e) => e.fieldValue == data.priority?.code,
             orElse: () => HiveSimpleMaster(),
           )
+          .name;
+      // Mengambil nilai bengkel saat mode edit
+      _selectedWorkshop = widget.workshopTypes
+          ?.firstWhere(
+            (e) => e.fieldValue == data.workshopTypeCode,
+        orElse: () => HiveSimpleMaster(),
+      )
           .name;
 
       /// ⬇️⬇️⬇️ INI YANG PENTING ⬇️⬇️⬇️
@@ -171,9 +178,10 @@ class _RepairFormPageState extends State<RepairFormPage> {
         listUrgencyLevel: widget.urgencyLevels!,
         maintenanceType: widget.maintenanceTypes!,
         listRepair: _selectedMaintenanceTypeIds,
-        // workshopType: _selectedWorkshop!,
-        workshopType: _selectedWorkshop!.toLowerCase(),
+        workshopType: _selectedWorkshop!,
         listWorkshopType: widget.workshopTypes ?? [],
+        // workshopType: _selectedWorkshop!.toLowerCase(),
+        // listWorkshopType: widget.workshopTypes ?? [],
       ),
     );
   }
@@ -394,7 +402,7 @@ class _RepairFormPageState extends State<RepairFormPage> {
         decoration: _inputDecoration("Jenis Maintenance"),
         child: _selectedMaintenanceTypeIds.isEmpty
             ? const Text(
-                "Pilih Jenis Maintenance",
+                "Pilih Jenis Kerusakan",
                 style: TextStyle(color: Colors.grey, fontSize: 13),
               )
             : Wrap(
@@ -436,7 +444,7 @@ class _RepairFormPageState extends State<RepairFormPage> {
         return StatefulBuilder(
           builder: (context, setStateDialog) {
             return AlertDialog(
-              title: const Text("Pilih Jenis Maintenance"),
+              title: const Text("Pilih Jenis Kerusakan"),
               content: SingleChildScrollView(
                 child: Column(
                   mainAxisSize: MainAxisSize.min,

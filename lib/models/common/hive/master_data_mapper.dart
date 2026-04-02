@@ -32,7 +32,10 @@ class MasterDataMapper {
           .toList(),
       maintenancetypes: src.maintenanceTypes
           ?.map((e) => toHiveSimple(e))
-          .toList()
+          .toList(),
+      workshopTypes: src.workshopTypes
+          ?.map((e) => toHiveSimple(e))
+          .toList(),
     );
   }
 }

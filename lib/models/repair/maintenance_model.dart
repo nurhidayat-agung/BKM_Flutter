@@ -7,6 +7,7 @@ class MaintenanceListData {
   String? maintenanceTypeId;
   int? isInternal;
   String? externalWorkshopName;
+  String? workshopTypeCode;
   String? requestNumber;
   int? queueNumber;
   String? queueMonth;
@@ -28,6 +29,7 @@ class MaintenanceListData {
   MechanicModel? mechanic;
   VehicleModel? vehicle;
   MaintenanceTypeModel? maintenanceType;
+  WorkshopTypeModel? workshopType;
   List<Damage?>? damages;
   List<dynamic>? logs;
 
@@ -40,6 +42,7 @@ class MaintenanceListData {
     this.maintenanceTypeId,
     this.isInternal,
     this.externalWorkshopName,
+    this.workshopTypeCode,
     this.requestNumber,
     this.queueNumber,
     this.queueMonth,
@@ -61,6 +64,7 @@ class MaintenanceListData {
     this.mechanic,
     this.vehicle,
     this.maintenanceType,
+    this.workshopType,
     this.damages,
     this.logs,
   });
@@ -75,6 +79,7 @@ class MaintenanceListData {
       maintenanceTypeId: json['maintenance_type_id'],
       isInternal: json['is_internal'],
       externalWorkshopName: json['external_workshop_name'],
+      workshopTypeCode: json['workshop_type_code'],
       requestNumber: json['request_number'],
       queueNumber: json['queue_number'],
       queueMonth: json['queue_month'],
@@ -108,6 +113,9 @@ class MaintenanceListData {
       maintenanceType: json['maintenance_type'] != null
           ? MaintenanceTypeModel.fromJson(json['maintenance_type'])
           : null,
+      workshopType: json['workshop_type'] != null
+          ? WorkshopTypeModel.fromJson(json['workshop_type'])
+          : null,
       damages: json['damages'] != null
           ? (json['damages'] as List)
           .map((e) => Damage.fromJson(e))
@@ -127,6 +135,7 @@ class MaintenanceListData {
       'maintenance_type_id': maintenanceTypeId,
       'is_internal': isInternal,
       'external_workshop_name': externalWorkshopName,
+      'workshop_type_code': workshopTypeCode,
       'request_number': requestNumber,
       'queue_number': queueNumber,
       'queue_month': queueMonth,
@@ -148,6 +157,7 @@ class MaintenanceListData {
       'mechanic': mechanic?.toJson(),
       'vehicle': vehicle?.toJson(),
       'maintenance_type': maintenanceType?.toJson(),
+      'workshop_type': workshopType?.toJson(),
       'damages': damages,
       'logs': logs,
     };
@@ -536,6 +546,50 @@ class Damage {
       'updated_at': updatedAt?.toIso8601String(),
     };
   }
+
+}
+// 👇 TAMBAHKAN KODE INI DI PALING BAWAH FILE 👇
+
+class WorkshopTypeModel {
+  String? id;
+  String? fieldName;
+  String? fieldValue;
+  String? name;
+  String? code;
+  int? sort;
+  int? isActive;
+
+  WorkshopTypeModel({
+    this.id,
+    this.fieldName,
+    this.fieldValue,
+    this.name,
+    this.code,
+    this.sort,
+    this.isActive,
+  });
+
+  factory WorkshopTypeModel.fromJson(Map<String, dynamic> json) {
+    return WorkshopTypeModel(
+      id: json['id'],
+      fieldName: json['field_name'],
+      fieldValue: json['field_value'],
+      name: json['name'],
+      code: json['code'],
+      sort: json['sort'],
+      isActive: json['is_active'],
+    );
+  }
+
+  Map<String, dynamic> toJson() => {
+    'id': id,
+    'field_name': fieldName,
+    'field_value': fieldValue,
+    'name': name,
+    'code': code,
+    'sort': sort,
+    'is_active': isActive,
+  };
 }
 
 
