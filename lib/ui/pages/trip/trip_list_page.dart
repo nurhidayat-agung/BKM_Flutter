@@ -3,7 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:newbkmmobile/blocs/trip/trip_bloc.dart';
 import 'package:newbkmmobile/repositories/trip_repository.dart';
 import 'package:newbkmmobile/ui/pages/trip/trip_page.dart';
-import 'package:newbkmmobile/models/trip/list_new_do_response.dart';
+// import 'package:newbkmmobile/models/trip/list_new_do_response.dart';
 
 class TripListPage extends StatefulWidget {
   const TripListPage({Key? key}) : super(key: key);
@@ -97,12 +97,12 @@ class _TripListPageState extends State<TripListPage> {
                   itemBuilder: (context, index) {
                     final item = listTrip[index];
 
-                    // Tarik data dari JSON untuk ditampilkan di List
+
                     final doBesar = item.deliveryOrder?.doNumber ?? "Tanpa DO";
                     final statusPesan = item.status?.name ?? "Diproses";
                     final komoditi = item.note ?? "-";
 
-                    // Ambil format tanggal "YYYY-MM-DD"
+
                     String tanggal = "-";
                     if (item.createdAt != null && item.createdAt!.length >= 10) {
                       tanggal = item.createdAt!.substring(0, 10);
@@ -110,7 +110,6 @@ class _TripListPageState extends State<TripListPage> {
 
                     return InkWell(
                       onTap: () {
-                        // 👉 MENGIRIM DATA KE TRIP PAGE SAAT DIKLIK
                         Navigator.push(
                           context,
                           MaterialPageRoute(

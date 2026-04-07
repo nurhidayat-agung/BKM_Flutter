@@ -720,16 +720,19 @@ class _TripPageState extends State<TripPage> {
   Widget inputField(
     TextEditingController c,
     String label, {
-    bool numericOnly = false, // default false
+    bool numericOnly = false, bool readOnly = false, // default false
   }) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 6),
       child: TextField(
         controller: c,
+        readOnly: readOnly, //Kunci field di form bongkar
         decoration: InputDecoration(
           labelText: label,
           labelStyle: const TextStyle(fontSize: 13),
           isDense: true,
+          filled: readOnly, //Kunci field di form bongkar
+          fillColor: readOnly ? Colors.grey.shade200 : Colors.white, //Kunci field di form bongkar
           contentPadding:
               const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
           border: OutlineInputBorder(
@@ -1029,7 +1032,7 @@ class _TripPageState extends State<TripPage> {
           const SizedBox(height: 8),
           inputField(tarraBongkar, "Jumlah Tarra Bongkar", numericOnly: true),
           inputField(brutoBongkar, "Jumlah Bruto Bongkar", numericOnly: true),
-          inputField(nettoBongkar, "Netto Bongkar (Kg)", numericOnly: true),
+          inputField(nettoBongkar, "Netto Bongkar (Kg)", numericOnly: true, readOnly: true),
           const SizedBox(height: 10),
 
           // ==========================
@@ -1101,12 +1104,12 @@ class _TripPageState extends State<TripPage> {
           if (deliveryData.linkedDetail != null) ...[
             Text("DO Sambung : $noDOSambung",
                 style: const TextStyle(fontWeight: FontWeight.bold)),
-            inputField(tarraBongkarSambung, "Jumlah Tarra Bongkar",
-                numericOnly: true),
             inputField(brutoBongkarSambung, "Jumlah Bruto Bongkar",
                 numericOnly: true),
-            inputField(nettoBongkarSambung, "Netto Bongkar (Kg)",
+            inputField(tarraBongkarSambung, "Jumlah Tarra Bongkar",
                 numericOnly: true),
+            inputField(nettoBongkarSambung, "Netto Bongkar (Kg)",
+                numericOnly: true, readOnly: true),
           ],
 
           if (isAction)
