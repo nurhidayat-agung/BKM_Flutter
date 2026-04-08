@@ -111,7 +111,21 @@ class _HistoryDetailPageState extends State<HistoryDetailPage> {
 
     final netto = isMuat ? (widget.detailHistory.loadQuantity?.toString() ?? "0")
         : (widget.detailHistory.unloadQuantity?.toString() ?? "0");
-    final fotoUrl = data["spb"];
+    String? fotoUrl;
+    if (widget.detailHistory.files.isNotEmpty) {
+      try {
+        if (isMuat) {
+          // Jika ini form MUAT, ambil foto di urutan pertama (first)
+          fotoUrl = widget.detailHistory.files.first.url;
+        } else {
+          // Jika ini form BONGKAR, ambil foto di urutan terakhir (last)
+          fotoUrl = widget.detailHistory.files.last.url;
+        }
+      } catch (e) {
+        fotoUrl = null;
+      }
+    }
+    // final fotoUrl = data["spb"];
 
     return Container(
       decoration: BoxDecoration(
@@ -179,7 +193,7 @@ class _HistoryDetailPageState extends State<HistoryDetailPage> {
                   if ((fotoUrl ?? "").isNotEmpty) {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (_) => FullImageView(image: fotoUrl)),
+                      MaterialPageRoute(builder: (_) => FullImageView(image: fotoUrl!)),
                     );
                   }
                 },
@@ -190,7 +204,7 @@ class _HistoryDetailPageState extends State<HistoryDetailPage> {
                   decoration: BoxDecoration(
                       color: Colors.grey.shade300,
                       borderRadius: BorderRadius.circular(4),
-                      image: DecorationImage(image: NetworkImage(fotoUrl), fit: BoxFit.cover)
+                      image: DecorationImage(image: NetworkImage(fotoUrl!), fit: BoxFit.cover)
                   ),
                 )
                     : Container(

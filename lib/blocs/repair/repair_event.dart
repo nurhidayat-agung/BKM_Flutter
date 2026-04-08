@@ -7,6 +7,7 @@ class RepairLoadingEvent extends RepairEvent {}
 
 class SubmitRepair extends RepairEvent {
   final String? id;
+  final String status;
   final String type;
   final String urgency;
   final String lastKm;
@@ -22,6 +23,7 @@ class SubmitRepair extends RepairEvent {
 
   SubmitRepair({
     required this.id,
+    required this.status,
     required this.type,
     required this.listRepair,
     required this.urgency,

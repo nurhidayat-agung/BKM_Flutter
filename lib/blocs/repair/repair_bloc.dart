@@ -56,6 +56,7 @@ class RepairBloc extends Bloc<RepairEvent, RepairState> {
       try {
         var (intStatus, result) = event.id == null ? await repository.submitRepair(
           type: selectedType ?? "",
+          status: event.status,
           listRepair: listRepair,
           urgency: selectedUrgency ?? "",
           lastKm: event.lastKm,
@@ -64,6 +65,7 @@ class RepairBloc extends Bloc<RepairEvent, RepairState> {
         ) : await repository.updateRepair(
           id: event.id ?? "",
           type: selectedType ?? "",
+          status: event.status,
           listRepair: listRepair,
           urgency: selectedUrgency ?? "",
           lastKm: event.lastKm,
@@ -71,7 +73,7 @@ class RepairBloc extends Bloc<RepairEvent, RepairState> {
           workshopTypeCode: selectedWorkshop ?? "",
         );
 
-        if (intStatus == 200) {
+        if (intStatus == 200 || intStatus == 201) {
 
           String message = '';
 

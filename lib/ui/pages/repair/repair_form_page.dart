@@ -170,6 +170,7 @@ class _RepairFormPageState extends State<RepairFormPage> {
     _repairBloc.add(
       SubmitRepair(
         id: widget.data?.id,
+        status: widget.data?.status?.fieldValue ?? 'pending',
         type: _selectedType!,
         urgency: _selectedUrgency!,
         lastKm: _kmController.text,

@@ -75,6 +75,7 @@ class RepairRepository {
   // Menyimpan data baru (Post/Store)
   Future<(int, dynamic)> submitRepair({
     required String type,
+    required String status,
     required String urgency,
     required List<String> listRepair,
     required String lastKm,
@@ -94,6 +95,7 @@ class RepairRepository {
       'maintenance-requests',
       headers: headers,
       body: {
+        'status': status,
         'requested_by': session?.driverId ?? '',
         'vehicle_id': session?.vehicleId ?? '',
         'maintenance_type_id': type,
@@ -113,6 +115,7 @@ class RepairRepository {
   Future<(int, dynamic)> updateRepair({
     required String id,
     required String type,
+    required String status,
     required String urgency,
     required String lastKm,
     required String description,
@@ -131,6 +134,7 @@ class RepairRepository {
       'maintenance-requests/$id',
       headers: headers,
       body: {
+        'status': status,
         'requested_by': session?.driverId ?? '',
         'vehicle_id': session?.vehicleId ?? '',
         'maintenance_type_id': type,
