@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
+import 'image_compressor.dart';
 
 Future<void> pickImage({
   required BuildContext context,
@@ -19,15 +20,19 @@ Future<void> pickImage({
               title: const Text('Ambil dari Kamera'),
               onTap: () async {
                 Navigator.pop(context);
+                // 1. Ambil foto asli (tanpa dibatasi kualitasnya di sini)
                 final XFile? image = await picker.pickImage(
-                  source: ImageSource.camera,
-                  imageQuality: 30, //konversi 30%
-                  maxWidth: 720,
-                  maxHeight: 720,
+                    source: ImageSource.camera,
                 );
 
                 if (image != null) {
-                  onImagePicked(File(image.path));
+                  File originalFile = File(image.path);
+
+                  // 2. Masukkan ke Mesin Kompresi Dinamis! (Otomatis target 2 MB)
+                  File compressedFile = await ImageCompressor.compressImageRecursive(originalFile);
+
+                  // 3. Kirim hasilnya kembali ke Form
+                  onImagePicked(compressedFile);
                 }
               },
             ),
@@ -38,13 +43,16 @@ Future<void> pickImage({
                 Navigator.pop(context);
                 final XFile? image = await picker.pickImage(
                   source: ImageSource.gallery,
-                  imageQuality: 30, // Konversi 30%
-                  maxWidth: 720,
-                  maxHeight: 720,
                 );
 
                 if (image != null) {
-                  onImagePicked(File(image.path));
+                  File originalFile = File(image.path);
+
+                  // 2. Masukkan ke Mesin Kompresi Dinamis! (Otomatis target 2 MB)
+                  File compressedFile = await ImageCompressor.compressImageRecursive(originalFile);
+
+                  // 3. Kirim hasilnya kembali ke Form
+                  onImagePicked(compressedFile);
                 }
               },
             ),

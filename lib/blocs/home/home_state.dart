@@ -17,10 +17,11 @@ class HomeLoaded extends HomeState {
   final String balance;
   final String? savings;
   final String? heldAmmount;
+  final bool hasNewOrder;
 
 
 
-  const HomeLoaded({required this.name, required this.balance, required this.savings, required this.heldAmmount,});
+  const HomeLoaded({required this.name, required this.balance, required this.savings, required this.heldAmmount, this.hasNewOrder = false,});
 
   @override
   List<Object?> get props => [name, balance,];

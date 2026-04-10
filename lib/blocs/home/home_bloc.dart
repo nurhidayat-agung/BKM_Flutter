@@ -20,6 +20,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
             balance: userSession.balance ?? '0',
             savings: userSession.savings,
             heldAmmount: userSession.heldAmmount,
+            // hasNewOrder: adaOrder,
           ));
         } else {
           emit(const HomeError('User session tidak ditemukan.'));

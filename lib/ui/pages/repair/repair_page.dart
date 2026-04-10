@@ -191,51 +191,86 @@ class _RepairPageState extends State<RepairPage> {
       HiveMasterData masterData) {
     const darkBlue = Color(0xFF002B4C);
 
-    Color statusColor() {
-      switch (item.status?.name) {
-        case "Tunda":
-          return Colors.orange;
-        case "Selesai":
-          return Colors.green;
-        case "Proses":
-          return Colors.blue;
-        default:
-          return Colors.grey;
-      }
+    //Menentukan teks dan warna badge berdasarkan respons API
+    String statusStr = item.status?.name ?? "Pending";
+    String badgeText = "Pending";
+    Color badgeColor = Colors.grey;
+    String sLower = statusStr.toLowerCase();
+
+    if (sLower.contains('setuju') || sLower.contains('approve')) {
+      badgeText = "Disetujui";
+      badgeColor = const Color(0xFF4CAF50); // Hijau
+    } else if (sLower.contains('tolak') || sLower.contains('reject')) {
+      badgeText = "Ditolak";
+      badgeColor = const Color(0xFFE53935); // Merah
+    } else if (sLower.contains('proses') || sLower.contains('process')) {
+      badgeText = "Proses";
+      badgeColor = const Color(0xFF1976D2); // Biru
+    } else if (sLower.contains('selesai') || sLower.contains('done')) {
+      badgeText = "Selesai";
+      badgeColor = const Color(0xFFFF9800); // Orange
+    } else {
+      badgeText = "Ditunda";
+      badgeColor = const Color(0xFFFDD835); // Kuning
     }
+
+    // Color statusColor() {
+    //   switch (item.status?.name) {
+    //     case "Tunda":
+    //       return Colors.orange;
+    //     case "Selesai":
+    //       return Colors.green;
+    //     case "Proses":
+    //       return Colors.blue;
+    //     default:
+    //       return Colors.grey;
+    //   }
+    // }
 
     return GestureDetector(
       onTap: () async {
-        if (masterData.repairTypes != null &&
-            masterData.repairTypes!.isNotEmpty &&
-            masterData.urgencyLevels != null &&
-            masterData.urgencyLevels!.isNotEmpty &&
-            masterData.maintenancetypes != null &&
-            masterData.maintenancetypes!.isNotEmpty) {
-          // Navigasi ke Form
-          final result = await Navigator.push(
-            context,
-            MaterialPageRoute(
-                builder: (context) => RepairFormPage(
-                    masterData.repairTypes,
-                    masterData.urgencyLevels,
-                    masterData.maintenancetypes,
-                    masterData.workshopTypes,
-                    data: item,)),
-          );
-
-          // --- REFRESH LIST JIKA SUKSES SIMPAN --- //
-          if (result == true) {
-            _repairBloc.add(FetchRepairs());
-          }
-        }
+        // 2. MENGUBAH ALUR: Jika List diklik, arahkan ke Halaman Detail (bukan Form)
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => RepairDetailPage(
+              item: item,
+              badgeText: badgeText,
+              badgeColor: badgeColor,
+            ),
+          ),
+        );
+        //kode lama
+        // if (masterData.repairTypes != null &&
+        //     masterData.repairTypes!.isNotEmpty &&
+        //     masterData.urgencyLevels != null &&
+        //     masterData.urgencyLevels!.isNotEmpty &&
+        //     masterData.maintenancetypes != null &&
+        //     masterData.maintenancetypes!.isNotEmpty) {
+        //   // Navigasi ke Form
+        //   final result = await Navigator.push(
+        //     context,
+        //     MaterialPageRoute(
+        //         builder: (context) => RepairFormPage(
+        //             masterData.repairTypes,
+        //             masterData.urgencyLevels,
+        //             masterData.maintenancetypes,
+        //             masterData.workshopTypes,
+        //             data: item,)),
+        //   );
+        //
+        //   // --- REFRESH LIST JIKA SUKSES SIMPAN --- //
+        //   if (result == true) {
+        //     _repairBloc.add(FetchRepairs());
+        //   }
+        // }
       },
       child: Container(
-        margin: const EdgeInsets.only(bottom: 10), // ⬅️ lebih rapat
-        padding: const EdgeInsets.fromLTRB(14, 12, 14, 12), // ⬅️ lebih padat
+        margin: const EdgeInsets.only(bottom: 12), // Jarak antar card
+        padding: const EdgeInsets.all(16), // Padding dalam card
         decoration: BoxDecoration(
           color: Colors.white,
-          borderRadius: BorderRadius.circular(10), // sedikit diperkecil
+          borderRadius: BorderRadius.circular(10), // Sedikit tumpul
           boxShadow: [
             BoxShadow(
               color: Colors.black.withOpacity(0.04),
@@ -244,6 +279,21 @@ class _RepairPageState extends State<RepairPage> {
             ),
           ],
         ),
+      //kode lama
+      // child: Container(
+      //   margin: const EdgeInsets.only(bottom: 10), // ⬅️ lebih rapat
+      //   padding: const EdgeInsets.fromLTRB(14, 12, 14, 12), // ⬅️ lebih padat
+      //   decoration: BoxDecoration(
+      //     color: Colors.white,
+      //     borderRadius: BorderRadius.circular(10), // sedikit diperkecil
+      //     boxShadow: [
+      //       BoxShadow(
+      //         color: Colors.black.withOpacity(0.04),
+      //         blurRadius: 6,
+      //         offset: const Offset(0, 2),
+      //       ),
+      //     ],
+      //   ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -266,37 +316,61 @@ class _RepairPageState extends State<RepairPage> {
                 Text(
                   item.priority?.name ?? "-",
                   style: const TextStyle(
-                    fontSize: 17, // sedikit diturunkan
+                    fontSize: 20, // Diperbesar sesuai mockup
                     fontWeight: FontWeight.bold,
                     color: darkBlue,
                   ),
                 ),
+                // 3. DESAIN BADGE: Bentuk oval / pill berwarna
                 Container(
-                  padding:
-                  const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
                   decoration: BoxDecoration(
-                    color: hexToColor(item.status?.colorHex),
-                    borderRadius: BorderRadius.circular(14),
+                    color: badgeColor,
+                    borderRadius: BorderRadius.circular(20), // Membuat kapsul
                   ),
                   child: Text(
-                    item.status?.name ?? "-",
+                    badgeText,
                     style: const TextStyle(
                       color: Colors.white,
-                      fontSize: 11, // lebih padat
+                      fontSize: 12,
                       fontWeight: FontWeight.w600,
                     ),
                   ),
                 ),
+                // Text(
+                //   item.priority?.name ?? "-",
+                //   style: const TextStyle(
+                //     fontSize: 17, // sedikit diturunkan
+                //     fontWeight: FontWeight.bold,
+                //     color: darkBlue,
+                //   ),
+                // ),
+                // Container(
+                //   padding:
+                //   const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                //   decoration: BoxDecoration(
+                //     color: hexToColor(item.status?.colorHex),
+                //     borderRadius: BorderRadius.circular(14),
+                //   ),
+                //   child: Text(
+                //     item.status?.name ?? "-",
+                //     style: const TextStyle(
+                //       color: Colors.white,
+                //       fontSize: 11, // lebih padat
+                //       fontWeight: FontWeight.w600,
+                //     ),
+                //   ),
+                // ),
               ],
             ),
 
             const SizedBox(height: 8),
-            Divider(
-              height: 1,
-              thickness: 0.8,
-              color: Colors.grey.shade200,
-            ),
-            const SizedBox(height: 8),
+            // Divider(
+            //   height: 1,
+            //   thickness: 0.8,
+            //   color: Colors.grey.shade200,
+            // ),
+            // const SizedBox(height: 8),
 
             /// JENIS PERBAIKAN & KM
             Row(
@@ -327,25 +401,42 @@ class _RepairPageState extends State<RepairPage> {
                 // KANAN
                 Expanded(
                   child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.end,
+                    // 5. MENGUBAH ALIGNMENT: Rata Kiri (start) sesuai Mockup
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       const Text(
                         "Kilometer Terakhir",
-                        textAlign: TextAlign.right,
-                        style:
-                        TextStyle(fontSize: 11, color: Colors.grey),
+                        style: TextStyle(fontSize: 11, color: Colors.grey, fontWeight: FontWeight.w500),
                       ),
-                      const SizedBox(height: 2),
+                      const SizedBox(height: 4),
                       Text(
-                        "${item.currentKm} km",
-                        textAlign: TextAlign.right,
+                        "${item.currentKm ?? 0} Km",
                         style: const TextStyle(
-                          fontSize: 16, // ⬆️ fokus utama
-                          fontWeight: FontWeight.bold,
-                          color: darkBlue,
+                          fontSize: 14,
+                          fontWeight: FontWeight.w700,
+                          color: Colors.black87,
                         ),
                       ),
                     ],
+                    // crossAxisAlignment: CrossAxisAlignment.end,
+                    // children: [
+                    //   const Text(
+                    //     "Kilometer Terakhir",
+                    //     textAlign: TextAlign.right,
+                    //     style:
+                    //     TextStyle(fontSize: 11, color: Colors.grey),
+                    //   ),
+                    //   const SizedBox(height: 2),
+                    //   Text(
+                    //     "${item.currentKm} km",
+                    //     textAlign: TextAlign.right,
+                    //     style: const TextStyle(
+                    //       fontSize: 16, // ⬆️ fokus utama
+                    //       fontWeight: FontWeight.bold,
+                    //       color: darkBlue,
+                    //     ),
+                    //   ),
+                    // ],
                   ),
                 ),
               ],

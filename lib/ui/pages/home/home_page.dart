@@ -359,7 +359,7 @@ class _HomePageState extends State<HomePage> {
                                 _menuItem("Pengangkutan Baru",
                                     "assets/Pengangkutan_Baru.png",
                                     const TripListPage(),
-                                    isRestrictedDuringLeave: true,context),
+                                    context,isRestrictedDuringLeave: true,showBadge: false),
                                     // isRestrictedDuringLeave: true),// Panggil ini untuk block pengangkutan
                                 _menuItem("Langsir", "assets/Langsir.png",
                                     const LangsirListPage(), context),
@@ -409,7 +409,7 @@ class _HomePageState extends State<HomePage> {
   }
 
   Widget _menuItem(String title, String imagePath, Widget page,
-      BuildContext context, {bool isRestrictedDuringLeave = false}) {
+      BuildContext context, {bool isRestrictedDuringLeave = false, bool showBadge = false}) {
     return GestureDetector(
       onTap: () {
         if (isRestrictedDuringLeave && _isCurrentlyOnLeave &&
@@ -426,12 +426,18 @@ class _HomePageState extends State<HomePage> {
           // FIXED HEIGHT ICON
           SizedBox(
             height: 90,
+            child: Badge(
+              isLabelVisible: showBadge,
+              backgroundColor: Colors.red,
+              smallSize: 14,
+            offset: const Offset(-25, 25),
             child: Image.asset(
               imagePath,
               width: 90,
               height: 90,
               fit: BoxFit.contain,
             ),
+          ),
           ),
           const SizedBox(height: 8),
           // TEXT MANAGE HEIGHT

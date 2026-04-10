@@ -2,10 +2,10 @@ import 'dart:convert';
 
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
-import 'package:newbkmmobile/blocs/trip_detail/trip_detail_bloc.dart';
+//import 'package:newbkmmobile/blocs/trip_detail/trip_detail_bloc.dart';
 import 'package:newbkmmobile/models/trip/list_new_do_response.dart' show ListNewDoData;
 import 'package:newbkmmobile/models/trip/muat_request.dart';
-import 'package:newbkmmobile/models/trip/show_do_response.dart';
+//import 'package:newbkmmobile/models/trip/show_do_response.dart';
 import 'package:newbkmmobile/models/trip/v2/do_detail_response.dart';
 import 'package:newbkmmobile/repositories/trip_repository.dart';
 
@@ -17,7 +17,7 @@ class TripBloc extends Bloc<TripEvent, TripState> {
 
   TripBloc(this._tripRepository) : super(TripInitial()) {
 
-    // 👉 KODE BARU: Fungsi helper untuk ambil trip spesifik
+    // KODE BARU: Fungsi helper untuk ambil trip spesifik
     Future<void> fetchSpecificTrip(String deliveryId, Emitter<TripState> emit) async {
       try {
         final (status, resp) = await _tripRepository.getNewDeliveryOrder();
@@ -75,7 +75,7 @@ class TripBloc extends Bloc<TripEvent, TripState> {
     //     emit(TripError(e.toString()));
     //   }
     // }
-    // 👉 KODE BARU: Event untuk halaman TripListPage (Nampilin List)
+    // KODE BARU: Event untuk halaman TripListPage (Nampilin List)
     on<GetTripList>((event, emit) async {
       emit(const TripLoading());
       try {
@@ -90,7 +90,7 @@ class TripBloc extends Bloc<TripEvent, TripState> {
       }
     });
 
-    // 👉 KODE BARU: Event untuk halaman TripPage (Nampilin Detail)
+    // KODE BARU: Event untuk halaman TripPage (Nampilin Detail)
     on<GetTripDetailEvent>((event, emit) async {
       emit(const TripLoading());
       await fetchSpecificTrip(event.deliveryData.id ?? "", emit);
@@ -155,9 +155,15 @@ class TripBloc extends Bloc<TripEvent, TripState> {
           loadQuantityLink: nettoSambung,
           loadTareLink: tarraSambung,
         );
+        // Pengecekan agar aplikasi tidak stuck/blank saat error
+        if (status == 200 || status == 201) {
+          await fetchSpecificTrip(event.deliveryData.id ?? "", emit);
+        } else {
+          emit(TripError("Gagal menyimpan data MUAT. Server merespons dengan kode: $status"));
+        }
 
-        // await fetchLatestTrip(emit);
-        await fetchSpecificTrip(event.deliveryData.id ?? "", emit);
+        // // await fetchLatestTrip(emit);
+        // await fetchSpecificTrip(event.deliveryData.id ?? "", emit);
       } catch (e) {
         emit(TripError(e.toString()));
       }
@@ -193,9 +199,15 @@ class TripBloc extends Bloc<TripEvent, TripState> {
           unloadQuantityLink: nettoSambung,
           unloadTareLink: tarraSambung
         );
+        // Pengecekan agar aplikasi tidak stuck/blank saat error
+        if (status == 200 || status == 201) {
+          await fetchSpecificTrip(event.deliveryData.id ?? "", emit);
+        } else {
+          emit(TripError("Gagal menyimpan data BONGKAR. Server merespons dengan kode: $status"));
+        }
 
-        // await fetchLatestTrip(emit);
-        await fetchSpecificTrip(event.deliveryData.id ?? "", emit);
+        // // await fetchLatestTrip(emit);
+        // await fetchSpecificTrip(event.deliveryData.id ?? "", emit);
       } catch (e) {
         emit(TripError(e.toString()));
       }
@@ -262,7 +274,7 @@ class TripBloc extends Bloc<TripEvent, TripState> {
           await fetchSpecificTrip(event.deliveryData.id ?? "", emit);
           // await fetchLatestTrip(emit);
         } else {
-          emit(TripError("Gagal menerima trip"));
+          emit(TripError("Gagal menerima trip: $status"));
         }
       } catch (e) {
         emit(TripError(e.toString()));
