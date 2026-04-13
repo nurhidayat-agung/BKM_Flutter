@@ -162,6 +162,21 @@ class LeaveDetailPage extends StatelessWidget {
   final LeaveData data;
   const LeaveDetailPage({super.key, required this.data});
 
+  // 👇 Fungsi untuk bikin warna background status otomatis (Hijau/Kuning/Merah)
+  Color _getStatusColor(String? statusName) {
+    final status = (statusName ?? '').toLowerCase();
+    if (status.contains('setuju') || status.contains('approve')) {
+      return const Color(0xFF4CAF50); // Hijau Disetujui
+    }
+    if (status.contains('tunda') || status.contains('pending') || status.contains('menunggu')) {
+      return const Color(0xFFFFC107); // Kuning Ditunda
+    }
+    if (status.contains('tolak') || status.contains('reject')) {
+      return const Color(0xFFE53935); // Merah Ditolak
+    }
+    return Colors.grey; // Abu-abu kalau status tidak dikenali
+  }
+
   @override
   Widget build(BuildContext context) {
     const darkBlue = Color(0xFF002B4C);
@@ -227,26 +242,31 @@ class LeaveDetailPage extends StatelessWidget {
               const SizedBox(height: 12),
 
               // Title & Status
+              // Title & Status
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text(
-                    data.leaveType?.name ?? "",
-                    style: const TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: darkBlue,
+                  Expanded( // ⬅️ Ditambah Expanded biar kalau judulnya panjang nggak error overflow
+                    child: Text(
+                      data.leaveType?.name ?? "-",
+                      style: const TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: darkBlue,
+                      ),
                     ),
                   ),
+                  const SizedBox(width: 8),
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
                     decoration: BoxDecoration(
-                      color: Colors.yellow,
+                      // 👇 INI YANG BERUBAH: Panggil fungsi warna yang kita buat di atas
+                      color: _getStatusColor(data.status?.name),
                       borderRadius: BorderRadius.circular(20),
                     ),
                     child: Text(
-                      data.status?.name ?? "",
-                      style: TextStyle(
+                      data.status?.name ?? "-",
+                      style: const TextStyle(
                         color: Colors.white,
                         fontSize: 12,
                         fontWeight: FontWeight.bold,
@@ -255,6 +275,34 @@ class LeaveDetailPage extends StatelessWidget {
                   ),
                 ],
               ),
+              // Row(
+              //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              //   children: [
+              //     Text(
+              //       data.leaveType?.name ?? "",
+              //       style: const TextStyle(
+              //         fontSize: 18,
+              //         fontWeight: FontWeight.bold,
+              //         color: darkBlue,
+              //       ),
+              //     ),
+              //     Container(
+              //       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+              //       decoration: BoxDecoration(
+              //         color: Colors.yellow,
+              //         borderRadius: BorderRadius.circular(20),
+              //       ),
+              //       child: Text(
+              //         data.status?.name ?? "",
+              //         style: TextStyle(
+              //           color: Colors.white,
+              //           fontSize: 12,
+              //           fontWeight: FontWeight.bold,
+              //         ),
+              //       ),
+              //     ),
+              //   ],
+              // ),
               const SizedBox(height: 24),
 
               // Dates Row
@@ -266,7 +314,7 @@ class LeaveDetailPage extends StatelessWidget {
                       children: [
                         const Text(
                           "Tgl Dimulai",
-                          style: TextStyle(fontSize: 12, color: Colors.black54),
+                          style: TextStyle(fontSize: 12, color: Colors.grey, fontWeight: FontWeight.w500),
                         ),
                         const SizedBox(height: 4),
                         Text(
@@ -286,7 +334,7 @@ class LeaveDetailPage extends StatelessWidget {
                       children: [
                         const Text(
                           "Tgl Berakhir",
-                          style: TextStyle(fontSize: 12, color: Colors.black54),
+                          style: TextStyle(fontSize: 12, color: Colors.grey, fontWeight: FontWeight.w500),
                         ),
                         const SizedBox(height: 4),
                         Text(

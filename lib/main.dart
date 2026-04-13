@@ -49,6 +49,7 @@ import 'package:newbkmmobile/blocs/langsir/langsir_bloc.dart';
 import 'package:newbkmmobile/repositories/langsir_repository.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 
 final Alice alice = Alice(
   configuration: AliceConfiguration(
@@ -58,16 +59,51 @@ final Alice alice = Alice(
   )
 );
 
+//======================
+// BACKGROUND HANDLER //
+//======================
+@pragma('vm:entry-point')
+Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  print("Menangani notif background: ${message.messageId}");
+}
+
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-  await Hive.initFlutter();
+  // Register Background Handler
+  FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
 
+  await Hive.initFlutter();
   await initializeDateFormatting('id_ID', null);
 
+  // Jalankan Setup FCM untuk ambil token
+  await setupFCM();
+
   runApp(MyApp());
+}
+//======================
+// FUNGSI SETUP FCM //
+//======================
+Future<void> setupFCM() async {
+  FirebaseMessaging messaging = FirebaseMessaging.instance;
+
+  // Minta izin ke user
+  NotificationSettings settings = await messaging.requestPermission(
+    alert: true,
+    badge: true,
+    sound: true,
+  );
+
+  if (settings.authorizationStatus == AuthorizationStatus.authorized) {
+    // Ambil Token
+    String? token = await messaging.getToken();
+    print("=========================================");
+    print("FCM TOKEN: $token");
+    print("=========================================");
+  }
 }
 
 class MyApp extends StatelessWidget {

@@ -727,6 +727,12 @@ class _TripPageState extends State<TripPage> {
       child: TextField(
         controller: c,
         readOnly: readOnly, //Kunci field di form bongkar
+        onTap: () {
+          // Kalau isinya cuma angka 0, langsung hapus (clear) pas diklik
+          if (c.text.trim() == '0') {
+            c.clear();
+          }
+        },
         decoration: InputDecoration(
           labelText: label,
           labelStyle: const TextStyle(fontSize: 13),
