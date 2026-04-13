@@ -162,7 +162,6 @@ class LeaveDetailPage extends StatelessWidget {
   final LeaveData data;
   const LeaveDetailPage({super.key, required this.data});
 
-  // 👇 Fungsi untuk bikin warna background status otomatis (Hijau/Kuning/Merah)
   Color _getStatusColor(String? statusName) {
     final status = (statusName ?? '').toLowerCase();
     if (status.contains('setuju') || status.contains('approve')) {
@@ -242,7 +241,6 @@ class LeaveDetailPage extends StatelessWidget {
               const SizedBox(height: 12),
 
               // Title & Status
-              // Title & Status
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -275,6 +273,8 @@ class LeaveDetailPage extends StatelessWidget {
                   ),
                 ],
               ),
+
+              //kode lama
               // Row(
               //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
               //   children: [

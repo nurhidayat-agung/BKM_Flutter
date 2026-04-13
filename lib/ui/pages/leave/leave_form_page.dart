@@ -168,7 +168,8 @@ class _LeaveFormPageState extends State<LeaveFormPage> {
   }
 
   Future<bool> showConfirmDialog(String title, String msg) async {
-    return await showDialog(
+    // return await showDialog
+    final result = await showDialog<bool>(
       context: context,
       builder: (_) => Dialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
@@ -221,6 +222,7 @@ class _LeaveFormPageState extends State<LeaveFormPage> {
         ),
       ),
     );
+    return result ?? false;
   }
 
   @override
