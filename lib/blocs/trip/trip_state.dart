@@ -17,11 +17,12 @@ class TripLoading extends TripState {
 
 class TripListLoaded extends TripState {
   final List<ListNewDoData> tripList;
+  final bool hasNewTrip;
 
-  const TripListLoaded(this.tripList);
+  const TripListLoaded(this.tripList, {this.hasNewTrip = false});
 
   @override
-  List<Object> get props => [tripList];
+  List<Object> get props => [tripList, hasNewTrip];
 }
 
 class TripSuccess extends TripState with EquatableMixin {

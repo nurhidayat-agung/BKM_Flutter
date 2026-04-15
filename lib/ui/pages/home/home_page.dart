@@ -23,6 +23,9 @@ import 'package:newbkmmobile/services/http_communicator.dart';
 import 'package:newbkmmobile/repositories/session_manager_repository.dart';
 import 'package:newbkmmobile/models/common/announcement.dart';
 import 'package:newbkmmobile/repositories/common_repository.dart';
+import 'package:newbkmmobile/blocs/trip/trip_bloc.dart';
+import 'package:newbkmmobile/repositories/trip_repository.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 
 
 class HomePage extends StatefulWidget {
@@ -65,6 +68,7 @@ class _HomePageState extends State<HomePage> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       fetchCommonData();
       checkLeaveStatus();
+      bindTokenToUser();
     });
   }
 
@@ -348,33 +352,58 @@ class _HomePageState extends State<HomePage> {
                           // 🔹 MENU GRID
                           Padding(
                             padding: const EdgeInsets.symmetric(horizontal: 16),
-                            child: GridView.count(
-                              shrinkWrap: true,
-                              physics: const NeverScrollableScrollPhysics(),
-                              crossAxisCount: 3,
-                              crossAxisSpacing: 24,
-                              mainAxisSpacing: 28,
-                              childAspectRatio: 0.70,
-                              children: [
-                                _menuItem("Pengangkutan Baru",
-                                    "assets/Pengangkutan_Baru.png",
-                                    const TripListPage(),
-                                    context,isRestrictedDuringLeave: true,showBadge: false),
-                                    // isRestrictedDuringLeave: true),// Panggil ini untuk block pengangkutan
-                                _menuItem("Langsir", "assets/Langsir.png",
-                                    const LangsirListPage(), context),
-                                _menuItem("Riwayat Pengangkutan",
-                                    "assets/Riwayat_Pengangkutan.png",
-                                    const HistoryPage(), context),
-                                _menuItem("Bengkel", "assets/Bengkel.png",
-                                    const RepairPage(), context),
-                                _menuItem("Pengajuan Cuti",
-                                    "assets/Pengajuan_Cuti.png",
-                                    const LeaveApplicationPageWrapper(),
-                                    context),
-                                _menuItem("Slip Gaji", "assets/slip_gaji.png",
-                                    const PaySlipPage(), context),
-                              ],
+                            child: BlocProvider<TripBloc>(
+                              create: (context) => TripBloc(TripRepository())..add(GetTripList()),
+                              child: BlocBuilder<TripBloc, TripState>(
+                                builder: (blocContext, tripState) {
+                                  bool hasNewTrip = false;
+                                  int currentTripCount = 0;
+
+                                  if (tripState is TripListLoaded) {
+                                    hasNewTrip = tripState.hasNewTrip;
+                                    currentTripCount =
+                                        tripState.tripList.length;
+                                  }
+                                  return GridView.count(
+                                    shrinkWrap: true,
+                                    physics: const NeverScrollableScrollPhysics(),
+                                    crossAxisCount: 3,
+                                    crossAxisSpacing: 24,
+                                    mainAxisSpacing: 28,
+                                    childAspectRatio: 0.70,
+                                    children: [
+                                      _menuItem("Pengangkutan Baru",
+                                        "assets/Pengangkutan_Baru.png",
+                                        const TripListPage(),
+                                        context, isRestrictedDuringLeave: true,
+                                        showBadge: hasNewTrip,
+                                        onBeforeAction: () {
+                                          blocContext.read<TripBloc>().add(
+                                              MarkTripAsRead(currentTripCount));
+                                        },
+                                        onAfterReturn: () {
+                                          blocContext.read<TripBloc>().add(
+                                              GetTripList());
+                                        },),
+                                      // isRestrictedDuringLeave: true),// Panggil ini untuk block pengangkutan
+                                      _menuItem("Langsir", "assets/Langsir.png",
+                                          const LangsirListPage(), context),
+                                      _menuItem("Riwayat Pengangkutan",
+                                          "assets/Riwayat_Pengangkutan.png",
+                                          const HistoryPage(), context),
+                                      _menuItem("Bengkel", "assets/Bengkel.png",
+                                          const RepairPage(), context),
+                                      _menuItem("Pengajuan Cuti",
+                                          "assets/Pengajuan_Cuti.png",
+                                          const LeaveApplicationPageWrapper(),
+                                          context),
+                                      _menuItem(
+                                          "Slip Gaji", "assets/slip_gaji.png",
+                                          const PaySlipPage(), context),
+                                    ],
+                                  );
+                                }
+                              ),
                             ),
                           ),
 
@@ -409,15 +438,18 @@ class _HomePageState extends State<HomePage> {
   }
 
   Widget _menuItem(String title, String imagePath, Widget page,
-      BuildContext context, {bool isRestrictedDuringLeave = false, bool showBadge = false}) {
+      BuildContext context, {bool isRestrictedDuringLeave = false, bool showBadge = false, VoidCallback? onBeforeAction, VoidCallback? onAfterReturn}) {
     return GestureDetector(
-      onTap: () {
+      onTap: () async {
+
+        if (onBeforeAction != null) onBeforeAction();
         if (isRestrictedDuringLeave && _isCurrentlyOnLeave &&
             _activeLeaveStart != null && _activeLeaveEnd != null) {
           showLeavePopup(
               _activeLeaveType, _activeLeaveStart!, _activeLeaveEnd!);
         } else {
-          Navigator.push(context, MaterialPageRoute(builder: (_) => page));
+          await Navigator.push(context, MaterialPageRoute(builder: (_) => page));
+          if (onAfterReturn != null) onAfterReturn();
         }
       },
       child: Column(
@@ -426,17 +458,32 @@ class _HomePageState extends State<HomePage> {
           // FIXED HEIGHT ICON
           SizedBox(
             height: 90,
-            child: Badge(
-              isLabelVisible: showBadge,
-              backgroundColor: Colors.red,
-              smallSize: 14,
-            offset: const Offset(-25, 25),
-            child: Image.asset(
+            width: 90,
+        child: Stack(
+          clipBehavior: Clip.none,
+          children: [
+            // Gambar Utama
+            Image.asset(
               imagePath,
               width: 90,
               height: 90,
               fit: BoxFit.contain,
             ),
+            if (showBadge)
+              Positioned(
+                top: 13,
+                right: 13,
+                child: Container(
+                  width: 18,
+                  height: 16,
+                  decoration: BoxDecoration(
+                    color: Colors.red,
+                    shape: BoxShape.circle,
+                    border: Border.all(color: Colors.white, width: 1.5),
+                  ),
+                ),
+              ),
+            ],
           ),
           ),
           const SizedBox(height: 8),
@@ -625,6 +672,30 @@ class _HomePageState extends State<HomePage> {
   }
 
   /// ===============================
+  /// FUNGSI KIRIM TOKEN KE BACKEND
+  /// ===============================
+  Future<void> bindTokenToUser() async {
+    try {
+      // Ambil "Token HP" (FCM Token) dari Google Firebase
+      String? fcmToken = await FirebaseMessaging.instance.getToken();
+
+      if (fcmToken != null) {
+        // Ambil ID Supir yang sedang login saat ini dari Session Manager
+        final session = await SessionManager.getUserSession();
+        final userId = session?.userId;
+
+        // Kirim Token + User ID ke API
+        if (userId != null && userId.isNotEmpty) {
+          // Nembak fungsi updateFirebaseToken yang ada di LoginRepository
+          await widget.loginRepository.updateFirebaseToken(userId, fcmToken);
+        }
+      }
+    } catch (e) {
+      debugPrint("Gagal Kirim FCM Token: $e");
+    }
+  }
+
+  /// ===============================
   /// POPUP INFORMASI CUTI
   /// ===============================
   void showLeavePopup(String type, DateTime start, DateTime end) {
@@ -649,7 +720,6 @@ class _HomePageState extends State<HomePage> {
     for (String part in parts) {
       if (part.contains('</bold>')) {
         List<String> subParts = part.split('</bold>');
-        // Bagian pertama (subParts[0]) adalah teks yang di dalam tag <bold> -> JADIKAN TEBAL
         textSpans.add(TextSpan(
           text: subParts[0],
           style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.black),
@@ -702,26 +772,26 @@ class _HomePageState extends State<HomePage> {
                   ),
 
                   // Tombol Menutup PopUp
-                  Align(
-                    alignment: Alignment.centerRight,
-                    child: TextButton(
-                      onPressed: () {
-                        Navigator.of(context).pop();
-                      },
-                      style: TextButton.styleFrom(
-                        foregroundColor: Colors.white,
-                        backgroundColor: const Color(0xFF001F3F),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-                      ),
-                      child: const Text(
-                        "Mengerti",
-                        style: TextStyle(fontWeight: FontWeight.bold),
-                      ),
-                    ),
-                  ),
+                  // Align(
+                  //   alignment: Alignment.centerRight,
+                  //   child: TextButton(
+                  //     onPressed: () {
+                  //       Navigator.of(context).pop();
+                  //     },
+                  //     style: TextButton.styleFrom(
+                  //       foregroundColor: Colors.white,
+                  //       backgroundColor: const Color(0xFF001F3F),
+                  //       shape: RoundedRectangleBorder(
+                  //         borderRadius: BorderRadius.circular(8),
+                  //       ),
+                  //       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                  //     ),
+                  //     child: const Text(
+                  //       "Mengerti",
+                  //       style: TextStyle(fontWeight: FontWeight.bold),
+                  //     ),
+                  //   ),
+                  // ),
                 ],
               ),
             ),

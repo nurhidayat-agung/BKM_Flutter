@@ -8,6 +8,7 @@ import 'package:newbkmmobile/models/trip/muat_request.dart';
 //import 'package:newbkmmobile/models/trip/show_do_response.dart';
 import 'package:newbkmmobile/models/trip/v2/do_detail_response.dart';
 import 'package:newbkmmobile/repositories/trip_repository.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 part 'trip_event.dart';
 part 'trip_state.dart';
@@ -16,14 +17,11 @@ class TripBloc extends Bloc<TripEvent, TripState> {
   final TripRepository _tripRepository;
 
   TripBloc(this._tripRepository) : super(TripInitial()) {
-
-    // KODE BARU: Fungsi helper untuk ambil trip spesifik
     Future<void> fetchSpecificTrip(String deliveryId, Emitter<TripState> emit) async {
       try {
         final (status, resp) = await _tripRepository.getNewDeliveryOrder();
 
         if (status == 200 && resp != null && resp.data != null) {
-          // Cari DO yang sedang dibuka di list berdasarkan ID
           final delivery = resp.data!.firstWhere(
                 (element) => element.id == deliveryId,
             orElse: () => ListNewDoData(id: 'not_found'),
@@ -82,6 +80,11 @@ class TripBloc extends Bloc<TripEvent, TripState> {
         final (status, resp) = await _tripRepository.getNewDeliveryOrder();
         if (status == 200 && resp != null && resp.data != null) {
           emit(TripListLoaded(resp.data!));
+          final prefs = await SharedPreferences.getInstance();
+          final int lastSeenCount = prefs.getInt('last_seen_trip_count') ?? 0;
+          final int currentCount = resp.data!.length;
+          final bool hasNew = currentCount > lastSeenCount;
+          emit(TripListLoaded(resp.data!, hasNewTrip: hasNew));
         } else {
           emit(const TripError("Gagal memuat antrean DO"));
         }
@@ -90,13 +93,20 @@ class TripBloc extends Bloc<TripEvent, TripState> {
       }
     });
 
-    // KODE BARU: Event untuk halaman TripPage (Nampilin Detail)
+    // 👇 TAMBAHAN BARU: Event untuk menghilangkan titik merah saat menu diklik
+    on<MarkTripAsRead>((event, emit) async {
+      final prefs = await SharedPreferences.getInstance();
+      // Simpan jumlah pengangkutan terbaru ke memori HP supir
+      await prefs.setInt('last_seen_trip_count', event.currentCount);
+    });
+
+    // Event untuk halaman TripPage (Nampilin Detail)
     on<GetTripDetailEvent>((event, emit) async {
       emit(const TripLoading());
       await fetchSpecificTrip(event.deliveryData.id ?? "", emit);
     });
 
-    // // Event GetTrip
+    // // Event GetTrip Ga dipake
     // on<GetTrip>((event, emit) async {
     //   await fetchLatestTrip(emit);
     // });

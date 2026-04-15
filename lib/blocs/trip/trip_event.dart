@@ -87,3 +87,12 @@ class PushTillUnload extends TripEvent {
   @override
   List<Object> get props => [deliveryData, tripDetail];
 }
+
+class MarkTripAsRead extends TripEvent {
+  final int currentCount;
+
+  const MarkTripAsRead(this.currentCount);
+
+  @override
+  List<Object> get props => [currentCount];
+}

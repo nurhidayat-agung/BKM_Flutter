@@ -220,5 +220,44 @@ class LoginRepository {
     return box.get(AuthBoxSchema.phone);
   }
 
+  // ===============================================================
+  // ===============  UPDATE FIREBASE TOKEN (FCM)  =================
+  // ===============================================================
+
+  Future<bool> updateFirebaseToken(String userId, String fcmToken) async {
+    try {
+      // Ambil token login (Bearer) untuk otorisasi
+      final userSession = await getUserSession();
+      if (userSession == null || userSession.token == null) {
+        return false;
+      }
+
+      // Tembak API menggunakan method PUT
+      // Catatan: Jika HttpCommunicator Mas Dimas menggunakan nama fungsi lain
+      final response = await _httpCommunicator.putJson(
+        'users/$userId/token',
+        headers: {
+          'Authorization': 'Bearer ${userSession.token}',
+          'X-Client-Type': 'mobile',
+          'Accept': 'application/json',
+        },
+        body: {
+          'firebase_token': fcmToken,
+        },
+      );
+
+      if (response.status == 200 || response.status == 201) {
+        print("Berhasil nge-map FCM Token ke User: $userId");
+        return true;
+      } else {
+        print("Gagal update FCM Token. Status code: ${response.status}");
+        return false;
+      }
+    } catch (e) {
+      print('Error saat kirim FCM Token: $e');
+      return false;
+    }
+  }
+
 
 }

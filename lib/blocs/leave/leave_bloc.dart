@@ -44,15 +44,19 @@ class LeaveBloc extends Bloc<LeaveEvent, LeaveState> {
               event.reason,
             );
 
-      if (status == 200) {
+      if (status == 200 || status == 201) {
         emit(
           SubmitLeaveSuccess(message: "submit cuti berhasil"),
         );
         return;
       } else {
+
+        // 👇 INI YANG DIUBAH: Kita tangkap dan tampilkan balasan ASLI dari API Bang Gulit
+        String errorMessage = "Gagal (Status $status). Balasan API: $response";
+
         emit(
           LeaveFailure(
-            error: "submit cuti gagal",
+            error: errorMessage,
           ),
         );
         return;
