@@ -50,6 +50,7 @@ import 'package:newbkmmobile/repositories/langsir_repository.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
 final Alice alice = Alice(
   configuration: AliceConfiguration(
@@ -58,6 +59,22 @@ final Alice alice = Alice(
     showShareButton: true,
   )
 );
+
+// =========================================
+// KONFIGURASI CHANNEL BANNER (Tanpa Getar)
+// =========================================
+const AndroidNotificationChannel channel = AndroidNotificationChannel(
+  'high_importance_channel',
+  'High Importance Notifications',
+  description: 'This channel is used for important notifications.',
+  importance: Importance.max,
+  enableVibration: false,
+  playSound: true,
+);
+
+final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+FlutterLocalNotificationsPlugin();
+// ==========================================
 
 //======================
 // BACKGROUND HANDLER //
@@ -103,8 +120,58 @@ Future<void> setupFCM() async {
     print("=========================================");
     print("FCM TOKEN: $token");
     print("=========================================");
+
+
+    //==================================
+    // BANNER NOTIFIKASI MELAYANG
+    //==================================
+    // DAFTAR BANNER CHANNEL KE SISTEM ANDROID
+    await flutterLocalNotificationsPlugin
+        .resolvePlatformSpecificImplementation<
+        AndroidFlutterLocalNotificationsPlugin>()
+        ?.createNotificationChannel(channel);
+
+    // Matikan popup bawaan FCM saat aplikasi dibuka, agar tidak bentrok
+    await FirebaseMessaging.instance.setForegroundNotificationPresentationOptions(
+      alert: false,
+      badge: true,
+      sound: true,
+
+    );//TANGKAP PESAN DAN MUNCULKAN BANNER JIKA PENGANGKUTAN BARU
+    FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+      String title = message.notification?.title ?? message.data['title'] ?? '';
+      String body = message.notification?.body ?? message.data['body'] ?? '';
+
+      // Cek pesan mengandung kata terkait pengangkutan baru
+      String textToLower = (title + " " + body).toLowerCase();
+      bool isPengangkutanBaru = textToLower.contains('pengangkutan') ||
+          textToLower.contains('baru');
+
+      if (isPengangkutanBaru) {
+        flutterLocalNotificationsPlugin.show(
+          message.hashCode,
+          title,
+          body,
+          NotificationDetails(
+            android: AndroidNotificationDetails(
+              channel.id,
+              channel.name,
+              channelDescription: channel.description,
+              icon: '@mipmap/launcher_icon',
+              importance: Importance.max,
+              priority: Priority.high,
+              enableVibration: false,
+              playSound: true,
+            ),
+          ),
+        );
+      }
+    });
+    //=============================================
   }
 }
+
+
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
