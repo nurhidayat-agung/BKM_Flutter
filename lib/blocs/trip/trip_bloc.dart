@@ -46,34 +46,8 @@ class TripBloc extends Bloc<TripEvent, TripState> {
         emit(TripError(e.toString()));
       }
     }
-    // Fungsi helper untuk ambil trip terbaru
-    // Future<void> fetchLatestTrip(Emitter<TripState> emit) async {
-    //   emit(const TripLoading());
-    //   try {
-    //     final (status, resp) = await _tripRepository.getNewDeliveryOrder();
-    //
-    //     if (status == 200 && resp != null && resp.data != null && resp.data!.isNotEmpty) {
-    //       final delivery = resp.data!.first;
-    //
-    //       final (detailStatus, tripDetail) =
-    //       await _tripRepository.getDeliveryOrderDetail(id: delivery.id.toString());
-    //
-    //       if (detailStatus == 200 && tripDetail != null) {
-    //         emit(TripSuccess(
-    //           doDetailResponseData: tripDetail,
-    //           listNewDoData: delivery,
-    //         ));
-    //       } else {
-    //         emit(const TripError("Data Tidak Ditemukan"));
-    //       }
-    //     } else {
-    //       emit(const TripError("Data Tidak Ditemukan"));
-    //     }
-    //   } catch (e) {
-    //     emit(TripError(e.toString()));
-    //   }
-    // }
-    // KODE BARU: Event untuk halaman TripListPage (Nampilin List)
+
+    // untuk halaman TripListPage (Nampilin List)
     on<GetTripList>((event, emit) async {
       emit(const TripLoading());
       try {
@@ -93,12 +67,12 @@ class TripBloc extends Bloc<TripEvent, TripState> {
       }
     });
 
-    // 👇 TAMBAHAN BARU: Event untuk menghilangkan titik merah saat menu diklik
-    on<MarkTripAsRead>((event, emit) async {
-      final prefs = await SharedPreferences.getInstance();
-      // Simpan jumlah pengangkutan terbaru ke memori HP supir
-      await prefs.setInt('last_seen_trip_count', event.currentCount);
-    });
+    // Event untuk menghilangkan titik merah saat menu diklik
+    // on<MarkTripAsRead>((event, emit) async {
+    //   final prefs = await SharedPreferences.getInstance();
+    //   // Simpan jumlah pengangkutan terbaru ke memori HP supir
+    //   await prefs.setInt('last_seen_trip_count', event.currentCount);
+    // });
 
     // Event untuk halaman TripPage (Nampilin Detail)
     on<GetTripDetailEvent>((event, emit) async {
@@ -216,8 +190,6 @@ class TripBloc extends Bloc<TripEvent, TripState> {
           emit(TripError("Gagal menyimpan data BONGKAR. Server merespons dengan kode: $status"));
         }
 
-        // // await fetchLatestTrip(emit);
-        // await fetchSpecificTrip(event.deliveryData.id ?? "", emit);
       } catch (e) {
         emit(TripError(e.toString()));
       }

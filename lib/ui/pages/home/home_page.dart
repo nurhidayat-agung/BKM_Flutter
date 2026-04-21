@@ -65,6 +65,7 @@ class _HomePageState extends State<HomePage> {
     _homeBloc = HomeBloc(loginRepository: widget.loginRepository);
     _homeBloc.add(LoadUserData());
 
+
     WidgetsBinding.instance.addPostFrameCallback((_) {
       fetchCommonData();
       checkLeaveStatus();
@@ -76,7 +77,6 @@ class _HomePageState extends State<HomePage> {
   void dispose() {
     _homeBloc.close();
     _announcementTimer?.cancel();
-    _announcementPageController.dispose();
     super.dispose();
   }
 
@@ -136,7 +136,18 @@ class _HomePageState extends State<HomePage> {
                       uangTertahan = state.heldAmmount ?? "0.00";
                     }
 
-                    return SingleChildScrollView(
+                    return RefreshIndicator(
+                        color: const Color(0xFFD4552F),
+                        backgroundColor: Colors.white,
+                        onRefresh: () async {
+                          _homeBloc.add(LoadUserData());
+                          fetchCommonData();
+                          checkLeaveStatus();
+                          await Future.delayed(const Duration(seconds: 1));
+                        },
+
+                    child: SingleChildScrollView(
+                      physics: const AlwaysScrollableScrollPhysics(),
                       child: Column(
                         children: [
                           // 🔹 HEADER
@@ -283,6 +294,26 @@ class _HomePageState extends State<HomePage> {
                                             color: Colors.grey.shade700,
                                           ),
                                         ),
+
+                                        const SizedBox(width: 14), // Jarak antara mata dan tombol refresh
+
+                                        //TOMBOL REFRESH KHUSUS SALDO 👇
+                                        GestureDetector(
+                                          onTap: () {
+                                            _homeBloc.add(LoadUserData());
+                                            ScaffoldMessenger.of(context).showSnackBar(
+                                              const SnackBar(
+                                                content: Text("Memperbarui saldo..."),
+                                                duration: Duration(seconds: 1),
+                                              ),
+                                            );
+                                          },
+                                          child: const Icon(
+                                            Icons.refresh,
+                                            color: Color(0xFFD4552F),
+                                            size: 24,
+                                          ),
+                                        ),
                                       ],
                                     ),
                                   ),
@@ -360,7 +391,7 @@ class _HomePageState extends State<HomePage> {
                                   int currentTripCount = 0;
 
                                   if (tripState is TripListLoaded) {
-                                    hasNewTrip = tripState.hasNewTrip;
+                                    hasNewTrip = tripState.tripList.isNotEmpty;
                                     currentTripCount =
                                         tripState.tripList.length;
                                   }
@@ -377,10 +408,6 @@ class _HomePageState extends State<HomePage> {
                                         const TripListPage(),
                                         context, isRestrictedDuringLeave: true,
                                         showBadge: hasNewTrip,
-                                        onBeforeAction: () {
-                                          blocContext.read<TripBloc>().add(
-                                              MarkTripAsRead(currentTripCount));
-                                        },
                                         onAfterReturn: () {
                                           blocContext.read<TripBloc>().add(
                                               GetTripList());
@@ -426,6 +453,7 @@ class _HomePageState extends State<HomePage> {
                           const SizedBox(height: 40),
                         ],
                       ),
+                    ),
                     );
                   },
                 ),
@@ -748,7 +776,6 @@ class _HomePageState extends State<HomePage> {
               padding: const EdgeInsets.all(24.0),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
-                // Sesuaikan tinggi dengan konten
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(

@@ -888,8 +888,8 @@ class _TripPageState extends State<TripPage> {
 
           // ------ INPUT DO UTAMA ------
           inputField(spbMuat, "No. SPB"),
-          inputField(brutoMuat, "Jumlah Bruto Muat", numericOnly: true),
           inputField(tarraMuat, "Jumlah Tarra Muat", numericOnly: true),
+          inputField(brutoMuat, "Jumlah Bruto Muat", numericOnly: true),
           inputField(nettoMuat, "Netto Muat (Kg)", numericOnly: true),
 
           const SizedBox(height: 10),
@@ -966,9 +966,9 @@ class _TripPageState extends State<TripPage> {
             ),
             const SizedBox(height: 8),
             inputField(spbMuatSambung, "No. SPB"),
-            inputField(brutoMuatSambung, "Jumlah Bruto Muat",
-                numericOnly: true),
             inputField(tarraMuatSambung, "Jumlah Tarra Muat",
+                numericOnly: true),
+            inputField(brutoMuatSambung, "Jumlah Bruto Muat",
                 numericOnly: true),
             inputField(nettoMuatSambung, "Netto Muat (Kg)", numericOnly: true),
           ],
