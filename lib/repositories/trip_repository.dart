@@ -124,6 +124,15 @@ class TripRepository {
 
       if (httpResponse.status == 200) {
         final resp = ListNewDoResponse.fromJson(httpResponse.result);
+
+        if (resp.data != null) {
+          resp.data!.sort((a, b) {
+            final aNum = a.doNumber ?? 0;
+            final bNum = b.doNumber ?? 0;
+            return bNum.compareTo(aNum); // descending
+          });
+        }
+        
         return (200, resp);
       }
 
