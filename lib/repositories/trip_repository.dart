@@ -127,9 +127,9 @@ class TripRepository {
 
         if (resp.data != null) {
           resp.data!.sort((a, b) {
-            final aNum = a.doNumber ?? 0;
-            final bNum = b.doNumber ?? 0;
-            return bNum.compareTo(aNum); // descending
+            final aTime = DateTime.tryParse(a.createdAt ?? '') ?? DateTime(0);
+            final bTime = DateTime.tryParse(b.createdAt ?? '') ?? DateTime(0);
+            return aTime.compareTo(bTime); // ascending: terbaru di bawah
           });
         }
         
