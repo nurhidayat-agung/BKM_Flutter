@@ -124,15 +124,6 @@ class TripRepository {
 
       if (httpResponse.status == 200) {
         final resp = ListNewDoResponse.fromJson(httpResponse.result);
-
-        if (resp.data != null) {
-          resp.data!.sort((a, b) {
-            final aTime = DateTime.tryParse(a.createdAt ?? '') ?? DateTime(0);
-            final bTime = DateTime.tryParse(b.createdAt ?? '') ?? DateTime(0);
-            return aTime.compareTo(bTime); // ascending: terbaru di bawah
-          });
-        }
-        
         return (200, resp);
       }
 
