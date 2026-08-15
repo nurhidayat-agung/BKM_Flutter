@@ -1,0 +1,1704 @@
+{
+  "info": {
+    "_postman_id": "6635f337-65e8-4d74-8975-cb6ffc140fea",
+    "name": "QUBU.MOBILE",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "43944002",
+    "_collection_link": "https://go.postman.co/collection/43944002-6635f337-65e8-4d74-8975-cb6ffc140fea?source=collection_link"
+  },
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Login",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "X-Client-Type",
+                "value": "mobile",
+                "type": "text"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"phone\":\"081268443344\",\r\n    \"password\":\"password\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/api/login",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "login"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Logout",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "X-Client-Type",
+                "value": "mobile",
+                "type": "text"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/api/logout",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "logout"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Change Password",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "X-Client-Type",
+                "value": "mobile",
+                "type": "text"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"current_password\": \"password2\",\r\n    \"new_password\": \"password\",\r\n    \"new_password_confirmation\": \"password\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/api/change-password",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "change-password"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Delivery Order Detail",
+      "item": [
+        {
+          "name": "Show",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "X-Site-ID",
+                "value": "{{siteIdRiau}}",
+                "type": "text"
+              },
+              {
+                "key": "X-Client-Type",
+                "value": "mobile",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/delivery-order-details/d663f8c7-aa2b-4a4e-916c-bd06bf73d9b1",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "delivery-order-details",
+                "d663f8c7-aa2b-4a4e-916c-bd06bf73d9b1"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Detail",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "X-Site-ID",
+                "value": "{{siteIdRiau}}",
+                "type": "text"
+              },
+              {
+                "key": "X-Client-Type",
+                "value": "mobile",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/delivery-order-details/app/d00b6681-71c6-45a1-beab-278bb9046a74",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "delivery-order-details",
+                "app",
+                "d00b6681-71c6-45a1-beab-278bb9046a74"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "List History",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "X-Site-ID",
+                "value": "{{siteIdRiau}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/delivery-order-details/completed?driver_id=0d30452b-90e8-4d41-97ce-710c057f5472",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "delivery-order-details",
+                "completed"
+              ],
+              "query": [
+                {
+                  "key": "driver_id",
+                  "value": "0d30452b-90e8-4d41-97ce-710c057f5472"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "List New DO",
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "X-Site-ID",
+                "value": "{{siteIdRiau}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/api/delivery-order-details/new?driver_id=87e508d5-77cc-499f-815b-aab007aee615",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "delivery-order-details",
+                "new"
+              ],
+              "query": [
+                {
+                  "key": "driver_id",
+                  "value": "87e508d5-77cc-499f-815b-aab007aee615"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "X-Site-ID",
+                "value": "{{siteIdRiau}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "spb_number",
+                  "value": "0987",
+                  "type": "text",
+                  "uuid": "9564fb1f-46f4-406a-9718-7e789020f5f7",
+                  "disabled": true
+                },
+                {
+                  "key": "load_tare",
+                  "value": "100",
+                  "type": "text",
+                  "uuid": "bdef3346-ba07-4a69-b449-2418f41941b7",
+                  "disabled": true
+                },
+                {
+                  "key": "load_bruto",
+                  "value": "100",
+                  "type": "text",
+                  "uuid": "a39103f6-1fcd-4569-bdb1-db755d2ed3ca",
+                  "disabled": true
+                },
+                {
+                  "key": "load_quantity",
+                  "value": "27000",
+                  "type": "text",
+                  "uuid": "dff2f4d2-154a-42ad-8fce-5eec292e89f8",
+                  "disabled": true
+                },
+                {
+                  "key": "img_spb_load",
+                  "type": "file",
+                  "uuid": "629dfb43-55df-47ff-b13c-7357fc501489",
+                  "src": "/C:/Users/gulit/OneDrive/Desktop/setup-location.png",
+                  "disabled": true
+                },
+                {
+                  "key": "unload_tare",
+                  "value": "1000",
+                  "type": "text",
+                  "uuid": "5eb7e7d0-86c8-413a-994d-b54120507385",
+                  "disabled": true
+                },
+                {
+                  "key": "unload_bruto",
+                  "value": "100",
+                  "type": "text",
+                  "uuid": "f9020fbd-d154-49b4-9bb1-b2fafc07187b",
+                  "disabled": true
+                },
+                {
+                  "key": "unload_quantity",
+                  "value": "200",
+                  "type": "text",
+                  "uuid": "69ce3ef9-0e56-4859-9e95-4835bc5ef9ce",
+                  "disabled": true
+                },
+                {
+                  "key": "img_spb_unload",
+                  "type": "file",
+                  "uuid": "8a733c78-0dd7-45fd-8537-2ce548db5e73",
+                  "src": "postman-cloud:///1f0c83a1-c3b6-4bc0-9e39-04cb9831e2c7",
+                  "disabled": true
+                },
+                {
+                  "key": "action_button",
+                  "value": "load_save",
+                  "description": "load_save,unload_save,final_save",
+                  "type": "text",
+                  "uuid": "8b34f9ac-2023-4650-bb3e-eda20571f661",
+                  "disabled": true
+                },
+                {
+                  "key": "next_status",
+                  "value": "2",
+                  "type": "text",
+                  "uuid": "9caa1f07-486b-4008-aad8-4dc031cec21d"
+                },
+                {
+                  "key": "note",
+                  "value": "",
+                  "type": "text",
+                  "uuid": "4097e818-fd2e-48e2-a9a8-812310214aea",
+                  "disabled": true
+                },
+                {
+                  "key": "linked_detail_id",
+                  "value": "8935155e-aa89-4d81-9ac7-1d38eaf27551",
+                  "type": "text",
+                  "uuid": "b7335e8a-c5a1-4b09-ab7e-ed71f13565bf",
+                  "disabled": true
+                },
+                {
+                  "key": "spb_number_link",
+                  "value": "1111",
+                  "type": "text",
+                  "uuid": "7340f244-1413-4598-a0a9-78fa00f890a7",
+                  "disabled": true
+                },
+                {
+                  "key": "load_tare_link",
+                  "value": "12",
+                  "type": "text",
+                  "uuid": "b01804b6-c094-4fa7-9edd-16f63afccaed",
+                  "disabled": true
+                },
+                {
+                  "key": "load_bruto_link",
+                  "value": "12",
+                  "type": "text",
+                  "uuid": "71ba9387-7b87-48d1-963b-bab3de6ec409",
+                  "disabled": true
+                },
+                {
+                  "key": "load_quantity_link",
+                  "value": "6000",
+                  "type": "text",
+                  "uuid": "f3c8b2f8-a08e-4e90-858b-79d725a1eb53",
+                  "disabled": true
+                },
+                {
+                  "key": "unload_tare_link",
+                  "value": "",
+                  "type": "text",
+                  "uuid": "ce545af4-0912-4dee-be45-4c9c9112ddee",
+                  "disabled": true
+                },
+                {
+                  "key": "unload_bruto_link",
+                  "value": "",
+                  "type": "text",
+                  "uuid": "71976fa7-8399-416b-8a93-fb8a95f63910",
+                  "disabled": true
+                },
+                {
+                  "key": "unload_quantity_link",
+                  "value": "",
+                  "type": "text",
+                  "uuid": "40ae4317-a07d-4000-8348-9ed0dc9f6f9a",
+                  "disabled": true
+                },
+                {
+                  "key": "is_edit",
+                  "value": "0",
+                  "description": "1/0",
+                  "type": "text",
+                  "uuid": "4b3f54a5-a505-42dd-b99e-cea02b021f29",
+                  "disabled": true
+                },
+                {
+                  "key": "status",
+                  "value": "waiting",
+                  "type": "text",
+                  "uuid": "974f321f-68e9-453c-b66d-6844047dd1b1",
+                  "disabled": true
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{base_url}}/api/delivery-order-details/app/b28294f2-aca5-4f5a-977a-ab1e67a291e7",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "delivery-order-details",
+                "app",
+                "b28294f2-aca5-4f5a-977a-ab1e67a291e7"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Accepted Assignment",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "X-Site-ID",
+                "value": "{{siteIdRiau}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": []
+            },
+            "url": {
+              "raw": "{{base_url}}/api/delivery-order-details/app/05c5721a-6523-4fd5-a414-e07c0441f1ee/accept",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "delivery-order-details",
+                "app",
+                "05c5721a-6523-4fd5-a414-e07c0441f1ee",
+                "accept"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Rejected Assignment",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "X-Site-ID",
+                "value": "{{siteIdRiau}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "spb_number",
+                  "value": "2222",
+                  "type": "text",
+                  "uuid": "9564fb1f-46f4-406a-9718-7e789020f5f7"
+                },
+                {
+                  "key": "load_tare",
+                  "value": "10",
+                  "type": "text",
+                  "uuid": "bdef3346-ba07-4a69-b449-2418f41941b7"
+                },
+                {
+                  "key": "load_bruto",
+                  "value": "21",
+                  "type": "text",
+                  "uuid": "a39103f6-1fcd-4569-bdb1-db755d2ed3ca"
+                },
+                {
+                  "key": "load_quantity",
+                  "value": "27000",
+                  "type": "text",
+                  "uuid": "dff2f4d2-154a-42ad-8fce-5eec292e89f8"
+                },
+                {
+                  "key": "img_spb_load",
+                  "type": "file",
+                  "uuid": "629dfb43-55df-47ff-b13c-7357fc501489",
+                  "src": "postman-cloud:///1f0adc02-db66-46a0-90bf-26fac72f3c6c"
+                },
+                {
+                  "key": "unload_tare",
+                  "value": "32",
+                  "type": "text",
+                  "uuid": "5eb7e7d0-86c8-413a-994d-b54120507385"
+                },
+                {
+                  "key": "unload_bruto",
+                  "value": "43",
+                  "type": "text",
+                  "uuid": "f9020fbd-d154-49b4-9bb1-b2fafc07187b"
+                },
+                {
+                  "key": "unload_quantity",
+                  "value": "2690",
+                  "type": "text",
+                  "uuid": "69ce3ef9-0e56-4859-9e95-4835bc5ef9ce"
+                },
+                {
+                  "key": "img_spb_unload",
+                  "type": "file",
+                  "uuid": "8a733c78-0dd7-45fd-8537-2ce548db5e73",
+                  "src": "postman-cloud:///1f0adc79-eaf4-4870-b0da-60682186e2dd"
+                },
+                {
+                  "key": "action_button",
+                  "value": "load_save",
+                  "description": "load_save,unload_save,final_save",
+                  "type": "text",
+                  "uuid": "8b34f9ac-2023-4650-bb3e-eda20571f661"
+                },
+                {
+                  "key": "next_status",
+                  "value": "3",
+                  "type": "text",
+                  "uuid": "9caa1f07-486b-4008-aad8-4dc031cec21d"
+                },
+                {
+                  "key": "note",
+                  "value": "status 3",
+                  "type": "text",
+                  "uuid": "4097e818-fd2e-48e2-a9a8-812310214aea"
+                },
+                {
+                  "key": "linked_detail_id",
+                  "value": "8935155e-aa89-4d81-9ac7-1d38eaf27551",
+                  "type": "text",
+                  "uuid": "b7335e8a-c5a1-4b09-ab7e-ed71f13565bf"
+                },
+                {
+                  "key": "spb_number_link",
+                  "value": "1111",
+                  "type": "text",
+                  "uuid": "7340f244-1413-4598-a0a9-78fa00f890a7"
+                },
+                {
+                  "key": "load_tare_link",
+                  "value": "12",
+                  "type": "text",
+                  "uuid": "b01804b6-c094-4fa7-9edd-16f63afccaed"
+                },
+                {
+                  "key": "load_bruto_link",
+                  "value": "12",
+                  "type": "text",
+                  "uuid": "71ba9387-7b87-48d1-963b-bab3de6ec409"
+                },
+                {
+                  "key": "load_quantity_link",
+                  "value": "6000",
+                  "type": "text",
+                  "uuid": "f3c8b2f8-a08e-4e90-858b-79d725a1eb53"
+                },
+                {
+                  "key": "unload_tare_link",
+                  "value": "",
+                  "type": "text",
+                  "uuid": "ce545af4-0912-4dee-be45-4c9c9112ddee"
+                },
+                {
+                  "key": "unload_bruto_link",
+                  "value": "",
+                  "type": "text",
+                  "uuid": "71976fa7-8399-416b-8a93-fb8a95f63910"
+                },
+                {
+                  "key": "unload_quantity_link",
+                  "value": "",
+                  "type": "text",
+                  "uuid": "40ae4317-a07d-4000-8348-9ed0dc9f6f9a"
+                },
+                {
+                  "key": "is_edit",
+                  "value": "true",
+                  "type": "text",
+                  "uuid": "4b3f54a5-a505-42dd-b99e-cea02b021f29"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{base_url}}/api/delivery-order-details/app/d00b6681-71c6-45a1-beab-278bb9046a74/reject",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "delivery-order-details",
+                "app",
+                "d00b6681-71c6-45a1-beab-278bb9046a74",
+                "reject"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Local Hauling",
+      "item": [
+        {
+          "name": "Show",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "X-Site-ID",
+                "value": "{{siteIdRiau}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/delivery-orders/6d93272a-fee6-4047-9285-3a737a32ce81",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "delivery-orders",
+                "6d93272a-fee6-4047-9285-3a737a32ce81"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Show DO Detail",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "X-Site-ID",
+                "value": "{{siteIdRiau}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/delivery-order-details/app/d00b6681-71c6-45a1-beab-278bb9046a74",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "delivery-order-details",
+                "app",
+                "d00b6681-71c6-45a1-beab-278bb9046a74"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Store",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "X-Client-Type",
+                "value": "mobile",
+                "type": "text"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "X-Client-Type",
+                "value": "mobile",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "do_id",
+                  "value": "2afc2d45-18b3-48fd-a421-039032c88e95",
+                  "type": "text",
+                  "uuid": "bded099f-655d-4fa4-92fc-8924b70ef5d6"
+                },
+                {
+                  "key": "driver_id",
+                  "value": "e6438785-b362-4d26-95bf-e6b5b78c2e66",
+                  "type": "text",
+                  "uuid": "17f5793f-6b2c-405b-bfb1-e49662e48df8"
+                },
+                {
+                  "key": "vehicle_id",
+                  "value": "065bc891-8a19-4f97-a89d-bf3aa3e6e76e",
+                  "type": "text",
+                  "uuid": "65763d0b-a921-42a9-9ab5-2f3c5f361233"
+                },
+                {
+                  "key": "spb_number",
+                  "value": "13213",
+                  "type": "text",
+                  "uuid": "ea5a13d3-14fb-4304-abfd-1275c4a08cb0"
+                },
+                {
+                  "key": "load_quantity",
+                  "value": "21",
+                  "type": "text",
+                  "uuid": "a2a70bdd-0ed8-488f-a0db-335692c471f6"
+                },
+                {
+                  "key": "unload_quantity",
+                  "value": "",
+                  "type": "text",
+                  "uuid": "349014fd-284d-46bb-bcee-754bdd79639a"
+                },
+                {
+                  "key": "load_date",
+                  "value": "2025-11-15",
+                  "type": "text",
+                  "uuid": "5e49a1c2-0814-4fc5-8599-9fddc55d0b9d"
+                },
+                {
+                  "key": "unload_date",
+                  "value": "",
+                  "type": "text",
+                  "uuid": "4ce39def-7311-4be5-8771-04fed2168f77"
+                },
+                {
+                  "key": "action_button",
+                  "value": "partial_save",
+                  "description": "final_save,partial_save",
+                  "type": "text",
+                  "uuid": "e72f8501-002d-4d4d-8401-dea5fd3382ff"
+                },
+                {
+                  "key": "img_spb_load",
+                  "type": "file",
+                  "uuid": "17ea55fe-341e-4106-bae6-6a02357405a0",
+                  "src": "/C:/Users/gulit/Downloads/13912117.png"
+                },
+                {
+                  "key": "img_spb_unload",
+                  "type": "file",
+                  "uuid": "52ef2053-7798-4e2f-91be-8d6b9892a4f4",
+                  "value": null
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{base_url}}/api/delivery-order-details/local-hauling",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "delivery-order-details",
+                "local-hauling"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "X-Client-Type",
+                "value": "mobile",
+                "type": "text"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "X-Client-Type",
+                "value": "mobile",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "do_id",
+                  "value": "2afc2d45-18b3-48fd-a421-039032c88e95",
+                  "type": "text",
+                  "uuid": "bded099f-655d-4fa4-92fc-8924b70ef5d6"
+                },
+                {
+                  "key": "driver_id",
+                  "value": "e6438785-b362-4d26-95bf-e6b5b78c2e66",
+                  "type": "text",
+                  "uuid": "17f5793f-6b2c-405b-bfb1-e49662e48df8"
+                },
+                {
+                  "key": "vehicle_id",
+                  "value": "065bc891-8a19-4f97-a89d-bf3aa3e6e76e",
+                  "type": "text",
+                  "uuid": "65763d0b-a921-42a9-9ab5-2f3c5f361233"
+                },
+                {
+                  "key": "spb_number",
+                  "value": "13213",
+                  "type": "text",
+                  "uuid": "ea5a13d3-14fb-4304-abfd-1275c4a08cb0"
+                },
+                {
+                  "key": "load_quantity",
+                  "value": "21",
+                  "type": "text",
+                  "uuid": "a2a70bdd-0ed8-488f-a0db-335692c471f6"
+                },
+                {
+                  "key": "unload_quantity",
+                  "value": "21",
+                  "type": "text",
+                  "uuid": "349014fd-284d-46bb-bcee-754bdd79639a"
+                },
+                {
+                  "key": "load_date",
+                  "value": "2025-11-15",
+                  "type": "text",
+                  "uuid": "5e49a1c2-0814-4fc5-8599-9fddc55d0b9d"
+                },
+                {
+                  "key": "unload_date",
+                  "value": "2025-11-15",
+                  "type": "text",
+                  "uuid": "4ce39def-7311-4be5-8771-04fed2168f77"
+                },
+                {
+                  "key": "action_button",
+                  "value": "final_save",
+                  "type": "text",
+                  "description": "final_save,partial_save",
+                  "uuid": "e72f8501-002d-4d4d-8401-dea5fd3382ff"
+                },
+                {
+                  "key": "img_spb_load",
+                  "type": "file",
+                  "uuid": "17ea55fe-341e-4106-bae6-6a02357405a0",
+                  "src": "/C:/Users/gulit/Downloads/13912117.png"
+                },
+                {
+                  "key": "img_spb_unload",
+                  "type": "file",
+                  "uuid": "52ef2053-7798-4e2f-91be-8d6b9892a4f4",
+                  "src": "/C:/Users/gulit/Downloads/9735827.png"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{base_url}}/api/delivery-order-details/local-hauling/852fc525-469a-484e-b379-349b92731334",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "delivery-order-details",
+                "local-hauling",
+                "852fc525-469a-484e-b379-349b92731334"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "All Open",
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "X-Site-ID",
+                "value": "{{siteIdRiau}}",
+                "type": "text"
+              },
+              {
+                "key": "X-Client-Type",
+                "value": "mobile",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"is_transshipment\":true\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/api/delivery-orders/open",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "delivery-orders",
+                "open"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Leave",
+      "item": [
+        {
+          "name": "By User",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "X-Site-ID",
+                "value": "{{siteIdRiau}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/leaves/user/7d2a66df-d1b5-4b2c-a080-de7eec96c7a9",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "leaves",
+                "user",
+                "7d2a66df-d1b5-4b2c-a080-de7eec96c7a9"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Store",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "X-Client-Type",
+                "value": "mobile",
+                "type": "text"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    //\"id\":\"e6afbe6a-26bd-48eb-95a1-b82283283eb1\",\r\n    \"user_id\":\"7d2a66df-d1b5-4b2c-a080-de7eec96c7a9\",\r\n    \"leave_type_id\":\"3\",\r\n    \"start_date\":\"2025-10-17\",\r\n    \"end_date\":\"2025-10-18\",\r\n    \"reason\":\"Acara kealuarga\"\r\n}\r\n\r\n",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/api/leaves",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "leaves"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PUT",
+            "header": [
+              {
+                "key": "X-Client-Type",
+                "value": "mobile",
+                "type": "text"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"id\":\"cfbb0741-5643-4102-a7d3-fd5a5ebaf4e6\",\r\n    \"user_id\":\"7d2a66df-d1b5-4b2c-a080-de7eec96c7a9\",\r\n    \"leave_type_id\":\"3\",\r\n    \"start_date\":\"2025-10-17\",\r\n    \"end_date\":\"2025-10-18\",\r\n    \"reason\":\"Acara kealuarga2\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/api/leaves/cfbb0741-5643-4102-a7d3-fd5a5ebaf4e6",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "leaves",
+                "cfbb0741-5643-4102-a7d3-fd5a5ebaf4e6"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Common",
+      "item": [
+        {
+          "name": "Initial Data",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "X-Site-ID",
+                "value": "{{siteIdRiau}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/initial-data",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "initial-data"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Maintenance Requests",
+      "item": [
+        {
+          "name": "By Requester",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "X-Site-ID",
+                "value": "{{siteIdRiau}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/maintenance-requests/?requested_by=58528e96-c639-48da-9c81-1b3ac97f8c5a",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "maintenance-requests",
+                ""
+              ],
+              "query": [
+                {
+                  "key": "requested_by",
+                  "value": "58528e96-c639-48da-9c81-1b3ac97f8c5a"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Show",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "X-Site-ID",
+                "value": "{{siteIdRiau}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/maintenance-requests/f23af917-11a1-4801-9e37-d5cbbc461d06",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "maintenance-requests",
+                "f23af917-11a1-4801-9e37-d5cbbc461d06"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Store",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "X-Client-Type",
+                "value": "mobile",
+                "type": "text"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "X-Site-ID",
+                "value": "{{siteIdRiau}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"requested_by\":\"7be5720f-82d2-40d4-8ab6-61e23b505202\",\r\n    \"vehicle_id\":\"2d86c0b8-90b2-47d4-9d6b-b0d5998cc066\",\r\n    \"maintenance_type_id\":\"repair\",\r\n    \"workshop_type_code\":\"internal\",\r\n    \"priority\":\"low\",\r\n    \"current_km\":32000,\r\n    \"damage_ids\":[\"machine\",\"ban\"],\r\n    \"description\":\"\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/api/maintenance-requests",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "maintenance-requests"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PUT",
+            "header": [
+              {
+                "key": "X-Client-Type",
+                "value": "mobile",
+                "type": "text"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"requested_by\":\"7be5720f-82d2-40d4-8ab6-61e23b505202\",\r\n    \"vehicle_id\":\"2d86c0b8-90b2-47d4-9d6b-b0d5998cc066\",\r\n    \"maintenance_type_id\":\"repair\",\r\n    \"workshop_type_code\":\"internal\",\r\n    \"priority\":\"low\",\r\n    \"current_km\":32000,\r\n    \"damage_ids\":[\"machine\",\"ban\"],\r\n    \"description\":\"\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/api/maintenance-requests/a83230cb-aa9a-4d1b-8678-78e4b705c5e6",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "maintenance-requests",
+                "a83230cb-aa9a-4d1b-8678-78e4b705c5e6"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Users",
+      "item": [
+        {
+          "name": "Update FireBase Token",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"firebase_token\":\"4c066ffc-89e4-46c9-2d81-1806214a2486\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/api/users/7d2a66df-d1b5-4b2c-a080-de7eec96c7a9/token",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "users",
+                "7d2a66df-d1b5-4b2c-a080-de7eec96c7a9",
+                "token"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Drivers",
+      "item": [
+        {
+          "name": "Show",
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "X-Site-ID",
+                "value": "{{siteIdRiau}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/api/drivers/0d30452b-90e8-4d41-97ce-710c057f5472",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "drivers",
+                "0d30452b-90e8-4d41-97ce-710c057f5472"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Payroll",
+      "item": [
+        {
+          "name": "Payslip",
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "X-Site-ID",
+                "value": "{{siteIdRiau}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"driver_id\":\"2a2d1429-6e00-4ef6-a7ab-00ec280a614a\",\r\n    \"month\":5,\r\n    \"year\":2026\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/api/payrolls/fbfdb42b-9fa1-4463-89d1-a925877410ee/payslip-by-period?month=7&year=2026",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "payrolls",
+                "fbfdb42b-9fa1-4463-89d1-a925877410ee",
+                "payslip-by-period"
+              ],
+              "query": [
+                {
+                  "key": "month",
+                  "value": "7"
+                },
+                {
+                  "key": "year",
+                  "value": "2026"
+                }
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    }
+  ]
+}

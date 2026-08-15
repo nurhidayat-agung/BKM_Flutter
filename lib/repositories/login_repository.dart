@@ -112,11 +112,11 @@ class LoginRepository {
         },
       );
 
-      // Gagal login
-      if (response.status != 200) {
+      // Gagal HTTP request
+      if (response.status != 200 || response.result == null) {
         return LoginResp(
-          status: 401,
-          message: "Login gagal",
+          status: response.status != 0 ? response.status : 401,
+          message: "Login gagal (${response.status})",
           userId: "",
           token: "",
           firebaseToken: "",
@@ -126,7 +126,18 @@ class LoginRepository {
       // PARSING JSON
       LoginResponse resp = LoginResponse.fromJson(response.result);
 
-      // SIMPAN USERSESSION
+      // VALIDASI STATUS RESPON BACKEND & DATA TOKEN
+      if (resp.status != 'success' || resp.data == null || resp.data?.token == null) {
+        return LoginResp(
+          status: 401,
+          message: resp.message ?? "Nomor HP atau kata sandi salah.",
+          userId: "",
+          token: "",
+          firebaseToken: "",
+        );
+      }
+
+      // SIMPAN USERSESSION HANYA JIKA LOGIN SUKSES
       var session = UserSession.fromLoginResponse(resp);
       session.status = response.status;
       session.userLogin = phone;
@@ -137,11 +148,10 @@ class LoginRepository {
       MasterDataRepository repository = MasterDataRepository();
       await repository.fetchMasterData();
 
-
       // Berhasil
       return LoginResp(
         status: 200,
-        message: "Login berhasil",
+        message: resp.message ?? "Login berhasil",
         userId: session.userId,
         token: resp.data?.token,
         firebaseToken: '',

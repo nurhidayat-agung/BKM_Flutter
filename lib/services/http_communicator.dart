@@ -42,14 +42,16 @@ class HttpCommunicator {
 
       if (response.statusCode == 200) {
         final json = jsonDecode(response.body);
-        final refreshedToken = json["data"]["token"];
+        if (json["status"] == "success" && json["data"] != null) {
+          final refreshedToken = json["data"]["token"];
 
-        if (driver != null) {
-          driver.token = refreshedToken;
-          await SessionManager.saveUserSession(driver);
+          if (driver != null && refreshedToken != null) {
+            driver.token = refreshedToken;
+            await SessionManager.saveUserSession(driver);
+          }
+
+          return refreshedToken;
         }
-
-        return refreshedToken;
       }
 
       return null;

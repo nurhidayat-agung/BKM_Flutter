@@ -7,6 +7,7 @@ import 'package:newbkmmobile/repositories/login_form_repository.dart';
 import 'package:newbkmmobile/repositories/login_repository.dart';
 import 'package:newbkmmobile/repositories/user_detail_repository.dart';
 import 'package:newbkmmobile/ui/pages/drawer_menu_page.dart';
+import 'package:newbkmmobile/ui/widgets/bkm_alert_dialog.dart';
 import 'package:newbkmmobile/ui/widgets/bkm_loading.dart';
 import 'package:newbkmmobile/ui/widgets/custom_loading.dart';
 
@@ -127,10 +128,13 @@ class _LoginPageState extends State<LoginPage> {
                 MaterialPageRoute(builder: (_) => const DrawerMenuPage()),
               );
             } else if (state is LoginError) {
-              // Navigator.of(context).pop();
               BkmLoading.hide(context);
-              ScaffoldMessenger.of(context)
-                  .showSnackBar(SnackBar(content: Text(state.message)));
+              BkmAlertDialog.showError(
+                context,
+                title: "Gagal Masuk",
+                message: state.message,
+                buttonText: "Tutup",
+              );
             }
           },
           child: Stack(
