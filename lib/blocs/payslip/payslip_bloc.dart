@@ -1,8 +1,7 @@
-import 'dart:convert';
-
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:newbkmmobile/models/legacy/payslip_resp.dart';
+import 'package:newbkmmobile/models/payslip/payslip_response_model.dart';
 import 'package:newbkmmobile/repositories/payslip_repository.dart';
 
 part 'payslip_event.dart';
@@ -16,17 +15,16 @@ class PaySlipBloc extends Bloc<PaySlipEvent, PaySlipState> {
       if (event is PaySlip) {
         try {
           emit(const PaySlipLoading());
-          final response = await _paySlipRepository.getPaySlip(event.month, event.year);
-          if (jsonDecode(response.body) != null) {
-            emit(PaySlipSuccess(PaySlipResp.fromJson(jsonDecode(response.body))));
+          final (status, result) = await _paySlipRepository.getPaySlipByPeriod(event.month, event.year);
+          if (status == 200 && result?.data != null && result?.data?.payroll != null) {
+            emit(PaySlipSuccess(result!.data!));
           } else {
-            emit(PaySlipSuccess(PaySlipResp()));
+            emit(PaySlipError(result?.message ?? "Data slip gaji tidak ditemukan"));
           }
         } catch (e) {
-          emit(PaySlipError(e.toString()));
+          emit(PaySlipError("Terjadi kesalahan: ${e.toString()}"));
         }
       }
     });
   }
-
 }

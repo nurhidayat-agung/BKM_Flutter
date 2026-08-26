@@ -1,563 +1,3 @@
-// import 'package:flutter/material.dart';
-// import 'package:flutter_bloc/flutter_bloc.dart';
-// import 'package:intl/intl.dart';
-// import 'package:newbkmmobile/blocs/payslip/payslip_bloc.dart';
-// import 'package:newbkmmobile/core/constants.dart';
-// import 'package:newbkmmobile/core/library/month_picker_dialog/month_picker_dialog.dart';
-// import 'package:newbkmmobile/core/r.dart';
-// import 'package:newbkmmobile/repositories/payslip_repository.dart';
-// import 'package:newbkmmobile/ui/widgets/space_between_horizontal_text.dart';
-//
-// class PaySlipPage extends StatefulWidget {
-//   const PaySlipPage({Key? key}) : super(key: key);
-//
-//   @override
-//   State<PaySlipPage> createState() => _PaySlipPageState();
-// }
-//
-// class _PaySlipPageState extends State<PaySlipPage> {
-//   final _paySlipBloc = PaySlipBloc(PaySlipRepository());
-//   late DateTime selectedDateTime;
-//
-//   @override
-//   void initState() {
-//     super.initState();
-//     var date = DateTime.now().toString();
-//     selectedDateTime = DateTime.parse(date);
-//     _paySlipBloc.add(PaySlip(month: selectedDateTime.month, year: selectedDateTime.year));
-//   }
-//
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//       appBar: AppBar(
-//         title: Text(R.strings.titlePaySlipPage),
-//       ),
-//       body: SafeArea(
-//         child: BlocBuilder<PaySlipBloc, PaySlipState>(
-//           bloc: _paySlipBloc,
-//           builder: (context, state) {
-//             if (state is PaySlipInitial) {
-//               return const Center(child: CircularProgressIndicator());
-//             } else if (state is PaySlipLoading) {
-//               return const Center(child: CircularProgressIndicator());
-//             } else if (state is PaySlipSuccess) {
-//               var isAdjustmentPlus = false;
-//               var isAdjustmentMinus = false;
-//
-//               var salaryTrip = double.parse(state.paySlipResp.salaryTrip ?? "0");
-//               var bonusTrip = double.parse(state.paySlipResp.bonusTrip ?? "0");
-//               var thr = double.parse(state.paySlipResp.thr ?? "0");
-//               var insentif = double.parse(state.paySlipResp.insentif ?? "0");
-//               var bonusDecrease = double.parse(state.paySlipResp.bonusDecrease ?? "0");
-//               var totalIncome = salaryTrip + bonusTrip + thr + insentif + bonusDecrease;
-//
-//               var bpjsKet = double.parse(state.paySlipResp.bpjsKet ?? "0");
-//               var bpjsKes = double.parse(state.paySlipResp.bpjsKes ?? "0");
-//               var pph21 = double.parse(state.paySlipResp.pph21 ?? "0");
-//               var totalDeduction = bpjsKet + bpjsKes;
-//
-//               var deptPayment = double.parse(state.paySlipResp.deptPayment ?? "0");
-//               var loanPayment = double.parse(state.paySlipResp.loanPayment ?? "0");
-//               var totalExpense = deptPayment + loanPayment;
-//
-//               var saving = double.parse(state.paySlipResp.saving ?? "0");
-//               var remainingLoan = double.parse(state.paySlipResp.remainingLoan ?? "0");
-//               var remainingDept = double.parse(state.paySlipResp.remainingDept ?? "0");
-//
-//               var total1 = salaryTrip + bonusTrip + thr + insentif + bonusDecrease;
-//               var total2 = bpjsKet + bpjsKes + pph21;
-//               var total3 = deptPayment + loanPayment;
-//               var thp = total1 - total2 - total3;
-//
-//               double adjustment = 0;
-//               if (state.paySlipResp.adjustment != null) {
-//                 adjustment = double.parse(state.paySlipResp.adjustment ?? "0");
-//                 thp = thp + adjustment;
-//                 if (adjustment > 0) {
-//                   totalIncome = totalIncome + adjustment;
-//                   isAdjustmentPlus = true;
-//                   isAdjustmentMinus = false;
-//                 } else if (adjustment < 0) {
-//                   adjustment = adjustment.abs();
-//                   totalDeduction = totalDeduction + adjustment;
-//                   isAdjustmentPlus = false;
-//                   isAdjustmentMinus = true;
-//                 }
-//               }
-//
-//               return Column(
-//                 crossAxisAlignment: CrossAxisAlignment.start,
-//                 children: [
-//                   Padding(
-//                     padding: const EdgeInsets.all(8.0),
-//                     child: Row(
-//                       children: [
-//                         Text(
-//                           R.strings.aturTanggal,
-//                           style: const TextStyle(
-//                             fontSize: 16.0,
-//                           ),
-//                         ),
-//                         const SizedBox(width: 10.0),
-//                         GestureDetector(
-//                           onTap: () async {
-//                             showMonthPicker(
-//                               context: context,
-//                               initialDate: selectedDateTime,
-//                               firstDate:DateTime(2000),
-//                               lastDate: DateTime(2100),
-//                             ).then((date) {
-//                               setState(() {
-//                                 selectedDateTime = date!;
-//                                 _paySlipBloc.add(PaySlip(month: selectedDateTime.month, year: selectedDateTime.year));
-//                               });
-//                             });
-//                           },
-//                           child: Card(
-//                             elevation: 0.0,
-//                             shape: RoundedRectangleBorder(
-//                               side: BorderSide(
-//                                 color: R.colors.greenLogo,
-//                               ),
-//                               borderRadius: BorderRadius.circular(10.0), //<-- SEE HERE
-//                             ),
-//                             child: Padding(
-//                               padding: const EdgeInsets.symmetric(
-//                                 horizontal: 8.0,
-//                                 vertical: 4.0,
-//                               ),
-//                               child: Row(
-//                                 crossAxisAlignment: CrossAxisAlignment.center,
-//                                 children: [
-//                                   Text(
-//                                     "${Constants.listMonthIndonesia[selectedDateTime.month-1]} ${selectedDateTime.year}",
-//                                     style: const TextStyle(
-//                                       fontSize: 16.0,
-//                                     ),
-//                                   ),
-//                                   const SizedBox(width: 5.0),
-//                                   Icon(
-//                                     Icons.keyboard_arrow_down,
-//                                     color: R.colors.greenLogo,
-//                                   ),
-//                                 ],
-//                               ),
-//                             ),
-//                           ),
-//                         ),
-//                       ],
-//                     ),
-//                   ),
-//                   Expanded(
-//                     child: SingleChildScrollView(
-//                       child: Column(
-//                         children: [
-//                           Container(
-//                             color: Colors.grey[300],
-//                             height: 6.0,
-//                           ),
-//                           Padding(
-//                             padding: const EdgeInsets.symmetric(
-//                               horizontal: 8.0,
-//                               vertical: 12.0,
-//                             ),
-//                             child: Column(
-//                               crossAxisAlignment: CrossAxisAlignment.start,
-//                               children: [
-//                                 Text(
-//                                   R.strings.pendapatan,
-//                                   style: const TextStyle(
-//                                     color: Colors.black,
-//                                     fontSize: 15.0,
-//                                     fontWeight: FontWeight.bold,
-//                                   ),
-//                                 ),
-//                                 const SizedBox(height: 10.0),
-//                                 Container(
-//                                   color: Colors.grey[300],
-//                                   height: 1.0,
-//                                 ),
-//                                 const SizedBox(height: 10.0),
-//                                 SpaceBetweenHorizontalText(
-//                                   title: R.strings.gajiTrip,
-//                                   content: NumberFormat.simpleCurrency(name: "", decimalDigits: 2).format(salaryTrip),
-//                                   colorTitle: R.colors.colorText,
-//                                   colorContent: R.colors.colorText,
-//                                   fontSizeTitle: 14.0,
-//                                   fontSizeContent: 14.0,
-//                                   fontWeightTitle: FontWeight.normal,
-//                                   fontWeightContent: FontWeight.bold,
-//                                 ),
-//                                 const SizedBox(height: 18.0),
-//                                 SpaceBetweenHorizontalText(
-//                                   title: R.strings.bonusTrip,
-//                                   content: NumberFormat.simpleCurrency(name: "", decimalDigits: 2).format(bonusTrip),
-//                                   colorTitle: R.colors.colorText,
-//                                   colorContent: R.colors.colorText,
-//                                   fontSizeTitle: 14.0,
-//                                   fontSizeContent: 14.0,
-//                                   fontWeightTitle: FontWeight.normal,
-//                                   fontWeightContent: FontWeight.bold,
-//                                 ),
-//                                 Visibility(
-//                                   visible: isAdjustmentPlus,
-//                                   child: Column(
-//                                     children: [
-//                                       const SizedBox(height: 18.0),
-//                                       SpaceBetweenHorizontalText(
-//                                         title: R.strings.penyesuaian,
-//                                         content: NumberFormat.simpleCurrency(name: "", decimalDigits: 2).format(adjustment),
-//                                         colorTitle: R.colors.colorText,
-//                                         colorContent: R.colors.colorText,
-//                                         fontSizeTitle: 14.0,
-//                                         fontSizeContent: 14.0,
-//                                         fontWeightTitle: FontWeight.normal,
-//                                         fontWeightContent: FontWeight.bold,
-//                                       ),
-//                                     ],
-//                                   ),
-//                                 ),
-//                                 const SizedBox(height: 18.0),
-//                                 SpaceBetweenHorizontalText(
-//                                   title: R.strings.thr,
-//                                   content: NumberFormat.simpleCurrency(name: "", decimalDigits: 2).format(thr),
-//                                   colorTitle: R.colors.colorText,
-//                                   colorContent: R.colors.colorText,
-//                                   fontSizeTitle: 14.0,
-//                                   fontSizeContent: 14.0,
-//                                   fontWeightTitle: FontWeight.normal,
-//                                   fontWeightContent: FontWeight.bold,
-//                                 ),
-//                                 const SizedBox(height: 18.0),
-//                                 SpaceBetweenHorizontalText(
-//                                   title: R.strings.insentif,
-//                                   content: NumberFormat.simpleCurrency(name: "", decimalDigits: 2).format(insentif),
-//                                   colorTitle: R.colors.colorText,
-//                                   colorContent: R.colors.colorText,
-//                                   fontSizeTitle: 14.0,
-//                                   fontSizeContent: 14.0,
-//                                   fontWeightTitle: FontWeight.normal,
-//                                   fontWeightContent: FontWeight.bold,
-//                                 ),
-//                                 const SizedBox(height: 18.0),
-//                                 SpaceBetweenHorizontalText(
-//                                   title: R.strings.bonusAntarTeman,
-//                                   content: NumberFormat.simpleCurrency(name: "", decimalDigits: 2).format(bonusDecrease),
-//                                   colorTitle: R.colors.colorText,
-//                                   colorContent: R.colors.colorText,
-//                                   fontSizeTitle: 14.0,
-//                                   fontSizeContent: 14.0,
-//                                   fontWeightTitle: FontWeight.normal,
-//                                   fontWeightContent: FontWeight.bold,
-//                                 ),
-//                                 const SizedBox(height: 10.0),
-//                                 Container(
-//                                   color: Colors.grey[300],
-//                                   height: 1.0,
-//                                 ),
-//                                 const SizedBox(height: 10.0),
-//                                 SpaceBetweenHorizontalText(
-//                                   title: R.strings.total,
-//                                   content: "+${NumberFormat.simpleCurrency(name: "", decimalDigits: 2).format(totalIncome)}",
-//                                   colorTitle: R.colors.colorText,
-//                                   colorContent: R.colors.greenLogo,
-//                                   fontSizeTitle: 15.0,
-//                                   fontSizeContent: 15.0,
-//                                   fontWeightTitle: FontWeight.bold,
-//                                   fontWeightContent: FontWeight.bold,
-//                                 ),
-//                               ],
-//                             ),
-//                           ),
-//                           Container(
-//                             color: Colors.grey[300],
-//                             height: 6.0,
-//                           ),
-//                           Padding(
-//                             padding: const EdgeInsets.symmetric(
-//                               horizontal: 8.0,
-//                               vertical: 12.0,
-//                             ),
-//                             child: Column(
-//                               crossAxisAlignment: CrossAxisAlignment.start,
-//                               children: [
-//                                 Text(
-//                                   R.strings.potongan,
-//                                   style: const TextStyle(
-//                                     color: Colors.black,
-//                                     fontSize: 15.0,
-//                                     fontWeight: FontWeight.bold,
-//                                   ),
-//                                 ),
-//                                 const SizedBox(height: 10.0),
-//                                 Container(
-//                                   color: Colors.grey[300],
-//                                   height: 1.0,
-//                                 ),
-//                                 const SizedBox(height: 10.0),
-//                                 SpaceBetweenHorizontalText(
-//                                   title: R.strings.bpjsKet,
-//                                   content: NumberFormat.simpleCurrency(name: "", decimalDigits: 2).format(bpjsKet),
-//                                   colorTitle: R.colors.colorText,
-//                                   colorContent: R.colors.colorText,
-//                                   fontSizeTitle: 14.0,
-//                                   fontSizeContent: 14.0,
-//                                   fontWeightTitle: FontWeight.normal,
-//                                   fontWeightContent: FontWeight.bold,
-//                                 ),
-//                                 const SizedBox(height: 18.0),
-//                                 SpaceBetweenHorizontalText(
-//                                   title: R.strings.bpjsKes,
-//                                   content: NumberFormat.simpleCurrency(name: "", decimalDigits: 2).format(bpjsKes),
-//                                   colorTitle: R.colors.colorText,
-//                                   colorContent: R.colors.colorText,
-//                                   fontSizeTitle: 14.0,
-//                                   fontSizeContent: 14.0,
-//                                   fontWeightTitle: FontWeight.normal,
-//                                   fontWeightContent: FontWeight.bold,
-//                                 ),
-//                                 Visibility(
-//                                   visible: isAdjustmentMinus,
-//                                   child: Column(
-//                                     children: [
-//                                       const SizedBox(height: 18.0),
-//                                       SpaceBetweenHorizontalText(
-//                                         title: R.strings.penyesuaian,
-//                                         content: NumberFormat.simpleCurrency(name: "", decimalDigits: 2).format(adjustment),
-//                                         colorTitle: R.colors.colorText,
-//                                         colorContent: R.colors.colorText,
-//                                         fontSizeTitle: 14.0,
-//                                         fontSizeContent: 14.0,
-//                                         fontWeightTitle: FontWeight.normal,
-//                                         fontWeightContent: FontWeight.bold,
-//                                       ),
-//                                     ],
-//                                   ),
-//                                 ),
-//                                 const SizedBox(height: 10.0),
-//                                 Container(
-//                                   color: Colors.grey[300],
-//                                   height: 1.0,
-//                                 ),
-//                                 const SizedBox(height: 10.0),
-//                                 SpaceBetweenHorizontalText(
-//                                   title: R.strings.total,
-//                                   content: "-${NumberFormat.simpleCurrency(name: "", decimalDigits: 2).format(totalDeduction)}",
-//                                   colorTitle: R.colors.colorText,
-//                                   colorContent: Colors.redAccent,
-//                                   fontSizeTitle: 15.0,
-//                                   fontSizeContent: 15.0,
-//                                   fontWeightTitle: FontWeight.bold,
-//                                   fontWeightContent: FontWeight.bold,
-//                                 ),
-//                               ],
-//                             ),
-//                           ),
-//                           Container(
-//                             color: Colors.grey[300],
-//                             height: 6.0,
-//                           ),
-//                           Padding(
-//                             padding: const EdgeInsets.symmetric(
-//                               horizontal: 8.0,
-//                               vertical: 12.0,
-//                             ),
-//                             child: Column(
-//                               crossAxisAlignment: CrossAxisAlignment.start,
-//                               children: [
-//                                 Text(
-//                                   R.strings.pengeluaran,
-//                                   style: const TextStyle(
-//                                     color: Colors.black,
-//                                     fontSize: 15.0,
-//                                     fontWeight: FontWeight.bold,
-//                                   ),
-//                                 ),
-//                                 const SizedBox(height: 10.0),
-//                                 Container(
-//                                   color: Colors.grey[300],
-//                                   height: 1.0,
-//                                 ),
-//                                 const SizedBox(height: 10.0),
-//                                 SpaceBetweenHorizontalText(
-//                                   title: R.strings.angsuranSusut,
-//                                   content: NumberFormat.simpleCurrency(name: "", decimalDigits: 2).format(deptPayment),
-//                                   colorTitle: R.colors.colorText,
-//                                   colorContent: R.colors.colorText,
-//                                   fontSizeTitle: 14.0,
-//                                   fontSizeContent: 14.0,
-//                                   fontWeightTitle: FontWeight.normal,
-//                                   fontWeightContent: FontWeight.bold,
-//                                 ),
-//                                 const SizedBox(height: 18.0),
-//                                 SpaceBetweenHorizontalText(
-//                                   title: R.strings.angsuranPinjaman,
-//                                   content: NumberFormat.simpleCurrency(name: "", decimalDigits: 2).format(loanPayment),
-//                                   colorTitle: R.colors.colorText,
-//                                   colorContent: R.colors.colorText,
-//                                   fontSizeTitle: 14.0,
-//                                   fontSizeContent: 14.0,
-//                                   fontWeightTitle: FontWeight.normal,
-//                                   fontWeightContent: FontWeight.bold,
-//                                 ),
-//                                 const SizedBox(height: 18.0),
-//                                 SpaceBetweenHorizontalText(
-//                                   title: R.strings.angsuranLain,
-//                                   content: NumberFormat.simpleCurrency(name: "", decimalDigits: 2).format(0),
-//                                   colorTitle: R.colors.colorText,
-//                                   colorContent: R.colors.colorText,
-//                                   fontSizeTitle: 14.0,
-//                                   fontSizeContent: 14.0,
-//                                   fontWeightTitle: FontWeight.normal,
-//                                   fontWeightContent: FontWeight.bold,
-//                                 ),
-//                                 const SizedBox(height: 10.0),
-//                                 Container(
-//                                   color: Colors.grey[300],
-//                                   height: 1.0,
-//                                 ),
-//                                 const SizedBox(height: 10.0),
-//                                 SpaceBetweenHorizontalText(
-//                                   title: R.strings.total,
-//                                   content: "-${NumberFormat.simpleCurrency(name: "", decimalDigits: 2).format(totalExpense)}",
-//                                   colorTitle: R.colors.colorText,
-//                                   colorContent: Colors.redAccent,
-//                                   fontSizeTitle: 15.0,
-//                                   fontSizeContent: 15.0,
-//                                   fontWeightTitle: FontWeight.bold,
-//                                   fontWeightContent: FontWeight.bold,
-//                                 ),
-//                               ],
-//                             ),
-//                           ),
-//                           Container(
-//                             color: Colors.grey[300],
-//                             height: 6.0,
-//                           ),
-//                           Padding(
-//                             padding: const EdgeInsets.symmetric(
-//                               horizontal: 8.0,
-//                               vertical: 12.0,
-//                             ),
-//                             child: Column(
-//                               crossAxisAlignment: CrossAxisAlignment.start,
-//                               children: [
-//                                 Text(
-//                                   R.strings.info,
-//                                   style: const TextStyle(
-//                                     color: Colors.black,
-//                                     fontSize: 15.0,
-//                                     fontWeight: FontWeight.bold,
-//                                   ),
-//                                 ),
-//                                 const SizedBox(height: 10.0),
-//                                 Container(
-//                                   color: Colors.grey[300],
-//                                   height: 1.0,
-//                                 ),
-//                                 const SizedBox(height: 10.0),
-//                                 SpaceBetweenHorizontalText(
-//                                   title: R.strings.jmlPerjalanan,
-//                                   content: state.paySlipResp.numberOfTrip ?? "0",
-//                                   colorTitle: R.colors.colorText,
-//                                   colorContent: R.colors.colorText,
-//                                   fontSizeTitle: 14.0,
-//                                   fontSizeContent: 14.0,
-//                                   fontWeightTitle: FontWeight.normal,
-//                                   fontWeightContent: FontWeight.bold,
-//                                 ),
-//                                 const SizedBox(height: 18.0),
-//                                 SpaceBetweenHorizontalText(
-//                                   title: R.strings.totalTabungan,
-//                                   content: NumberFormat.simpleCurrency(name: "", decimalDigits: 2).format(saving),
-//                                   colorTitle: R.colors.colorText,
-//                                   colorContent: R.colors.colorText,
-//                                   fontSizeTitle: 14.0,
-//                                   fontSizeContent: 14.0,
-//                                   fontWeightTitle: FontWeight.normal,
-//                                   fontWeightContent: FontWeight.bold,
-//                                 ),
-//                                 const SizedBox(height: 18.0),
-//                                 SpaceBetweenHorizontalText(
-//                                   title: R.strings.sisaHutangYTD,
-//                                   content: NumberFormat.simpleCurrency(name: "", decimalDigits: 2).format(remainingLoan),
-//                                   colorTitle: R.colors.colorText,
-//                                   colorContent: R.colors.colorText,
-//                                   fontSizeTitle: 14.0,
-//                                   fontSizeContent: 14.0,
-//                                   fontWeightTitle: FontWeight.normal,
-//                                   fontWeightContent: FontWeight.bold,
-//                                 ),
-//                                 const SizedBox(height: 18.0),
-//                                 SpaceBetweenHorizontalText(
-//                                   title: R.strings.sisaPinjamanYTD,
-//                                   content: NumberFormat.simpleCurrency(name: "", decimalDigits: 2).format(remainingDept),
-//                                   colorTitle: R.colors.colorText,
-//                                   colorContent: R.colors.colorText,
-//                                   fontSizeTitle: 14.0,
-//                                   fontSizeContent: 14.0,
-//                                   fontWeightTitle: FontWeight.normal,
-//                                   fontWeightContent: FontWeight.bold,
-//                                 ),
-//                               ],
-//                             ),
-//                           ),
-//                         ],
-//                       ),
-//                     ),
-//                   ),
-//                   Container(
-//                     color: R.colors.greenLogo,
-//                     child: Padding(
-//                       padding: const EdgeInsets.all(8.0),
-//                       child: Column(
-//                         children: [
-//                           SpaceBetweenHorizontalText(
-//                             title: R.strings.nettoGaji,
-//                             content: "${R.strings.rp} ${NumberFormat.simpleCurrency(name: "", decimalDigits: 2).format(thp)}",
-//                             colorTitle: Colors.white,
-//                             colorContent: Colors.white,
-//                             fontSizeTitle: 16.0,
-//                             fontSizeContent: 16.0,
-//                             fontWeightTitle: FontWeight.bold,
-//                             fontWeightContent: FontWeight.bold,
-//                           ),
-//                         ],
-//                       ),
-//                     ),
-//                   )
-//                 ],
-//               );
-//             } else if (state is PaySlipError) {
-//               return Center(
-//                 child: Column(
-//                   mainAxisAlignment: MainAxisAlignment.center,
-//                   children: [
-//                     const Icon(
-//                       Icons.error,
-//                       color: Colors.red,
-//                       size: 50.0,
-//                     ),
-//                     Text(
-//                       state.message,
-//                       style: const TextStyle(
-//                         fontSize: 14.0,
-//                       ),
-//                     ),
-//                   ],
-//                 ),
-//               );
-//             }
-//             throw ScaffoldMessenger.of(context)
-//                 .showSnackBar(SnackBar(content: Text(R.strings.errorWidget)));
-//           },
-//         ),
-//       ),
-//     );
-//   }
-// }
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
@@ -582,9 +22,31 @@ class _PaySlipPageState extends State<PaySlipPage> {
   @override
   void initState() {
     super.initState();
-    var date = DateTime.now().toString();
-    selectedDateTime = DateTime.parse(date);
+    selectedDateTime = DateTime.now();
     _paySlipBloc.add(PaySlip(month: selectedDateTime.month, year: selectedDateTime.year));
+  }
+
+  @override
+  void dispose() {
+    _paySlipBloc.close();
+    super.dispose();
+  }
+
+  /// Helper untuk memformat angka / string uang secara aman tanpa throw exception jika null / corrupt
+  String _formatCurrency(dynamic value) {
+    if (value == null) return "0.00";
+    try {
+      final double numVal;
+      if (value is num) {
+        numVal = value.toDouble();
+      } else {
+        final cleanString = value.toString().replaceAll(',', '').trim();
+        numVal = double.tryParse(cleanString) ?? 0.0;
+      }
+      return NumberFormat.simpleCurrency(name: "", decimalDigits: 2).format(numVal);
+    } catch (_) {
+      return "0.00";
+    }
   }
 
   // Fungsi helper untuk membuat desain Card yang seragam
@@ -609,7 +71,7 @@ class _PaySlipPageState extends State<PaySlipPage> {
           Text(
             title,
             style: const TextStyle(
-              color: Color(0xFF002B4C), // Warna teks biru gelap disesuaikan dengan Cuti
+              color: Color(0xFF002B4C),
               fontSize: 15.0,
               fontWeight: FontWeight.bold,
             ),
@@ -628,11 +90,10 @@ class _PaySlipPageState extends State<PaySlipPage> {
 
   @override
   Widget build(BuildContext context) {
-    const darkBlue = Color(0xFF002B4C); // Warna disamakan dengan Pengajuan Cuti
-    const orange = Color(0xFFD4552F);   // Warna disamakan dengan tombol Tambah
+    const darkBlue = Color(0xFF002B4C);
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF5F6F8), // Background disamakan dengan Pengajuan Cuti
+      backgroundColor: const Color(0xFFF5F6F8),
       appBar: AppBar(
         backgroundColor: darkBlue,
         elevation: 0,
@@ -645,7 +106,6 @@ class _PaySlipPageState extends State<PaySlipPage> {
             fontSize: 18,
           ),
         ),
-        // Style tombol back disamakan persis dengan Pengajuan Cuti
         leading: Padding(
           padding: const EdgeInsets.only(left: 12),
           child: InkWell(
@@ -669,7 +129,7 @@ class _PaySlipPageState extends State<PaySlipPage> {
             Container(
               padding: const EdgeInsets.fromLTRB(16, 16, 16, 24),
               decoration: const BoxDecoration(
-                color: darkBlue, // Background mengikuti AppBar
+                color: darkBlue,
                 borderRadius: BorderRadius.only(
                   bottomLeft: Radius.circular(24),
                   bottomRight: Radius.circular(24),
@@ -682,7 +142,7 @@ class _PaySlipPageState extends State<PaySlipPage> {
                     R.strings.aturTanggal,
                     style: const TextStyle(
                       fontSize: 16.0,
-                      color: Color(0xFFFF9800), // Warna Atur Tanggal menjadi Oranye
+                      color: Color(0xFFFF9800),
                       fontWeight: FontWeight.bold,
                     ),
                   ),
@@ -713,7 +173,7 @@ class _PaySlipPageState extends State<PaySlipPage> {
                           Icon(Icons.calendar_month_outlined, color: R.colors.greenLogo, size: 18),
                           const SizedBox(width: 8.0),
                           Text(
-                            "${Constants.listMonthIndonesia[selectedDateTime.month - 1]} ${selectedDateTime.year}",
+                            "${Constants.listMonthIndonesia[(selectedDateTime.month - 1).clamp(0, 11)]} ${selectedDateTime.year}",
                             style: TextStyle(
                               fontSize: 14.0,
                               fontWeight: FontWeight.bold,
@@ -742,50 +202,19 @@ class _PaySlipPageState extends State<PaySlipPage> {
                       child: CircularProgressIndicator(color: R.colors.greenLogo),
                     );
                   } else if (state is PaySlipSuccess) {
+                    final data = state.payslipData;
+                    final payroll = data.payroll;
+                    final incomes = data.incomes;
+                    final deductions = data.deductions;
 
-                    var isAdjustmentPlus = false;
-                    var isAdjustmentMinus = false;
-
-                    var salaryTrip = double.parse(state.paySlipResp.salaryTrip ?? "0");
-                    var bonusTrip = double.parse(state.paySlipResp.bonusTrip ?? "0");
-                    var thr = double.parse(state.paySlipResp.thr ?? "0");
-                    var insentif = double.parse(state.paySlipResp.insentif ?? "0");
-                    var bonusDecrease = double.parse(state.paySlipResp.bonusDecrease ?? "0");
-                    var totalIncome = salaryTrip + bonusTrip + thr + insentif + bonusDecrease;
-
-                    var bpjsKet = double.parse(state.paySlipResp.bpjsKet ?? "0");
-                    var bpjsKes = double.parse(state.paySlipResp.bpjsKes ?? "0");
-                    var pph21 = double.parse(state.paySlipResp.pph21 ?? "0");
-                    var totalDeduction = bpjsKet + bpjsKes;
-
-                    var deptPayment = double.parse(state.paySlipResp.deptPayment ?? "0");
-                    var loanPayment = double.parse(state.paySlipResp.loanPayment ?? "0");
-                    var totalExpense = deptPayment + loanPayment;
-
-                    var saving = double.parse(state.paySlipResp.saving ?? "0");
-                    var remainingLoan = double.parse(state.paySlipResp.remainingLoan ?? "0");
-                    var remainingDept = double.parse(state.paySlipResp.remainingDept ?? "0");
-
-                    var total1 = salaryTrip + bonusTrip + thr + insentif + bonusDecrease;
-                    var total2 = bpjsKet + bpjsKes + pph21;
-                    var total3 = deptPayment + loanPayment;
-                    var thp = total1 - total2 - total3;
-
-                    double adjustment = 0;
-                    if (state.paySlipResp.adjustment != null) {
-                      adjustment = double.parse(state.paySlipResp.adjustment ?? "0");
-                      thp = thp + adjustment;
-                      if (adjustment > 0) {
-                        totalIncome = totalIncome + adjustment;
-                        isAdjustmentPlus = true;
-                        isAdjustmentMinus = false;
-                      } else if (adjustment < 0) {
-                        adjustment = adjustment.abs();
-                        totalDeduction = totalDeduction + adjustment;
-                        isAdjustmentPlus = false;
-                        isAdjustmentMinus = true;
-                      }
+                    // Cek jika seluruh objek kosong/null
+                    if (payroll == null && incomes.isEmpty && deductions.isEmpty) {
+                      return _buildEmptyState("Belum ada catatan slip gaji\nuntuk periode ini.");
                     }
+
+                    final grossSalaryFormatted = _formatCurrency(payroll?.grossSalary);
+                    final totalDeductionFormatted = _formatCurrency(payroll?.totalDeduction);
+                    final netSalaryFormatted = _formatCurrency(payroll?.netSalary);
 
                     return Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -797,75 +226,152 @@ class _PaySlipPageState extends State<PaySlipPage> {
                               children: [
                                 const SizedBox(height: 8),
 
-                                // KARTU PENDAPATAN
+                                // 🔹 KARTU PENDAPATAN (Dinamis dari list incomes)
                                 _buildSectionCard(
                                   title: R.strings.pendapatan,
                                   children: [
-                                    SpaceBetweenHorizontalText(title: R.strings.gajiTrip, content: NumberFormat.simpleCurrency(name: "", decimalDigits: 2).format(salaryTrip), colorTitle: R.colors.colorText, colorContent: R.colors.colorText, fontSizeTitle: 14.0, fontSizeContent: 14.0, fontWeightTitle: FontWeight.normal, fontWeightContent: FontWeight.bold),
-                                    const SizedBox(height: 14.0),
-                                    SpaceBetweenHorizontalText(title: R.strings.bonusTrip, content: NumberFormat.simpleCurrency(name: "", decimalDigits: 2).format(bonusTrip), colorTitle: R.colors.colorText, colorContent: R.colors.colorText, fontSizeTitle: 14.0, fontSizeContent: 14.0, fontWeightTitle: FontWeight.normal, fontWeightContent: FontWeight.bold),
-                                    if (isAdjustmentPlus) ...[
-                                      const SizedBox(height: 14.0),
-                                      SpaceBetweenHorizontalText(title: R.strings.penyesuaian, content: NumberFormat.simpleCurrency(name: "", decimalDigits: 2).format(adjustment), colorTitle: R.colors.colorText, colorContent: R.colors.colorText, fontSizeTitle: 14.0, fontSizeContent: 14.0, fontWeightTitle: FontWeight.normal, fontWeightContent: FontWeight.bold),
-                                    ],
-                                    const SizedBox(height: 14.0),
-                                    SpaceBetweenHorizontalText(title: R.strings.thr, content: NumberFormat.simpleCurrency(name: "", decimalDigits: 2).format(thr), colorTitle: R.colors.colorText, colorContent: R.colors.colorText, fontSizeTitle: 14.0, fontSizeContent: 14.0, fontWeightTitle: FontWeight.normal, fontWeightContent: FontWeight.bold),
-                                    const SizedBox(height: 14.0),
-                                    SpaceBetweenHorizontalText(title: R.strings.insentif, content: NumberFormat.simpleCurrency(name: "", decimalDigits: 2).format(insentif), colorTitle: R.colors.colorText, colorContent: R.colors.colorText, fontSizeTitle: 14.0, fontSizeContent: 14.0, fontWeightTitle: FontWeight.normal, fontWeightContent: FontWeight.bold),
-                                    const SizedBox(height: 14.0),
-                                    SpaceBetweenHorizontalText(title: R.strings.bonusAntarTeman, content: NumberFormat.simpleCurrency(name: "", decimalDigits: 2).format(bonusDecrease), colorTitle: R.colors.colorText, colorContent: R.colors.colorText, fontSizeTitle: 14.0, fontSizeContent: 14.0, fontWeightTitle: FontWeight.normal, fontWeightContent: FontWeight.bold),
-                                    const SizedBox(height: 12.0),
+                                    if (incomes.isEmpty)
+                                      Padding(
+                                        padding: const EdgeInsets.symmetric(vertical: 4.0),
+                                        child: Text(
+                                          "Tidak ada rincian pendapatan",
+                                          style: TextStyle(
+                                            fontSize: 13.5,
+                                            color: Colors.grey.shade500,
+                                            fontStyle: FontStyle.italic,
+                                          ),
+                                        ),
+                                      )
+                                    else
+                                      ...incomes.map((income) {
+                                        final itemTitle = (income.description != null && income.description!.trim().isNotEmpty)
+                                            ? income.description!
+                                            : "Pendapatan";
+                                        final qtyVal = int.tryParse(income.qty?.toString() ?? '');
+                                        final titleWithQty = (qtyVal != null && qtyVal > 1)
+                                            ? "$itemTitle (${income.qty}x)"
+                                            : itemTitle;
+
+                                        return Padding(
+                                          padding: const EdgeInsets.only(bottom: 14.0),
+                                          child: SpaceBetweenHorizontalText(
+                                            title: titleWithQty,
+                                            content: _formatCurrency(income.amount),
+                                            colorTitle: R.colors.colorText,
+                                            colorContent: R.colors.colorText,
+                                            fontSizeTitle: 14.0,
+                                            fontSizeContent: 14.0,
+                                            fontWeightTitle: FontWeight.normal,
+                                            fontWeightContent: FontWeight.bold,
+                                          ),
+                                        );
+                                      }).toList(),
                                     Container(color: Colors.grey.shade200, height: 1.0),
                                     const SizedBox(height: 12.0),
-                                    SpaceBetweenHorizontalText(title: R.strings.total, content: "+${NumberFormat.simpleCurrency(name: "", decimalDigits: 2).format(totalIncome)}", colorTitle: R.colors.colorText, colorContent: R.colors.greenLogo, fontSizeTitle: 14.0, fontSizeContent: 15.0, fontWeightTitle: FontWeight.bold, fontWeightContent: FontWeight.bold),
+                                    SpaceBetweenHorizontalText(
+                                      title: R.strings.total,
+                                      content: "+$grossSalaryFormatted",
+                                      colorTitle: R.colors.colorText,
+                                      colorContent: R.colors.greenLogo,
+                                      fontSizeTitle: 14.0,
+                                      fontSizeContent: 15.0,
+                                      fontWeightTitle: FontWeight.bold,
+                                      fontWeightContent: FontWeight.bold,
+                                    ),
                                   ],
                                 ),
 
-                                // KARTU POTONGAN
+                                // 🔹 KARTU POTONGAN (Dinamis dari list deductions)
                                 _buildSectionCard(
                                   title: R.strings.potongan,
                                   children: [
-                                    SpaceBetweenHorizontalText(title: R.strings.bpjsKet, content: NumberFormat.simpleCurrency(name: "", decimalDigits: 2).format(bpjsKet), colorTitle: R.colors.colorText, colorContent: R.colors.colorText, fontSizeTitle: 14.0, fontSizeContent: 14.0, fontWeightTitle: FontWeight.normal, fontWeightContent: FontWeight.bold),
-                                    const SizedBox(height: 14.0),
-                                    SpaceBetweenHorizontalText(title: R.strings.bpjsKes, content: NumberFormat.simpleCurrency(name: "", decimalDigits: 2).format(bpjsKes), colorTitle: R.colors.colorText, colorContent: R.colors.colorText, fontSizeTitle: 14.0, fontSizeContent: 14.0, fontWeightTitle: FontWeight.normal, fontWeightContent: FontWeight.bold),
-                                    if (isAdjustmentMinus) ...[
-                                      const SizedBox(height: 14.0),
-                                      SpaceBetweenHorizontalText(title: R.strings.penyesuaian, content: NumberFormat.simpleCurrency(name: "", decimalDigits: 2).format(adjustment), colorTitle: R.colors.colorText, colorContent: R.colors.colorText, fontSizeTitle: 14.0, fontSizeContent: 14.0, fontWeightTitle: FontWeight.normal, fontWeightContent: FontWeight.bold),
-                                    ],
-                                    const SizedBox(height: 12.0),
+                                    if (deductions.isEmpty)
+                                      Padding(
+                                        padding: const EdgeInsets.symmetric(vertical: 4.0),
+                                        child: Text(
+                                          "Tidak ada potongan",
+                                          style: TextStyle(
+                                            fontSize: 13.5,
+                                            color: Colors.grey.shade500,
+                                            fontStyle: FontStyle.italic,
+                                          ),
+                                        ),
+                                      )
+                                    else
+                                      ...deductions.map((deduction) {
+                                        final itemTitle = (deduction.description != null && deduction.description!.trim().isNotEmpty)
+                                            ? deduction.description!
+                                            : "Potongan";
+
+                                        return Padding(
+                                          padding: const EdgeInsets.only(bottom: 14.0),
+                                          child: SpaceBetweenHorizontalText(
+                                            title: itemTitle,
+                                            content: _formatCurrency(deduction.amount),
+                                            colorTitle: R.colors.colorText,
+                                            colorContent: R.colors.colorText,
+                                            fontSizeTitle: 14.0,
+                                            fontSizeContent: 14.0,
+                                            fontWeightTitle: FontWeight.normal,
+                                            fontWeightContent: FontWeight.bold,
+                                          ),
+                                        );
+                                      }).toList(),
                                     Container(color: Colors.grey.shade200, height: 1.0),
                                     const SizedBox(height: 12.0),
-                                    SpaceBetweenHorizontalText(title: R.strings.total, content: "-${NumberFormat.simpleCurrency(name: "", decimalDigits: 2).format(totalDeduction)}", colorTitle: R.colors.colorText, colorContent: Colors.redAccent, fontSizeTitle: 14.0, fontSizeContent: 15.0, fontWeightTitle: FontWeight.bold, fontWeightContent: FontWeight.bold),
+                                    SpaceBetweenHorizontalText(
+                                      title: R.strings.total,
+                                      content: "-$totalDeductionFormatted",
+                                      colorTitle: R.colors.colorText,
+                                      colorContent: Colors.redAccent,
+                                      fontSizeTitle: 14.0,
+                                      fontSizeContent: 15.0,
+                                      fontWeightTitle: FontWeight.bold,
+                                      fontWeightContent: FontWeight.bold,
+                                    ),
                                   ],
                                 ),
 
-                                // KARTU PENGELUARAN
-                                _buildSectionCard(
-                                  title: R.strings.pengeluaran,
-                                  children: [
-                                    SpaceBetweenHorizontalText(title: R.strings.angsuranSusut, content: NumberFormat.simpleCurrency(name: "", decimalDigits: 2).format(deptPayment), colorTitle: R.colors.colorText, colorContent: R.colors.colorText, fontSizeTitle: 14.0, fontSizeContent: 14.0, fontWeightTitle: FontWeight.normal, fontWeightContent: FontWeight.bold),
-                                    const SizedBox(height: 14.0),
-                                    SpaceBetweenHorizontalText(title: R.strings.angsuranPinjaman, content: NumberFormat.simpleCurrency(name: "", decimalDigits: 2).format(loanPayment), colorTitle: R.colors.colorText, colorContent: R.colors.colorText, fontSizeTitle: 14.0, fontSizeContent: 14.0, fontWeightTitle: FontWeight.normal, fontWeightContent: FontWeight.bold),
-                                    const SizedBox(height: 14.0),
-                                    SpaceBetweenHorizontalText(title: R.strings.angsuranLain, content: NumberFormat.simpleCurrency(name: "", decimalDigits: 2).format(0), colorTitle: R.colors.colorText, colorContent: R.colors.colorText, fontSizeTitle: 14.0, fontSizeContent: 14.0, fontWeightTitle: FontWeight.normal, fontWeightContent: FontWeight.bold),
-                                    const SizedBox(height: 12.0),
-                                    Container(color: Colors.grey.shade200, height: 1.0),
-                                    const SizedBox(height: 12.0),
-                                    SpaceBetweenHorizontalText(title: R.strings.total, content: "-${NumberFormat.simpleCurrency(name: "", decimalDigits: 2).format(totalExpense)}", colorTitle: R.colors.colorText, colorContent: Colors.redAccent, fontSizeTitle: 14.0, fontSizeContent: 15.0, fontWeightTitle: FontWeight.bold, fontWeightContent: FontWeight.bold),
-                                  ],
-                                ),
-
-                                // KARTU INFO
+                                // 🔹 KARTU INFO
                                 _buildSectionCard(
                                   title: R.strings.info,
                                   children: [
-                                    SpaceBetweenHorizontalText(title: R.strings.jmlPerjalanan, content: state.paySlipResp.numberOfTrip ?? "0", colorTitle: R.colors.colorText, colorContent: R.colors.colorText, fontSizeTitle: 14.0, fontSizeContent: 14.0, fontWeightTitle: FontWeight.normal, fontWeightContent: FontWeight.bold),
-                                    const SizedBox(height: 14.0),
-                                    SpaceBetweenHorizontalText(title: R.strings.totalTabungan, content: NumberFormat.simpleCurrency(name: "", decimalDigits: 2).format(saving), colorTitle: R.colors.colorText, colorContent: R.colors.colorText, fontSizeTitle: 14.0, fontSizeContent: 14.0, fontWeightTitle: FontWeight.normal, fontWeightContent: FontWeight.bold),
-                                    const SizedBox(height: 14.0),
-                                    SpaceBetweenHorizontalText(title: R.strings.sisaHutangYTD, content: NumberFormat.simpleCurrency(name: "", decimalDigits: 2).format(remainingLoan), colorTitle: R.colors.colorText, colorContent: R.colors.colorText, fontSizeTitle: 14.0, fontSizeContent: 14.0, fontWeightTitle: FontWeight.normal, fontWeightContent: FontWeight.bold),
-                                    const SizedBox(height: 14.0),
-                                    SpaceBetweenHorizontalText(title: R.strings.sisaPinjamanYTD, content: NumberFormat.simpleCurrency(name: "", decimalDigits: 2).format(remainingDept), colorTitle: R.colors.colorText, colorContent: R.colors.colorText, fontSizeTitle: 14.0, fontSizeContent: 14.0, fontWeightTitle: FontWeight.normal, fontWeightContent: FontWeight.bold),
+                                    SpaceBetweenHorizontalText(
+                                      title: R.strings.jmlPerjalanan,
+                                      content: "${payroll?.numberOfTrip ?? 0} Trip",
+                                      colorTitle: R.colors.colorText,
+                                      colorContent: R.colors.colorText,
+                                      fontSizeTitle: 14.0,
+                                      fontSizeContent: 14.0,
+                                      fontWeightTitle: FontWeight.normal,
+                                      fontWeightContent: FontWeight.bold,
+                                    ),
+                                    if (payroll?.driver?.name != null && payroll!.driver!.name!.trim().isNotEmpty) ...[
+                                      const SizedBox(height: 14.0),
+                                      SpaceBetweenHorizontalText(
+                                        title: "Nama Driver",
+                                        content: payroll!.driver!.name!.trim(),
+                                        colorTitle: R.colors.colorText,
+                                        colorContent: R.colors.colorText,
+                                        fontSizeTitle: 14.0,
+                                        fontSizeContent: 14.0,
+                                        fontWeightTitle: FontWeight.normal,
+                                        fontWeightContent: FontWeight.bold,
+                                      ),
+                                    ],
+                                    if (payroll?.driver?.rekeningNumber != null && payroll!.driver!.rekeningNumber!.trim().isNotEmpty) ...[
+                                      const SizedBox(height: 14.0),
+                                      SpaceBetweenHorizontalText(
+                                        title: "No. Rekening",
+                                        content: payroll!.driver!.rekeningNumber!.trim(),
+                                        colorTitle: R.colors.colorText,
+                                        colorContent: R.colors.colorText,
+                                        fontSizeTitle: 14.0,
+                                        fontSizeContent: 14.0,
+                                        fontWeightTitle: FontWeight.normal,
+                                        fontWeightContent: FontWeight.bold,
+                                      ),
+                                    ],
                                   ],
                                 ),
                                 const SizedBox(height: 24),
@@ -874,7 +380,7 @@ class _PaySlipPageState extends State<PaySlipPage> {
                           ),
                         ),
 
-                        // KARTU NETTO GAJI (Bottom Fixed - Flat Style)
+                        // 🔹 KARTU NETTO GAJI (Bottom Fixed Bar)
                         Container(
                           padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 16.0),
                           decoration: BoxDecoration(
@@ -891,7 +397,7 @@ class _PaySlipPageState extends State<PaySlipPage> {
                             top: false,
                             child: SpaceBetweenHorizontalText(
                               title: R.strings.nettoGaji,
-                              content: "${R.strings.rp} ${NumberFormat.simpleCurrency(name: "", decimalDigits: 2).format(thp)}",
+                              content: "${R.strings.rp} $netSalaryFormatted",
                               colorTitle: Colors.white,
                               colorContent: Colors.white,
                               fontSizeTitle: 16.0,
@@ -904,50 +410,10 @@ class _PaySlipPageState extends State<PaySlipPage> {
                       ],
                     );
                   } else if (state is PaySlipError) {
-                    return Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Container(
-                            padding: const EdgeInsets.all(24),
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              shape: BoxShape.circle,
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.black.withOpacity(0.05),
-                                  blurRadius: 10,
-                                ),
-                              ],
-                            ),
-                            child: Icon(
-                              Icons.receipt_long_rounded,
-                              color: Colors.grey.shade400,
-                              size: 60.0,
-                            ),
-                          ),
-                          const SizedBox(height: 24.0),
-                          const Text(
-                            "Tidak ada data",
-                            style: TextStyle(
-                              fontSize: 18.0,
-                              fontWeight: FontWeight.bold,
-                              color: darkBlue, // Diselaraskan dengan warna tema
-                            ),
-                          ),
-                          const SizedBox(height: 8.0),
-                          Text(
-                            "Belum ada catatan slip gaji\nuntuk bulan ini.",
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                              fontSize: 14.0,
-                              color: Colors.grey.shade600,
-                              height: 1.5,
-                            ),
-                          ),
-                        ],
-                      ),
-                    );
+                    final message = state.message.isNotEmpty
+                        ? state.message
+                        : "Belum ada catatan slip gaji\nuntuk bulan ini.";
+                    return _buildEmptyState(message);
                   }
 
                   return const SizedBox.shrink();
@@ -956,6 +422,57 @@ class _PaySlipPageState extends State<PaySlipPage> {
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget _buildEmptyState(String message) {
+    const darkBlue = Color(0xFF002B4C);
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Container(
+            padding: const EdgeInsets.all(24),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              shape: BoxShape.circle,
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.05),
+                  blurRadius: 10,
+                ),
+              ],
+            ),
+            child: Icon(
+              Icons.receipt_long_rounded,
+              color: Colors.grey.shade400,
+              size: 60.0,
+            ),
+          ),
+          const SizedBox(height: 24.0),
+          const Text(
+            "Tidak ada data",
+            style: TextStyle(
+              fontSize: 18.0,
+              fontWeight: FontWeight.bold,
+              color: darkBlue,
+            ),
+          ),
+          const SizedBox(height: 8.0),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 32.0),
+            child: Text(
+              message,
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: 14.0,
+                color: Colors.grey.shade600,
+                height: 1.5,
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

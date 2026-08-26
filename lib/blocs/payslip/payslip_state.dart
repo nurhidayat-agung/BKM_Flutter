@@ -6,25 +6,28 @@ abstract class PaySlipState extends Equatable {
 
 class PaySlipInitial extends PaySlipState {
   @override
-  List<Object> get props => [];
+  List<Object?> get props => [];
 }
 
 class PaySlipLoading extends PaySlipState {
   const PaySlipLoading();
   @override
-  List<Object> get props => [];
+  List<Object?> get props => [];
 }
 
 class PaySlipSuccess extends PaySlipState {
-  final PaySlipResp paySlipResp;
-  const PaySlipSuccess(this.paySlipResp);
+  final PayslipData payslipData;
+  final PaySlipResp? paySlipResp;
+
+  const PaySlipSuccess(this.payslipData, {this.paySlipResp});
+
   @override
-  List<Object> get props => [paySlipResp];
+  List<Object?> get props => [payslipData, paySlipResp];
 }
 
 class PaySlipError extends PaySlipState {
   final String message;
   const PaySlipError(this.message);
   @override
-  List<Object> get props => [message];
+  List<Object?> get props => [message];
 }
