@@ -22,6 +22,7 @@ import 'package:newbkmmobile/repositories/leave_repository.dart';
 import 'package:newbkmmobile/services/http_communicator.dart';
 import 'package:newbkmmobile/repositories/session_manager_repository.dart';
 import 'package:newbkmmobile/models/common/announcement.dart';
+import 'package:newbkmmobile/models/common/menu_item.dart';
 import 'package:newbkmmobile/repositories/common_repository.dart';
 import 'package:newbkmmobile/blocs/trip/trip_bloc.dart';
 import 'package:newbkmmobile/repositories/trip_repository.dart';
@@ -58,6 +59,15 @@ class _HomePageState extends State<HomePage> {
   int _currentAnnouncementIndex = 0;
   final PageController _announcementPageController = PageController();
   Timer? _announcementTimer;
+
+  List<MenuItem> _menus = [
+    MenuItem(sort: 1, menuName: "Pengangkutan Baru", icon: "assets/Pengangkutan_Baru.png", show: true),
+    MenuItem(sort: 2, menuName: "Langsir", icon: "assets/Langsir.png", show: true),
+    MenuItem(sort: 3, menuName: "Riwayat Pengangkutan", icon: "assets/Riwayat_Pengangkutan.png", show: true),
+    MenuItem(sort: 4, menuName: "Pengajuan Perbaikan", icon: "assets/Bengkel.png", show: true),
+    MenuItem(sort: 5, menuName: "Pengajuan Cuti", icon: "assets/Pengajuan_Cuti.png", show: true),
+    MenuItem(sort: 6, menuName: "Slip Gaji", icon: "assets/slip_gaji.png", show: true),
+  ];
 
   @override
   void initState() {
@@ -402,32 +412,25 @@ class _HomePageState extends State<HomePage> {
                                     crossAxisSpacing: 24,
                                     mainAxisSpacing: 28,
                                     childAspectRatio: 0.70,
-                                    children: [
-                                      _menuItem("Pengangkutan Baru",
-                                        "assets/Pengangkutan_Baru.png",
-                                        const TripListPage(),
-                                        context, isRestrictedDuringLeave: true,
-                                        showBadge: hasNewTrip,
-                                        onAfterReturn: () {
-                                          blocContext.read<TripBloc>().add(
-                                              GetTripList());
-                                        },),
-                                      // isRestrictedDuringLeave: true),// Panggil ini untuk block pengangkutan
-                                      _menuItem("Langsir", "assets/Langsir.png",
-                                          const LangsirListPage(), context),
-                                      _menuItem("Riwayat Pengangkutan",
-                                          "assets/Riwayat_Pengangkutan.png",
-                                          const HistoryPage(), context),
-                                      _menuItem("Bengkel", "assets/Bengkel.png",
-                                          const RepairPage(), context),
-                                      _menuItem("Pengajuan Cuti",
-                                          "assets/Pengajuan_Cuti.png",
-                                          const LeaveApplicationPageWrapper(),
-                                          context),
-                                      _menuItem(
-                                          "Slip Gaji", "assets/slip_gaji.png",
-                                          const PaySlipPage(), context),
-                                    ],
+                                    children: _menus.map((menu) {
+                                      final title = menu.menuName ?? "";
+                                      final fallbackAsset = _getFallbackAssetForMenu(title);
+                                      final page = _getPageForMenu(title);
+                                      final isRestricted = _isRestrictedMenu(title);
+                                      final showBadge = _shouldShowBadge(title, hasNewTrip);
+                                      final onAfterReturn = _getAfterReturnCallback(title, blocContext);
+
+                                      return _buildMenuItemWidget(
+                                        title: title,
+                                        iconPath: menu.icon,
+                                        fallbackAsset: fallbackAsset,
+                                        page: page,
+                                        context: context,
+                                        isRestrictedDuringLeave: isRestricted,
+                                        showBadge: showBadge,
+                                        onAfterReturn: onAfterReturn,
+                                      );
+                                    }).toList(),
                                   );
                                 }
                               ),
@@ -465,19 +468,136 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  Widget _menuItem(String title, String imagePath, Widget page,
-      BuildContext context, {bool isRestrictedDuringLeave = false, bool showBadge = false, VoidCallback? onBeforeAction, VoidCallback? onAfterReturn}) {
+  String _normalizeMenuName(String name) {
+    return name.trim().toLowerCase().replaceAll(RegExp(r'\s+'), ' ');
+  }
+
+  Widget? _getPageForMenu(String name) {
+    final normalized = _normalizeMenuName(name);
+    if (normalized.contains("pengangkutan baru") || normalized == "trip") {
+      return const TripListPage();
+    } else if (normalized.contains("langsir")) {
+      return const LangsirListPage();
+    } else if (normalized.contains("riwayat pengangkutan") || normalized.contains("riwayat")) {
+      return const HistoryPage();
+    } else if (normalized.contains("perbaikan") || normalized.contains("bengkel") || normalized.contains("repair")) {
+      return const RepairPage();
+    } else if (normalized.contains("cuti") || normalized.contains("leave")) {
+      return const LeaveApplicationPageWrapper();
+    } else if (normalized.contains("slip gaji") || normalized.contains("slip")) {
+      return const PaySlipPage();
+    }
+    return null;
+  }
+
+  String _getFallbackAssetForMenu(String name) {
+    final normalized = _normalizeMenuName(name);
+    if (normalized.contains("pengangkutan baru") || normalized == "trip") {
+      return "assets/Pengangkutan_Baru.png";
+    } else if (normalized.contains("langsir")) {
+      return "assets/Langsir.png";
+    } else if (normalized.contains("riwayat pengangkutan") || normalized.contains("riwayat")) {
+      return "assets/Riwayat_Pengangkutan.png";
+    } else if (normalized.contains("perbaikan") || normalized.contains("bengkel") || normalized.contains("repair")) {
+      return "assets/Bengkel.png";
+    } else if (normalized.contains("cuti") || normalized.contains("leave")) {
+      return "assets/Pengajuan_Cuti.png";
+    } else if (normalized.contains("slip gaji") || normalized.contains("slip")) {
+      return "assets/slip_gaji.png";
+    }
+    return "assets/BKM_Logo_BG_White.png";
+  }
+
+  bool _isRestrictedMenu(String name) {
+    final normalized = _normalizeMenuName(name);
+    return normalized.contains("pengangkutan baru") || normalized == "trip";
+  }
+
+  bool _shouldShowBadge(String name, bool hasNewTrip) {
+    final normalized = _normalizeMenuName(name);
+    if (normalized.contains("pengangkutan baru") || normalized == "trip") {
+      return hasNewTrip;
+    }
+    return false;
+  }
+
+  VoidCallback? _getAfterReturnCallback(String name, BuildContext blocContext) {
+    final normalized = _normalizeMenuName(name);
+    if (normalized.contains("pengangkutan baru") || normalized == "trip") {
+      return () {
+        blocContext.read<TripBloc>().add(GetTripList());
+      };
+    }
+    return null;
+  }
+
+  Widget _buildMenuIcon(String? iconPath, String fallbackAsset) {
+    if (iconPath != null &&
+        (iconPath.startsWith("http://") || iconPath.startsWith("https://"))) {
+      return Image.network(
+        iconPath,
+        width: 90,
+        height: 90,
+        fit: BoxFit.contain,
+        loadingBuilder: (context, child, loadingProgress) {
+          if (loadingProgress == null) return child;
+          return Image.asset(
+            fallbackAsset,
+            width: 90,
+            height: 90,
+            fit: BoxFit.contain,
+          );
+        },
+        errorBuilder: (context, error, stackTrace) {
+          return Image.asset(
+            fallbackAsset,
+            width: 90,
+            height: 90,
+            fit: BoxFit.contain,
+          );
+        },
+      );
+    }
+    return Image.asset(
+      (iconPath != null && iconPath.isNotEmpty && !iconPath.startsWith("http"))
+          ? iconPath
+          : fallbackAsset,
+      width: 90,
+      height: 90,
+      fit: BoxFit.contain,
+    );
+  }
+
+  Widget _buildMenuItemWidget({
+    required String title,
+    required String? iconPath,
+    required String fallbackAsset,
+    required Widget? page,
+    required BuildContext context,
+    bool isRestrictedDuringLeave = false,
+    bool showBadge = false,
+    VoidCallback? onBeforeAction,
+    VoidCallback? onAfterReturn,
+  }) {
     return GestureDetector(
       onTap: () async {
-
         if (onBeforeAction != null) onBeforeAction();
-        if (isRestrictedDuringLeave && _isCurrentlyOnLeave &&
-            _activeLeaveStart != null && _activeLeaveEnd != null) {
+        if (isRestrictedDuringLeave &&
+            _isCurrentlyOnLeave &&
+            _activeLeaveStart != null &&
+            _activeLeaveEnd != null) {
           showLeavePopup(
               _activeLeaveType, _activeLeaveStart!, _activeLeaveEnd!);
-        } else {
+        } else if (page != null) {
           await Navigator.push(context, MaterialPageRoute(builder: (_) => page));
           if (onAfterReturn != null) onAfterReturn();
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text("Menu $title sedang dalam pengembangan."),
+              duration: const Duration(seconds: 2),
+            ),
+          );
         }
       },
       child: Column(
@@ -487,32 +607,26 @@ class _HomePageState extends State<HomePage> {
           SizedBox(
             height: 90,
             width: 90,
-        child: Stack(
-          clipBehavior: Clip.none,
-          children: [
-            // Gambar Utama
-            Image.asset(
-              imagePath,
-              width: 90,
-              height: 90,
-              fit: BoxFit.contain,
-            ),
-            if (showBadge)
-              Positioned(
-                top: 13,
-                right: 13,
-                child: Container(
-                  width: 18,
-                  height: 16,
-                  decoration: BoxDecoration(
-                    color: Colors.red,
-                    shape: BoxShape.circle,
-                    border: Border.all(color: Colors.white, width: 1.5),
+            child: Stack(
+              clipBehavior: Clip.none,
+              children: [
+                _buildMenuIcon(iconPath, fallbackAsset),
+                if (showBadge)
+                  Positioned(
+                    top: 13,
+                    right: 13,
+                    child: Container(
+                      width: 18,
+                      height: 16,
+                      decoration: BoxDecoration(
+                        color: Colors.red,
+                        shape: BoxShape.circle,
+                        border: Border.all(color: Colors.white, width: 1.5),
+                      ),
+                    ),
                   ),
-                ),
-              ),
-            ],
-          ),
+              ],
+            ),
           ),
           const SizedBox(height: 8),
           // TEXT MANAGE HEIGHT
@@ -609,6 +723,24 @@ class _HomePageState extends State<HomePage> {
                 _announcements = [];
               }
             });
+          }
+
+          // Update Menus dari API
+          final List menusData = data['menus'] ?? [];
+          debugPrint("JUMLAH MENU DARI JSON: ${menusData.length}");
+          if (menusData.isNotEmpty) {
+            final parsedMenus = menusData
+                .map((m) => MenuItem.fromJson(m as Map<String, dynamic>))
+                .where((m) => m.show == true)
+                .toList();
+            parsedMenus.sort((a, b) => (a.sort ?? 0).compareTo(b.sort ?? 0));
+            debugPrint("MENU AKTIF LOLOS FILTER (show=true): ${parsedMenus.length}");
+
+            if (mounted && parsedMenus.isNotEmpty) {
+              setState(() {
+                _menus = parsedMenus;
+              });
+            }
           }
         }
       } else {
