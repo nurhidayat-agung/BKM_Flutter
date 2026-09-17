@@ -539,6 +539,8 @@ class _HomePageState extends State<HomePage> {
         width: 90,
         height: 90,
         fit: BoxFit.contain,
+        cacheWidth: 180,
+        cacheHeight: 180,
         loadingBuilder: (context, child, loadingProgress) {
           if (loadingProgress == null) return child;
           return Image.asset(
